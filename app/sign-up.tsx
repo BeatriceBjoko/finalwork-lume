@@ -1,66 +1,113 @@
-import { Link, router } from "expo-router";
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { useSession } from "../context";
+import { Link } from "expo-router";
+import { ImageBackground, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import Button from "../components/ui/Button";
+import Checkbox from "../components/ui/Checkbox";
+import GlassCard from "../components/ui/GlassCard";
+import Input from "../components/ui/Input";
+import { COLORS, FONTS } from "../constants/theme";
+import { useSignUp } from "../hooks/useSignUp";
 
 export default function SignUp() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [name, setName] = useState("");
-	const { signUp } = useSession();
+	const { name, setName, email, setEmail, password, setPassword, termsAccepted, setTermsAccepted, isSubmitting, handleSignUpPress } = useSignUp();
 
-	const handleSignUpPress = async () => {
-		const user = await signUp(email, password, name);
-		if (user) {
-			router.replace("/");
-		}
-	};
+	const TermsLabel = (
+		<Text style={styles.termsText}>
+			Ik ga akkoord met de <Text style={styles.linkText}>Privacyvoorwaarden</Text> en <Text style={styles.linkText}>Gebruiksvoorwaarden</Text>
+		</Text>
+	);
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.header}>
-				<Text style={styles.title}>Join Lume</Text>
-				<Text style={styles.subtitle}>Create an account to get started</Text>
-			</View>
+		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+			<ImageBackground source={require("../assets/images/signup-bg.jpg")} style={styles.background} resizeMode="cover">
+				<View style={styles.spacer} />
 
-			<View style={styles.form}>
-				<Text style={styles.label}>Name</Text>
-				<TextInput style={styles.input} placeholder="Your full name" value={name} onChangeText={setName} autoCapitalize="words" />
+				<GlassCard>
+					<View style={styles.header}>
+						<Text style={styles.title}>Account aanmaken</Text>
+						<Text style={styles.subtitle}>Maak een account om je zorgkring te starten</Text>
+					</View>
 
-				<Text style={styles.label}>Email</Text>
-				<TextInput style={styles.input} placeholder="name@mail.com" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+					<Input label="Voornaam + naam" placeholder="Beatrice Bjoko" value={name} onChangeText={setName} autoCapitalize="words" />
 
-				<Text style={styles.label}>Password</Text>
-				<TextInput style={styles.input} placeholder="Create a password" value={password} onChangeText={setPassword} secureTextEntry />
-			</View>
+					<Input label="E-mail" placeholder="beatricebjoko@gmail.be" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
 
-			<Pressable style={styles.button} onPress={handleSignUpPress}>
-				<Text style={styles.buttonText}>Sign Up</Text>
-			</Pressable>
+					<Input label="Wachtwoord" placeholder="**********" value={password} onChangeText={setPassword} secureTextEntry />
 
-			<View style={styles.footer}>
-				<Text style={styles.footerText}>Already have an account? </Text>
-				<Link href="/sign-in" asChild>
-					<Pressable>
-						<Text style={styles.link}>Sign In</Text>
-					</Pressable>
-				</Link>
-			</View>
-		</View>
+					<Checkbox checked={termsAccepted} onChange={setTermsAccepted} label={TermsLabel} />
+
+					<Text style={styles.securityNote}>Je gegevens blijven veilig binnen je zorgkring</Text>
+
+					<Button
+						title={isSubmitting ? "Laden..." : "Account aanmaken"}
+						onPress={handleSignUpPress}
+						disabled={isSubmitting || !termsAccepted} // Knop is uitgeschakeld als voorwaarden niet zijn geaccepteerd
+						style={{ marginTop: 8 }}
+					/>
+
+					<View style={styles.footer}>
+						<Text style={styles.footerText}>Al een account? </Text>
+						<Link href="/sign-in" asChild>
+							<Pressable>
+								<Text style={styles.footerLink}>Log in</Text>
+							</Pressable>
+						</Link>
+					</View>
+				</GlassCard>
+			</ImageBackground>
+		</KeyboardAvoidingView>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 24, backgroundColor: "#FDFBF7" },
-	header: { alignItems: "center", marginBottom: 32 },
-	title: { fontSize: 28, fontWeight: "bold", color: "#4A5D4E", marginBottom: 8 },
-	subtitle: { fontSize: 16, color: "#7FA99B" },
-	form: { width: "100%", maxWidth: 300, marginBottom: 32 },
-	label: { fontSize: 14, fontWeight: "600", color: "#4A5D4E", marginBottom: 8, marginLeft: 4 },
-	input: { backgroundColor: "#FFF", borderWidth: 1, borderColor: "#E5E5E5", borderRadius: 12, padding: 16, fontSize: 16, marginBottom: 16 },
-	button: { backgroundColor: "#7FA99B", width: "100%", maxWidth: 300, padding: 16, borderRadius: 12, alignItems: "center" },
-	buttonText: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
-	footer: { flexDirection: "row", marginTop: 24 },
-	footerText: { color: "#666" },
-	link: { color: "#7FA99B", fontWeight: "bold" },
+	container: { flex: 1 },
+	background: { flex: 1, width: "100%", height: "100%" },
+	spacer: { flex: 1 },
+	header: { alignItems: "center", marginBottom: 32, zIndex: 1 },
+	title: {
+		fontFamily: FONTS.heading,
+		fontSize: 28,
+		color: COLORS.primary,
+		marginBottom: 8,
+		letterSpacing: 0.5,
+	},
+	subtitle: {
+		fontFamily: FONTS.body,
+		fontSize: 14,
+		color: COLORS.primary,
+	},
+	termsText: {
+		fontSize: 12,
+		color: "black",
+		lineHeight: 18,
+		fontStyle: "italic",
+	},
+	linkText: {
+		color: COLORS.primary,
+		textDecorationLine: "underline",
+	},
+	securityNote: {
+		fontFamily: FONTS.body,
+		fontSize: 11,
+		color: COLORS.primary,
+		textAlign: "center",
+		opacity: 0.8,
+		marginBottom: 16,
+	},
+	footer: {
+		flexDirection: "row",
+		justifyContent: "center",
+		marginTop: 24,
+		zIndex: 1,
+	},
+	footerText: {
+		fontFamily: FONTS.body,
+		fontSize: 13,
+		color: COLORS.primary,
+	},
+	footerLink: {
+		fontFamily: FONTS.button,
+		fontSize: 13,
+		color: COLORS.primary,
+		textDecorationLine: "underline",
+	},
 });
