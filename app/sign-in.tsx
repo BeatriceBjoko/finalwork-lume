@@ -1,62 +1,95 @@
-import { Link, router } from "expo-router";
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { useSession } from "../context";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
+import { Link } from "expo-router";
+import { ImageBackground, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import { COLORS, FONTS, SIZES } from "../constants/theme";
+import { useSignIn } from "../hooks/useSignIn";
 
 export default function SignIn() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const { signIn } = useSession();
-
-	const handleSignInPress = async () => {
-		const user = await signIn(email, password);
-		if (user) {
-			router.replace("/");
-		}
-	};
+	const { email, setEmail, password, setPassword, isSubmitting, handleSignInPress } = useSignIn();
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.header}>
-				<Text style={styles.title}>Welcome Back</Text>
-				<Text style={styles.subtitle}>Please sign in to continue</Text>
-			</View>
+		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+			<ImageBackground source={require("../assets/images/login-bg.jpg")} style={styles.background} resizeMode="cover">
+				<View style={styles.spacer} />
 
-			<View style={styles.form}>
-				<Text style={styles.label}>Email</Text>
-				<TextInput style={styles.input} placeholder="name@mail.com" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+				<BlurView intensity={15} tint="light" style={styles.cardWrapper}>
+					<LinearGradient colors={[COLORS.glassGradientStart, COLORS.glassGradientEnd]} style={styles.gradientCard}>
+						<LinearGradient colors={[COLORS.innerGlowStart, COLORS.innerGlowEnd]} style={styles.innerGlow} pointerEvents="none" />
 
-				<Text style={styles.label}>Password</Text>
-				<TextInput style={styles.input} placeholder="Your password" value={password} onChangeText={setPassword} secureTextEntry />
-			</View>
+						<View style={styles.header}>
+							<Text style={styles.title}>LOG IN</Text>
+							<Text style={styles.subtitle}>Voor mantelzorgers in België</Text>
+						</View>
 
-			<Pressable style={styles.button} onPress={handleSignInPress}>
-				<Text style={styles.buttonText}>Sign In</Text>
-			</Pressable>
+						<Input label="E-mail" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+						<Input label="Wachtwoord" value={password} onChangeText={setPassword} secureTextEntry />
 
-			<View style={styles.footer}>
-				<Text style={styles.footerText}>Don't have an account? </Text>
-				<Link href="/sign-up" asChild>
-					<Pressable>
-						<Text style={styles.link}>Sign Up</Text>
-					</Pressable>
-				</Link>
-			</View>
-		</View>
+						<Button title={isSubmitting ? "Laden..." : "Account aanmaken"} onPress={handleSignInPress} disabled={isSubmitting} style={{ marginTop: 16 }} />
+
+						<Link href="/sign-up" asChild>
+							<Pressable style={styles.forgotPassword}>
+								<Text style={styles.forgotPasswordText}>Wachtwoord vergeten?</Text>
+							</Pressable>
+						</Link>
+					</LinearGradient>
+				</BlurView>
+			</ImageBackground>
+		</KeyboardAvoidingView>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 24, backgroundColor: "#FDFBF7" },
-	header: { alignItems: "center", marginBottom: 32 },
-	title: { fontSize: 28, fontWeight: "bold", color: "#4A5D4E", marginBottom: 8 },
-	subtitle: { fontSize: 16, color: "#7FA99B" },
-	form: { width: "100%", maxWidth: 300, marginBottom: 32 },
-	label: { fontSize: 14, fontWeight: "600", color: "#4A5D4E", marginBottom: 8, marginLeft: 4 },
-	input: { backgroundColor: "#FFF", borderWidth: 1, borderColor: "#E5E5E5", borderRadius: 12, padding: 16, fontSize: 16, marginBottom: 16 },
-	button: { backgroundColor: "#7FA99B", width: "100%", maxWidth: 300, padding: 16, borderRadius: 12, alignItems: "center" },
-	buttonText: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
-	footer: { flexDirection: "row", marginTop: 24 },
-	footerText: { color: "#666" },
-	link: { color: "#7FA99B", fontWeight: "bold" },
+	container: { flex: 1 },
+	background: { flex: 1, width: "100%", height: "100%" },
+	spacer: { flex: 1 },
+	cardWrapper: {
+		borderTopLeftRadius: SIZES.cardRadius,
+		borderTopRightRadius: SIZES.cardRadius,
+		overflow: "hidden",
+	},
+	gradientCard: {
+		position: "relative",
+		paddingHorizontal: 32,
+		paddingTop: 40,
+		paddingBottom: 60,
+		borderTopLeftRadius: SIZES.cardRadius,
+		borderTopRightRadius: SIZES.cardRadius,
+
+		borderWidth: 2,
+		borderBottomWidth: 0,
+		borderColor: COLORS.glassBorder,
+	},
+	innerGlow: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		height: 44,
+		borderTopLeftRadius: SIZES.cardRadius,
+		borderTopRightRadius: SIZES.cardRadius,
+	},
+	header: { alignItems: "center", marginBottom: 40, zIndex: 1 },
+	title: {
+		fontFamily: FONTS.heading,
+		fontSize: 32,
+		color: COLORS.primary,
+		marginBottom: 8,
+		letterSpacing: 1,
+	},
+	subtitle: {
+		fontFamily: FONTS.body,
+		fontSize: 14,
+		color: COLORS.primary,
+	},
+	forgotPassword: { marginTop: 24, alignItems: "center", zIndex: 1 },
+	forgotPasswordText: {
+		fontFamily: FONTS.body,
+		fontSize: 12,
+		color: COLORS.primary,
+		textDecorationLine: "underline",
+	},
 });
