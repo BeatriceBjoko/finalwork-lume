@@ -11,10 +11,15 @@ interface CheckboxProps {
 
 export default function Checkbox({ checked, onChange, label }: CheckboxProps) {
 	return (
-		<Pressable style={styles.container} onPress={() => onChange(!checked)}>
-			<View style={[styles.box, checked && styles.boxChecked]}>{checked && <Feather name="check" size={14} color={COLORS.white} />}</View>
+		// De buitenste container is nu een View (niet meer klikbaar)
+		<View style={styles.container}>
+			{/* De Pressable zit NU ALLEEN om het vierkantje */}
+			<Pressable style={[styles.box, checked && styles.boxChecked]} onPress={() => onChange(!checked)}>
+				{checked && <Feather name="check" size={14} color={COLORS.white} />}
+			</Pressable>
+
 			<View style={styles.labelContainer}>{label}</View>
-		</Pressable>
+		</View>
 	);
 }
 
