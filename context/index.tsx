@@ -6,7 +6,7 @@ import { login, logout, register } from "../lib/firebase-service";
 interface AuthContextType {
 	signIn: (email: string, password: string) => Promise<User | undefined>;
 	signUp: (email: string, password: string, name?: string) => Promise<User | undefined>;
-	signOut: () => void;
+	signOut: () => Promise<void>;
 	user: User | null;
 	isLoading: boolean;
 }
@@ -32,32 +32,18 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 	}, []);
 
 	const handleSignIn = async (email: string, password: string) => {
-		try {
-			const response = await login(email, password);
-			return response?.user;
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
+		const response = await login(email, password);
+		return response?.user;
 	};
 
 	const handleSignUp = async (email: string, password: string, name?: string) => {
-		try {
-			const response = await register(email, password, name);
-			return response?.user;
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
+		const response = await register(email, password, name);
+		return response?.user;
 	};
 
 	const handleSignOut = async () => {
-		try {
-			await logout();
-			setUser(null);
-		} catch (error) {
-			console.error(error);
-		}
+		await logout();
+		setUser(null);
 	};
 
 	return <AuthContext.Provider value={{ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, isLoading }}>{props.children}</AuthContext.Provider>;
