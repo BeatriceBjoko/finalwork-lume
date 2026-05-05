@@ -65,5 +65,16 @@
 		"invalidCredential": "E-mailadres of wachtwoord is onjuist.",
 		"tooManyRequests": "Te veel mislukte pogingen. Probeer het later opnieuw.",
 		"default": "Er is een onbekende fout opgetreden. Probeer het opnieuw."
+	},
+	"onboarding": {
+		"step1": {
+			"title": "Zorg voor een dierbare\nis mooi. Maar soms ook\nzwaar",
+			"description": "Afspraken, medicatie, taken... iedereen helpt\nmee, maar het overzicht ontbreekt vaak."
+		},
+		"step2": {
+			"title": "SAMEN zorgen, met\nmeer rust in je hoofd",
+			"card1": "Van medicatie tot planning: alles komt samen op één gedeelde plek.",
+			"card2": "Zodat jullie zorgkring verbonden blijft en jij rust in je zorgdag vindt."
+		}
 	}
 }

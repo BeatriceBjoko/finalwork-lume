@@ -65,5 +65,16 @@
 		"invalidCredential": "L'adresse e-mail ou le mot de passe est incorrect.",
 		"tooManyRequests": "Trop de tentatives infructueuses. Veuillez réessayer plus tard.",
 		"default": "Une erreur inconnue s'est produite. Veuillez réessayer."
+	},
+	"onboarding": {
+		"step1": {
+			"title": "Prendre soin d'un proche\nest beau. Mais parfois\naussi difficile",
+			"description": "Rendez-vous, médicaments, tâches... tout le monde aide,\nmais la vue d'ensemble manque souvent."
+		},
+		"step2": {
+			"title": "Prendre soin ENSEMBLE,\navec plus de tranquillité d'esprit",
+			"card1": "Des médicaments à la planification : tout est réuni en un seul endroit partagé.",
+			"card2": "Pour que votre cercle de soins reste connecté et que vous trouviez la paix dans votre journée de soins."
+		}
 	}
 }
