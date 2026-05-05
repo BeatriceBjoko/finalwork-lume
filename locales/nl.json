@@ -56,5 +56,14 @@
 			{ "type": "subtitle", "text": "Wijzigingen" },
 			{ "type": "body", "text": "Deze voorwaarden kunnen in de toekomst aangepast worden om de app te verbeteren." }
 		]
+	},
+	"errors": {
+		"missingFields": "Vul aub alle velden in.",
+		"invalidEmail": "Dit e-mailadres is ongeldig.",
+		"emailInUse": "Dit e-mailadres is al in gebruik.",
+		"weakPassword": "Je wachtwoord moet minimaal 6 tekens lang zijn.",
+		"invalidCredential": "E-mailadres of wachtwoord is onjuist.",
+		"tooManyRequests": "Te veel mislukte pogingen. Probeer het later opnieuw.",
+		"default": "Er is een onbekende fout opgetreden. Probeer het opnieuw."
 	}
 }

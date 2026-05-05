@@ -56,5 +56,14 @@
 			{ "type": "subtitle", "text": "Modifications" },
 			{ "type": "body", "text": "Ces conditions peuvent être modifiées à l'avenir pour améliorer l'application." }
 		]
+	},
+	"errors": {
+		"missingFields": "Veuillez remplir tous les champs.",
+		"invalidEmail": "Cette adresse e-mail n'est pas valide.",
+		"emailInUse": "Cette adresse e-mail est déjà utilisée.",
+		"weakPassword": "Le mot de passe doit comporter au moins 6 caractères.",
+		"invalidCredential": "L'adresse e-mail ou le mot de passe est incorrect.",
+		"tooManyRequests": "Trop de tentatives infructueuses. Veuillez réessayer plus tard.",
+		"default": "Une erreur inconnue s'est produite. Veuillez réessayer."
 	}
 }

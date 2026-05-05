@@ -37,7 +37,7 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 			return response?.user;
 		} catch (error) {
 			console.error(error);
-			return undefined;
+			throw error;
 		}
 	};
 
@@ -47,7 +47,7 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 			return response?.user;
 		} catch (error) {
 			console.error(error);
-			return undefined;
+			throw error;
 		}
 	};
 

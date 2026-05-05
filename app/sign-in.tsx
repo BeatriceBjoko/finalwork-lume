@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ImageBackground, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../components/ui/Button";
 import GlassCard from "../components/ui/GlassCard";
@@ -13,7 +14,7 @@ export default function SignIn() {
 	// Haal de vertaalfunctie en de i18n instantie op
 	const { t, i18n } = useTranslation();
 
-	const { email, setEmail, password, setPassword, isSubmitting, handleSignInPress } = useSignIn();
+	const { email, setEmail, password, setPassword, isSubmitting, errorMessage, handleSignInPress } = useSignIn();
 
 	// functie om de taal te wisselen
 	const toggleLanguage = () => {
@@ -37,6 +38,12 @@ export default function SignIn() {
 						<Text style={styles.title}>{t("login.title")}</Text>
 						<Text style={styles.subtitle}>{t("login.subtitle")}</Text>
 					</View>
+
+					{errorMessage !== "" && (
+						<View style={styles.errorContainer}>
+							<Text style={styles.errorText}>{errorMessage}</Text>
+						</View>
+					)}
 
 					<Input label={t("login.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="naam@mail.com" />
 
@@ -64,8 +71,6 @@ export default function SignIn() {
 	);
 }
 
-import { SafeAreaView } from "react-native-safe-area-context";
-
 const styles = StyleSheet.create({
 	container: { flex: 1 },
 	background: { flex: 1, width: "100%", height: "100%" },
@@ -92,6 +97,22 @@ const styles = StyleSheet.create({
 	header: { alignItems: "center", marginBottom: 40, zIndex: 1 },
 	title: { fontFamily: FONTS.heading, fontSize: 32, color: COLORS.primary, marginBottom: 8, letterSpacing: 1 },
 	subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.primary },
+
+	errorContainer: {
+		backgroundColor: "rgba(255, 0, 0, 0.1)",
+		padding: 12,
+		borderRadius: 8,
+		marginBottom: 16,
+		borderLeftWidth: 4,
+		borderLeftColor: "#ff4d4d",
+		width: "100%",
+	},
+	errorText: {
+		fontFamily: FONTS.body,
+		fontSize: 13,
+		color: "#cc0000",
+	},
+
 	forgotPassword: { marginTop: 24, alignItems: "center", zIndex: 1 },
 	forgotPasswordText: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.primary, textDecorationLine: "underline" },
 	footer: { flexDirection: "row", justifyContent: "center", marginTop: 24, zIndex: 1 },
