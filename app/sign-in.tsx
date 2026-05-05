@@ -57,6 +57,12 @@ export default function SignIn() {
 						</Pressable>
 					</Link>
 
+					<Link href="/onboarding" asChild>
+						<Pressable style={{ backgroundColor: "yellow", padding: 10, marginTop: 20, alignItems: "center", borderRadius: 10 }}>
+							<Text style={{ fontWeight: "bold" }}>TEST DE ONBOARDING </Text>
+						</Pressable>
+					</Link>
+
 					<View style={styles.footer}>
 						<Text style={styles.footerText}>{t("login.noAccount")} </Text>
 						<Link href="/sign-up" asChild>
