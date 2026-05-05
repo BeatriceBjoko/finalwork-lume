@@ -12,7 +12,7 @@ import { useSignUp } from "../hooks/useSignUp";
 
 export default function SignUp() {
 	const { t } = useTranslation();
-	const { name, setName, email, setEmail, password, setPassword, termsAccepted, setTermsAccepted, isSubmitting, handleSignUpPress } = useSignUp();
+	const { name, setName, email, setEmail, password, setPassword, termsAccepted, setTermsAccepted, isSubmitting, errorMessage, handleSignUpPress } = useSignUp();
 
 	const TermsLabel = (
 		<Text style={styles.termsText}>
@@ -37,6 +37,12 @@ export default function SignUp() {
 						<Text style={styles.title}>{t("signup.title")}</Text>
 						<Text style={styles.subtitle}>{t("signup.subtitle")}</Text>
 					</View>
+
+					{errorMessage !== "" && (
+						<View style={styles.errorContainer}>
+							<Text style={styles.errorText}>{errorMessage}</Text>
+						</View>
+					)}
 
 					<Input label={t("signup.namePlaceholder")} placeholder="Beatrice Bjoko" value={name} onChangeText={setName} autoCapitalize="words" />
 
@@ -80,6 +86,20 @@ const styles = StyleSheet.create({
 		fontFamily: FONTS.body,
 		fontSize: 14,
 		color: COLORS.primary,
+	},
+	errorContainer: {
+		backgroundColor: "rgba(255, 0, 0, 0.1)",
+		padding: 12,
+		borderRadius: 8,
+		marginBottom: 16,
+		borderLeftWidth: 4,
+		borderLeftColor: "#ff4d4d",
+		width: "100%",
+	},
+	errorText: {
+		fontFamily: FONTS.body,
+		fontSize: 13,
+		color: "#cc0000",
 	},
 	termsText: {
 		fontSize: 12,
