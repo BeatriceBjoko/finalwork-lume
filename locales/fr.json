@@ -9,11 +9,52 @@
 		"noAccount": "Pas encore de compte ?",
 		"createAccount": "Créer un compte"
 	},
+	"signup": {
+		"title": "Créer un compte",
+		"subtitle": "Créez un compte pour démarrer votre cercle de soins",
+		"namePlaceholder": "Prénom + nom",
+		"email": "E-mail",
+		"password": "Mot de passe",
+		"termsStart": "J'accepte la ",
+		"termsPrivacy": "Politique de confidentialité",
+		"termsAnd": " et les ",
+		"termsTerms": "Conditions d'utilisation",
+		"securityNote": "Vos données restent en sécurité au sein de votre cercle",
+		"buttonLoading": "Chargement...",
+		"button": "Créer un compte",
+		"alreadyAccount": "Déjà un compte ? ",
+		"loginLink": "Se connecter"
+	},
 	"legal": {
 		"title": "Conditions",
 		"tabPrivacy": "Confidentialité",
 		"tabTerms": "Conditions d'utilisation",
-		"privacyContent": [{ "type": "body", "text": "Chez Lume, nous accordons une grande importance à votre vie privée." }],
-		"termsContent": [{ "type": "body", "text": "En utilisant Lume, vous acceptez les conditions suivantes." }]
+		"privacyContent": [
+			{ "type": "body", "text": "Chez Lume, nous accordons une grande importance à votre vie privée.\n\nNous collectons uniquement les données nécessaires au bon fonctionnement de l'application et pour vous soutenir en tant qu'aidant proche." },
+			{ "type": "subtitle", "text": "Quelles données collectons-nous ?" },
+			{ "type": "body", "text": "• Nom et adresse e-mail\n• Informations sur votre cercle de soins\n• Tâches, rendez-vous et notes que vous ajoutez vous-même" },
+			{ "type": "subtitle", "text": "Pourquoi collectons-nous ces données ?" },
+			{ "type": "body", "text": "• Pour vous donner un aperçu clair des tâches de soins\n• Pour permettre la collaboration entre les utilisateurs\n• Pour que les rappels et notifications fonctionnent correctement" },
+			{ "type": "highlight", "text": "Vos données restent privées." },
+			{
+				"type": "body",
+				"text": "Nous ne partageons jamais vos données avec des tiers sans votre consentement.\n\nVos données sont stockées en toute sécurité et utilisées uniquement au sein de l'application.\n\nVous avez toujours le droit de consulter, modifier ou supprimer vos données."
+			}
+		],
+		"termsContent": [
+			{ "type": "body", "text": "En utilisant Lume, vous acceptez les conditions suivantes." },
+			{ "type": "subtitle", "text": "Utilisation de l'application" },
+			{ "type": "body", "text": "Lume est conçu comme un outil pour organiser et soutenir les tâches de soins. L'application ne remplace pas un avis médical professionnel." },
+			{ "type": "subtitle", "text": "Responsabilité" },
+			{ "type": "body", "text": "Vous êtes responsable des informations que vous saisissez dans l'application et de la manière dont vous les utilisez." },
+			{ "type": "subtitle", "text": "Collaboration" },
+			{ "type": "body", "text": "Si vous collaborez avec d'autres utilisateurs, vous êtes responsable du partage correct des informations au sein de votre cercle de soins." },
+			{ "type": "subtitle", "text": "Limitations" },
+			{ "type": "body", "text": "Lume n'est pas responsable des erreurs dans les données saisies, des tâches manquées ou des décisions médicales basées sur les informations de l'application." },
+			{ "type": "subtitle", "text": "Confidentialité" },
+			{ "type": "body", "text": "Vous ne pouvez pas partager d'informations sensibles en dehors de votre cercle de soins sans autorisation." },
+			{ "type": "subtitle", "text": "Modifications" },
+			{ "type": "body", "text": "Ces conditions peuvent être modifiées à l'avenir pour améliorer l'application." }
+		]
 	}
 }

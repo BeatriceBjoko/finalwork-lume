@@ -9,19 +9,52 @@
 		"noAccount": "Nog geen account?",
 		"createAccount": "Account aanmaken"
 	},
+	"signup": {
+		"title": "Account aanmaken",
+		"subtitle": "Maak een account om je zorgkring te starten",
+		"namePlaceholder": "Voornaam + naam",
+		"email": "E-mail",
+		"password": "Wachtwoord",
+		"termsStart": "Ik ga akkoord met de ",
+		"termsPrivacy": "Privacyvoorwaarden",
+		"termsAnd": " en ",
+		"termsTerms": "Gebruiksvoorwaarden",
+		"securityNote": "Je gegevens blijven veilig binnen je zorgkring",
+		"buttonLoading": "Laden...",
+		"button": "Account aanmaken",
+		"alreadyAccount": "Al een account? ",
+		"loginLink": "Log in"
+	},
 	"legal": {
 		"title": "Voorwaarden",
 		"tabPrivacy": "Privacy",
 		"tabTerms": "Gebruiksvoorwaarden",
 		"privacyContent": [
-			{ "type": "body", "text": "Bij Lume hechten we veel belang aan jouw privacy.\n\nWe verzamelen enkel de gegevens die nodig zijn." },
+			{ "type": "body", "text": "Bij Lume hechten we veel belang aan jouw privacy.\n\nWe verzamelen enkel de gegevens die nodig zijn om de app correct te laten werken en jou te ondersteunen als mantelzorger." },
 			{ "type": "subtitle", "text": "Welke gegevens verzamelen we?" },
-			{ "type": "body", "text": "• Naam en e-mailadres\n• Informatie over jouw zorgkring" }
+			{ "type": "body", "text": "• Naam en e-mailadres\n• Informatie over jouw zorgkring\n• Taken, afspraken en notities die je zelf toevoegt" },
+			{ "type": "subtitle", "text": "Waarom verzamelen we deze gegevens?" },
+			{ "type": "body", "text": "• Om jou een duidelijk overzicht te geven van zorgtaken\n• Om samenwerking mogelijk te maken tussen gebruikers\n• Om herinneringen en meldingen correct te laten werken" },
+			{ "type": "highlight", "text": "Jouw gegevens blijven privé." },
+			{
+				"type": "body",
+				"text": "We delen jouw gegevens nooit met derden zonder jouw toestemming.\n\nJe gegevens worden veilig opgeslagen en enkel gebruikt binnen de app.\n\nJe hebt altijd het recht om je gegevens te bekijken, aan te passen of te verwijderen."
+			}
 		],
 		"termsContent": [
 			{ "type": "body", "text": "Door Lume te gebruiken, ga je akkoord met de volgende voorwaarden." },
 			{ "type": "subtitle", "text": "Gebruik van de app" },
-			{ "type": "body", "text": "Lume is bedoeld als hulpmiddel om zorgtaken te organiseren. De app vervangt geen medisch advies." }
+			{ "type": "body", "text": "Lume is bedoeld als hulpmiddel om zorgtaken te organiseren en te ondersteunen. De app vervangt geen professioneel medisch advies." },
+			{ "type": "subtitle", "text": "Verantwoordelijkheid" },
+			{ "type": "body", "text": "Je bent zelf verantwoordelijk voor de informatie die je invoert in de app en hoe je deze gebruikt." },
+			{ "type": "subtitle", "text": "Samenwerking" },
+			{ "type": "body", "text": "Als je samenwerkt met andere gebruikers, ben je verantwoordelijk voor het correct delen van informatie binnen jouw zorgkring." },
+			{ "type": "subtitle", "text": "Beperkingen" },
+			{ "type": "body", "text": "Lume is niet verantwoordelijk voor fouten in ingevoerde gegevens, gemiste taken of medische beslissingen die gebaseerd zijn op informatie uit de app." },
+			{ "type": "subtitle", "text": "Privacy" },
+			{ "type": "body", "text": "Je mag geen gevoelige informatie delen buiten jouw zorgkring zonder toestemming." },
+			{ "type": "subtitle", "text": "Wijzigingen" },
+			{ "type": "body", "text": "Deze voorwaarden kunnen in de toekomst aangepast worden om de app te verbeteren." }
 		]
 	}
 }
