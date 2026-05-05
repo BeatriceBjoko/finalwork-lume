@@ -1,0 +1,19 @@
+{
+	"login": {
+		"title": "CONNEXION",
+		"subtitle": "Pour les aidants proches en Belgique",
+		"email": "E-mail",
+		"password": "Mot de passe",
+		"button": "Se connecter",
+		"forgot": "Mot de passe oublié ?",
+		"noAccount": "Pas encore de compte ?",
+		"createAccount": "Créer un compte"
+	},
+	"legal": {
+		"title": "Conditions",
+		"tabPrivacy": "Confidentialité",
+		"tabTerms": "Conditions d'utilisation",
+		"privacyContent": [{ "type": "body", "text": "Chez Lume, nous accordons une grande importance à votre vie privée." }],
+		"termsContent": [{ "type": "body", "text": "En utilisant Lume, vous acceptez les conditions suivantes." }]
+	}
+}

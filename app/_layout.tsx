@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { SessionProvider } from "../context";
+import "../locales/i18n";
 
 export default function RootLayout() {
 	// Load the fonts

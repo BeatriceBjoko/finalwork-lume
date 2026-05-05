@@ -1,0 +1,27 @@
+{
+	"login": {
+		"title": "LOG IN",
+		"subtitle": "Voor mantelzorgers in België",
+		"email": "E-mail",
+		"password": "Wachtwoord",
+		"button": "Log In",
+		"forgot": "Wachtwoord vergeten?",
+		"noAccount": "Nog geen account?",
+		"createAccount": "Account aanmaken"
+	},
+	"legal": {
+		"title": "Voorwaarden",
+		"tabPrivacy": "Privacy",
+		"tabTerms": "Gebruiksvoorwaarden",
+		"privacyContent": [
+			{ "type": "body", "text": "Bij Lume hechten we veel belang aan jouw privacy.\n\nWe verzamelen enkel de gegevens die nodig zijn." },
+			{ "type": "subtitle", "text": "Welke gegevens verzamelen we?" },
+			{ "type": "body", "text": "• Naam en e-mailadres\n• Informatie over jouw zorgkring" }
+		],
+		"termsContent": [
+			{ "type": "body", "text": "Door Lume te gebruiken, ga je akkoord met de volgende voorwaarden." },
+			{ "type": "subtitle", "text": "Gebruik van de app" },
+			{ "type": "body", "text": "Lume is bedoeld als hulpmiddel om zorgtaken te organiseren. De app vervangt geen medisch advies." }
+		]
+	}
+}
