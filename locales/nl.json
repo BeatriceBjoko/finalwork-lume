@@ -75,6 +75,18 @@
 			"title": "SAMEN zorgen, met\nmeer rust in je hoofd",
 			"card1": "Van medicatie tot planning: alles komt samen op één gedeelde plek.",
 			"card2": "Zodat jullie zorgkring verbonden blijft en jij rust in je zorgdag vindt."
+		},
+		"step3": {
+			"titleLine1": "Start met jouw",
+			"titleLine2": "zorgkring",
+			"feature1_title": "Gedeeld zorgoverzicht",
+			"feature1_sub": "iedereen ziet dezelfde planning",
+			"feature2_title": "Zekerheid bij medicatie",
+			"feature2_sub": "scan & check in één seconde",
+			"feature3_title": "Minder mentale last",
+			"feature3_sub": "Taken duidelijk verdeeld",
+			"btn_primary": "Zorgkring aanmaken",
+			"btn_secondary": "Join zorgkring"
 		}
 	}
 }

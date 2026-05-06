@@ -75,6 +75,18 @@
 			"title": "Prendre soin ENSEMBLE,\navec plus de tranquillité d'esprit",
 			"card1": "Des médicaments à la planification : tout est réuni en un seul endroit partagé.",
 			"card2": "Pour que votre cercle de soins reste connecté et que vous trouviez la paix dans votre journée de soins."
+		},
+		"step3": {
+			"titleLine1": "Commencez votre",
+			"titleLine2": "cercle de soins",
+			"feature1_title": "Aperçu partagé des soins",
+			"feature1_sub": "tout le monde voit le même planning",
+			"feature2_title": "Sécurité des médicaments",
+			"feature2_sub": "scannez et vérifiez en une seconde",
+			"feature3_title": "Moins de charge mentale",
+			"feature3_sub": "Tâches clairement réparties",
+			"btn_primary": "Créer un cercle de soins",
+			"btn_secondary": "Rejoindre un cercle"
 		}
 	}
 }
