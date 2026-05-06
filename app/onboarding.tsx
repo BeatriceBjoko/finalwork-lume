@@ -1,10 +1,11 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
-import { Dimensions, FlatList, Pressable, StyleSheet, Text, View, ViewToken } from "react-native";
+import { Dimensions, FlatList, Pressable, StyleSheet, View, ViewToken } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Step1 from "../components/onboarding/Step1";
 import Step2 from "../components/onboarding/Step2";
+import Step3 from "../components/onboarding/Step3";
 
 const { width } = Dimensions.get("window");
 
@@ -37,12 +38,8 @@ export default function Onboarding() {
 	const renderItem = ({ index }: { index: number }) => {
 		if (index === 0) return <Step1 />;
 		if (index === 1) return <Step2 />;
-
-		return (
-			<View style={{ width, flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text style={{ color: "#233600" }}>Design voor scherm 3 komt hier!</Text>
-			</View>
-		);
+		if (index === 2) return <Step3 />;
+		return null;
 	};
 
 	return (
@@ -76,9 +73,13 @@ export default function Onboarding() {
 						))}
 					</View>
 
-					<Pressable style={styles.navButton} onPress={handleNext}>
-						<Feather name="chevron-right" size={24} color="#354E00" />
-					</Pressable>
+					{currentIndex < ONBOARDING_PAGES.length - 1 ? (
+						<Pressable style={styles.navButton} onPress={handleNext}>
+							<Feather name="chevron-right" size={24} color="#354E00" />
+						</Pressable>
+					) : (
+						<View style={{ width: 45 }} />
+					)}
 				</View>
 			</SafeAreaView>
 		</View>

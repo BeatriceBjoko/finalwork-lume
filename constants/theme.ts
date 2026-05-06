@@ -9,6 +9,9 @@ export const COLORS = {
 	buttonFill: "#354E00",
 	buttonText: "#D5FF8C",
 	buttonShadow: "#9AD900",
+	buttonSecondaryBorder: "#354E00",
+	buttonSecondaryText: "#354E00",
+
 	iconColor: "#354E00",
 
 	glassGradientStart: "rgba(242, 230, 238, 0.90)",

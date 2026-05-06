@@ -8,37 +8,53 @@ interface ButtonProps {
 	style?: StyleProp<ViewStyle>;
 	textStyle?: StyleProp<TextStyle>;
 	disabled?: boolean;
+	variant?: "primary" | "secondary";
 }
 
-export default function Button({ title, onPress, style, textStyle, disabled }: ButtonProps) {
+export default function Button({ title, onPress, style, textStyle, disabled, variant = "primary" }: ButtonProps) {
+	const isPrimary = variant === "primary";
+
 	return (
-		<Pressable style={({ pressed }) => [styles.button, style, pressed && styles.buttonPressed, disabled && styles.buttonDisabled]} onPress={onPress} disabled={disabled}>
-			<Text style={[styles.text, textStyle]}>{title}</Text>
+		<Pressable style={({ pressed }) => [styles.buttonBase, isPrimary ? styles.buttonPrimary : styles.buttonSecondary, style, pressed && styles.buttonPressed, disabled && styles.buttonDisabled]} onPress={onPress} disabled={disabled}>
+			<Text style={[styles.textBase, isPrimary ? styles.textPrimary : styles.textSecondary, textStyle]}>{title}</Text>
 		</Pressable>
 	);
 }
 
 const styles = StyleSheet.create({
-	button: {
-		backgroundColor: COLORS.buttonFill,
+	buttonBase: {
 		width: "100%",
 		paddingVertical: 18,
 		paddingHorizontal: 11,
 		borderRadius: SIZES.radius,
 		alignItems: "center",
 		justifyContent: "center",
+	},
+	buttonPressed: { opacity: 0.8 },
+	buttonDisabled: { opacity: 0.5 },
+	textBase: {
+		fontFamily: FONTS.button,
+		fontSize: 16,
+	},
 
+	buttonPrimary: {
+		backgroundColor: COLORS.buttonFill,
 		shadowColor: COLORS.buttonShadow,
 		shadowOffset: { width: 0, height: 6 },
 		shadowOpacity: 0.5,
 		shadowRadius: 10,
-		elevation: 4, // Android shadow
+		elevation: 4,
 	},
-	buttonPressed: { opacity: 0.8 },
-	buttonDisabled: { opacity: 0.5 },
-	text: {
-		fontFamily: FONTS.button,
+	textPrimary: {
 		color: COLORS.buttonText,
-		fontSize: 16,
+	},
+
+	buttonSecondary: {
+		backgroundColor: COLORS.transparent,
+		borderWidth: 1.5,
+		borderColor: COLORS.buttonSecondaryBorder,
+	},
+	textSecondary: {
+		color: COLORS.buttonSecondaryText,
 	},
 });
