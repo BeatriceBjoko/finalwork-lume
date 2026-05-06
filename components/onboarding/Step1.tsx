@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FONTS } from "../../constants/theme";
+import { TYPOGRAPHY } from "../../constants/theme";
 
 const { width, height } = Dimensions.get("window");
 
@@ -104,9 +104,9 @@ const styles = StyleSheet.create({
 	},
 	avatarImage: { width: "100%", height: "100%", borderRadius: 53.5, borderWidth: 1.3, borderColor: "#FFFFFF" },
 	avatarInnerShadow: { ...StyleSheet.absoluteFillObject, borderRadius: 53.5, borderWidth: 4, borderColor: "rgba(70, 74, 0, 0.1)" },
-	safeArea: { flex: 1, justifyContent: "space-between", paddingHorizontal: 24, paddingTop: 60, paddingBottom: 30, zIndex: 10 },
+	safeArea: { flex: 1, justifyContent: "space-between", paddingHorizontal: 24, paddingTop: 30, paddingBottom: 30, zIndex: 10 },
 	spacer: { flex: 1 },
 	headerContainer: { alignItems: "center" },
-	title: { fontFamily: FONTS.heading, fontSize: 30, color: "#233600", textAlign: "center", lineHeight: 36 },
-	paragraph: { fontFamily: FONTS.body, fontSize: 14, color: "#233600", textAlign: "center", lineHeight: 22 },
+	title: { ...TYPOGRAPHY.h1 },
+	paragraph: { ...TYPOGRAPHY.body },
 });

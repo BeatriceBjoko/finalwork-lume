@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS, FONTS } from "../../constants/theme";
+import { COLORS, TYPOGRAPHY } from "../../constants/theme";
 
 import Button from "../ui/Button";
 import FeatureCard from "../ui/FeatureCard";
@@ -28,9 +28,17 @@ export default function Step3() {
 				</View>
 
 				<View style={styles.cardsList}>
-					<FeatureCard title={t("onboarding.step3.feature1_title", "Gedeeld zorgoverzicht")} subtitle={t("onboarding.step3.feature1_sub", "iedereen ziet dezelfde planning")} />
-					<FeatureCard title={t("onboarding.step3.feature2_title", "Zekerheid bij medicatie")} subtitle={t("onboarding.step3.feature2_sub", "scan & check in één seconde")} />
-					<FeatureCard title={t("onboarding.step3.feature3_title", "Minder mentale last")} subtitle={t("onboarding.step3.feature3_sub", "Taken duidelijk verdeeld")} />
+					<View style={[styles.cardWrapper, styles.card1Pos]}>
+						<FeatureCard title={t("onboarding.step3.feature1_title", "Gedeeld zorgoverzicht")} subtitle={t("onboarding.step3.feature1_sub", "iedereen ziet dezelfde planning")} />
+					</View>
+
+					<View style={[styles.cardWrapper, styles.card2Pos]}>
+						<FeatureCard title={t("onboarding.step3.feature2_title", "Zekerheid bij medicatie")} subtitle={t("onboarding.step3.feature2_sub", "scan & check in één seconde")} />
+					</View>
+
+					<View style={[styles.cardWrapper, styles.card3Pos]}>
+						<FeatureCard title={t("onboarding.step3.feature3_title", "Minder mentale last")} subtitle={t("onboarding.step3.feature3_sub", "Taken duidelijk verdeeld")} />
+					</View>
 				</View>
 
 				<View style={styles.buttonsContainer}>
@@ -47,39 +55,40 @@ const styles = StyleSheet.create({
 		width: width,
 		height: height,
 		backgroundColor: COLORS.white,
+		overflow: "hidden",
 	},
 	safeArea: {
 		flex: 1,
 		paddingHorizontal: 24,
-		paddingTop: 60,
-		paddingBottom: 40,
+		paddingTop: 30,
+		paddingBottom: 70,
 		justifyContent: "space-between",
 	},
 
 	backgroundImage: {
 		position: "absolute",
-		width: "95%",
-		height: "65%",
 		borderRadius: 24,
 		resizeMode: "cover",
-		top: "15%",
 	},
 	bgImageBottom: {
-		left: "-8%",
-		transform: [{ rotate: "-6deg" }],
+		width: "85%",
+		height: "50%",
+		top: "21%",
+		left: "2%",
+		transform: [{ rotate: "-8deg" }],
 	},
 	bgImageTop: {
-		right: "-5%",
-		transform: [{ rotate: "4deg" }],
-		marginTop: 30,
+		width: "78%",
+		height: "50%",
+		top: "21%",
+		right: "2%",
+		transform: [{ rotate: "8deg" }],
+		marginTop: 5,
 	},
 
-	headerContainer: { alignItems: "center", marginTop: 10 },
+	headerContainer: { alignItems: "center" },
 	titleText: {
-		fontFamily: FONTS.heading,
-		fontSize: 32,
-		color: COLORS.primary,
-		textAlign: "center",
+		...TYPOGRAPHY.h1,
 	},
 	highlightWrapper: {
 		backgroundColor: COLORS.accent,
@@ -89,15 +98,34 @@ const styles = StyleSheet.create({
 		marginTop: 4,
 	},
 	highlightText: {
-		fontFamily: FONTS.heading,
-		fontSize: 32,
-		color: COLORS.primary,
-		textAlign: "center",
+		...TYPOGRAPHY.h1,
 	},
 
 	cardsList: {
-		gap: 16,
-		marginTop: 40,
+		flex: 1,
+		width: "100%",
+		marginTop: 60,
+		zIndex: 5,
+	},
+
+	cardWrapper: {
+		position: "absolute",
+		width: width * 0.8,
+	},
+
+	card1Pos: {
+		top: height * 0.03,
+		right: "-10%",
+	},
+
+	card2Pos: {
+		top: height * 0.19,
+		left: "-10%",
+	},
+
+	card3Pos: {
+		top: height * 0.35,
+		right: "-10%",
 	},
 
 	buttonsContainer: {

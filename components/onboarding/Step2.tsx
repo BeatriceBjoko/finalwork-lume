@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FONTS } from "../../constants/theme";
+import { FONTS, TYPOGRAPHY } from "../../constants/theme";
 
 const { width, height } = Dimensions.get("window");
 
@@ -101,15 +101,11 @@ const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
 		paddingHorizontal: 24,
-		paddingTop: 60,
+		paddingTop: 30,
 	},
 	headerContainer: { alignItems: "center", marginBottom: 30 },
 	title: {
-		fontFamily: FONTS.heading,
-		fontSize: 32,
-		color: "#233600",
-		textAlign: "center",
-		lineHeight: 38,
+		...TYPOGRAPHY.h1,
 	},
 	contentContainer: {
 		flex: 1,

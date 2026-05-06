@@ -1,7 +1,7 @@
 export const COLORS = {
 	primary: "#233600",
 	primaryLight: "#395717",
-	accent: "#EFFC00",
+	accent: "#FEF970",
 	white: "#FFFFFF",
 	background: "#FDFBF7",
 	transparent: "transparent",
@@ -27,6 +27,23 @@ export const FONTS = {
 	heading: "BricolageBold",
 	body: "InterRegular",
 	button: "InterBold",
+};
+
+export const TYPOGRAPHY = {
+	h1: {
+		fontFamily: FONTS.heading,
+		fontSize: 30,
+		lineHeight: 38,
+		color: COLORS.primary,
+		textAlign: "center" as const,
+	},
+	body: {
+		fontFamily: FONTS.body,
+		fontSize: 14,
+		lineHeight: 22,
+		color: COLORS.primary,
+		textAlign: "center" as const,
+	},
 };
 
 export const SIZES = {
