@@ -31,9 +31,9 @@ const styles = StyleSheet.create({
 		marginBottom: 20,
 	},
 	stepCircle: {
-		width: 32,
-		height: 32,
-		borderRadius: 16,
+		width: 44,
+		height: 44,
+		borderRadius: 22,
 		justifyContent: "center",
 		alignItems: "center",
 	},
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 	},
 	stepText: {
 		fontFamily: FONTS.button,
-		fontSize: 14,
+		fontSize: 16,
 	},
 	stepTextActive: {
 		color: COLORS.white,

@@ -28,7 +28,7 @@ export default function CreateCircleStep1() {
 					<Text style={styles.subtitle}>Nodig mensen uit en hou samen overzicht{"\n"}over zorg en taken.</Text>
 
 					<View style={styles.formContainer}>
-						<Input label="Naam van je zorgkring" placeholder="Zorg voor mama" value={circleName} onChangeText={setCircleName} />
+						<Input label="Naam van je zorgkring" variant="outline" placeholder="Zorg voor mama" value={circleName} onChangeText={setCircleName} />
 
 						<View style={styles.shadowLayer1}>
 							<View style={styles.shadowLayer2}>
@@ -37,12 +37,12 @@ export default function CreateCircleStep1() {
 
 									<View style={styles.cardHeader}>
 										<View style={styles.iconWrapper}>
-											<MaterialCommunityIcons name="account-heart-outline" size={22} color={COLORS.primary} />
+											<MaterialCommunityIcons name="account-heart-outline" size={28} color={COLORS.primary} />
 										</View>
 										<Text style={styles.cardTitle}>Zorgontvanger</Text>
 									</View>
 
-									<Input label="Naam zorgontvanger" placeholder="Oma Marie" value={receiverName} onChangeText={setReceiverName} />
+									<Input label="Naam zorgontvanger" variant="outline" placeholder="Oma Marie" value={receiverName} onChangeText={setReceiverName} />
 
 									<Text style={styles.label}>Relatie tot zorgontvanger</Text>
 									<Pressable style={styles.dropdownButton} onPress={() => setIsDropdownOpen(true)}>
@@ -52,12 +52,12 @@ export default function CreateCircleStep1() {
 
 									{relation === "andere" && (
 										<View style={{ marginTop: 10 }}>
-											<Input label="Specificeer je relatie" placeholder="Bijv. Mantelzorger" value={customRelation} onChangeText={setCustomRelation} />
+											<Input label="Specificeer je relatie" variant="outline" placeholder="Bijv. Mantelzorger" value={customRelation} onChangeText={setCustomRelation} />
 										</View>
 									)}
 
 									<Text style={styles.label}>
-										Profielfoto <Text style={{ fontWeight: "normal", fontSize: 12 }}>(optioneel)</Text>
+										Profielfoto <Text style={styles.optionalText}>(optioneel)</Text>
 									</Text>
 									<Pressable style={styles.imagePickerBox}>
 										<View style={styles.cameraIconWrapper}>
@@ -73,7 +73,7 @@ export default function CreateCircleStep1() {
 					<View style={styles.footer}>
 						<Button title="Volgende" onPress={handleNext} variant="primary" />
 						<View style={styles.infoRow}>
-							<MaterialCommunityIcons name="information-outline" size={16} color={COLORS.primary} />
+							<MaterialCommunityIcons name="information-outline" size={20} color={COLORS.primary} />
 							<Text style={styles.infoText}>Je kan dit later nog aanpassen</Text>
 						</View>
 					</View>
@@ -99,16 +99,26 @@ export default function CreateCircleStep1() {
 
 const styles = StyleSheet.create({
 	safeArea: { flex: 1, backgroundColor: "#FFFFFF" },
-	scrollContent: { paddingHorizontal: 24, paddingTop: 40, paddingBottom: 40, alignItems: "center" },
+	scrollContent: { paddingHorizontal: 16, paddingTop: 40, paddingBottom: 40, alignItems: "center" },
 
 	header: { alignItems: "center", marginBottom: 20 },
-	titleText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
+	titleText: { ...TYPOGRAPHY.h1, color: COLORS.primary, zIndex: 10 },
 	highlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 16, paddingVertical: 2, borderRadius: 20, marginTop: -5 },
 	highlightText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
 
 	subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.primary, textAlign: "center", marginBottom: 30, lineHeight: 20 },
 	formContainer: { width: "100%", marginBottom: 20 },
-	label: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.primary, marginBottom: 8, marginTop: 10 },
+	label: { ...TYPOGRAPHY.h4, marginBottom: 8, marginTop: 10 },
+	optionalText: { fontFamily: FONTS.body, fontSize: 14, fontWeight: "normal" },
+
+	inputContainer: {
+		borderWidth: 1,
+		borderColor: COLORS.primary,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		backgroundColor: "#FFFFFF",
+	},
 
 	shadowLayer1: {
 		marginTop: 10,
@@ -149,9 +159,9 @@ const styles = StyleSheet.create({
 
 	cardHeader: { flexDirection: "row", alignItems: "center", marginBottom: 20, zIndex: 2 },
 	iconWrapper: {
-		width: 36,
-		height: 36,
-		borderRadius: 18,
+		width: 54,
+		height: 54,
+		borderRadius: 27,
 		backgroundColor: "rgba(176, 248, 0, 0.2)",
 		justifyContent: "center",
 		alignItems: "center",
@@ -160,7 +170,7 @@ const styles = StyleSheet.create({
 	cardTitle: {
 		fontFamily: "BricolageGrotesque-Medium",
 		fontSize: 18,
-		color: COLORS.primary,
+		color: "#000000",
 	},
 
 	dropdownButton: {
@@ -187,16 +197,16 @@ const styles = StyleSheet.create({
 		borderColor: "rgba(35, 54, 0, 0.8)",
 		borderStyle: "dashed",
 		borderRadius: 16,
-		height: 120,
+		height: 280,
 		justifyContent: "center",
 		alignItems: "center",
 		marginTop: 10,
 		backgroundColor: "rgba(76, 175, 80, 0.05)",
 	},
 	cameraIconWrapper: {
-		width: 40,
-		height: 40,
-		borderRadius: 20,
+		width: 54,
+		height: 54,
+		borderRadius: 27,
 		backgroundColor: "#FFFFFF",
 		justifyContent: "center",
 		alignItems: "center",
