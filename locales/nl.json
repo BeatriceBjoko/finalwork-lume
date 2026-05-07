@@ -88,5 +88,24 @@
 			"btn_primary": "Zorgkring aanmaken",
 			"btn_secondary": "Join zorgkring"
 		}
+	},
+	"createCircle": {
+		"relations": {
+			"partner": "Partner",
+			"dochter": "Dochter",
+			"zoon": "Zoon",
+			"moeder": "Moeder",
+			"vader": "Vader",
+			"zus": "Zus",
+			"broer": "Broer",
+			"kleindochter": "Kleindochter",
+			"kleinzoon": "Kleinzoon",
+			"vriend_vriendin": "Vriend / Vriendin",
+			"buur": "Buur / Buurvrouw",
+			"familielid": "Familielid",
+			"vertrouwenspersoon": "Vertrouwenspersoon",
+			"vrijwilliger": "Vrijwilliger",
+			"andere": "Andere"
+		}
 	}
 }

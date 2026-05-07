@@ -7,7 +7,6 @@ import { SessionProvider } from "../context";
 import "../locales/i18n";
 
 export default function RootLayout() {
-	// Load the fonts
 	const [fontsLoaded] = useFonts({
 		BricolageBold: BricolageGrotesque_700Bold,
 		InterRegular: Inter_400Regular,

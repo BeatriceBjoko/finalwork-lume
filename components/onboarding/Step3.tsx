@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
@@ -11,6 +12,7 @@ const { width, height } = Dimensions.get("window");
 
 export default function Step3() {
 	const { t } = useTranslation();
+	const router = useRouter();
 
 	return (
 		<View style={styles.slide}>
@@ -42,7 +44,7 @@ export default function Step3() {
 				</View>
 
 				<View style={styles.buttonsContainer}>
-					<Button title={t("onboarding.step3.btn_primary", "Zorgkring aanmaken")} variant="primary" onPress={() => {}} />
+					<Button title={t("onboarding.step3.btn_primary", "Zorgkring aanmaken")} variant="primary" onPress={() => router.push("/create-circle")} />
 					<Button title={t("onboarding.step3.btn_secondary", "Join zorgkring")} variant="secondary" onPress={() => {}} />
 				</View>
 			</SafeAreaView>

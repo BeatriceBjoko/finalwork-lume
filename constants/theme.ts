@@ -37,6 +37,7 @@ export const TYPOGRAPHY = {
 		color: COLORS.primary,
 		textAlign: "center" as const,
 	},
+	h3: { fontFamily: "BricolageGrotesque-Medium", fontSize: 18, color: COLORS.primary },
 	body: {
 		fontFamily: FONTS.body,
 		fontSize: 14,

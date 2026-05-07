@@ -88,5 +88,24 @@
 			"btn_primary": "Créer un cercle de soins",
 			"btn_secondary": "Rejoindre un cercle"
 		}
+	},
+	"createCircle": {
+		"relations": {
+			"partner": "Partenaire",
+			"dochter": "Fille",
+			"zoon": "Fils",
+			"moeder": "Mère",
+			"vader": "Père",
+			"zus": "Sœur",
+			"broer": "Frère",
+			"kleindochter": "Petite-fille",
+			"kleinzoon": "Petit-fils",
+			"vriend_vriendin": "Ami(e)",
+			"buur": "Voisin(e)",
+			"familielid": "Membre de la famille",
+			"vertrouwenspersoon": "Personne de confiance",
+			"vrijwilliger": "Bénévole",
+			"andere": "Autre"
+		}
 	}
 }
