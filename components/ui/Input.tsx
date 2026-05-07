@@ -6,14 +6,19 @@ import { COLORS, FONTS } from "../../constants/theme";
 interface InputProps extends TextInputProps {
 	label?: string;
 	variant?: "underline" | "outline";
+	isRequired?: boolean;
 }
 
-export default function Input({ label, secureTextEntry, variant = "underline", ...props }: InputProps) {
+export default function Input({ label, secureTextEntry, variant = "underline", isRequired = false, ...props }: InputProps) {
 	const [isPasswordHidden, setIsPasswordHidden] = useState(secureTextEntry);
 
 	return (
 		<View style={styles.container}>
-			{label && <Text style={[styles.label, variant === "outline" && styles.labelOutline]}>{label}</Text>}
+			{label && (
+				<Text style={[styles.label, variant === "outline" && styles.labelOutline]}>
+					{label} {isRequired && <Text style={{ color: "red" }}>*</Text>}
+				</Text>
+			)}
 			<View
 				style={[
 					styles.inputContainer,

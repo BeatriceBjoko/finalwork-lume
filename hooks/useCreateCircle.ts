@@ -12,6 +12,7 @@ export function useCreateCircle() {
 	const [relation, setRelation] = useState("");
 	const [customRelation, setCustomRelation] = useState("");
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	const relationOptions = RELATION_KEYS.map((key) => ({
 		value: key,
@@ -26,9 +27,22 @@ export function useCreateCircle() {
 			setCustomRelation("");
 		}
 		setIsDropdownOpen(false);
+		setErrorMessage("");
 	};
 
 	const handleNext = () => {
+		setErrorMessage("");
+
+		if (!circleName.trim() || !receiverName.trim() || !relation) {
+			setErrorMessage(t("errors.missingFields"));
+			return;
+		}
+
+		if (relation === "andere" && !customRelation.trim()) {
+			setErrorMessage(t("errors.missingFields"));
+			return;
+		}
+
 		router.push("/create-circle-step2");
 	};
 
@@ -46,5 +60,6 @@ export function useCreateCircle() {
 		relationOptions,
 		selectedRelationLabel,
 		handleNext,
+		errorMessage,
 	};
 }

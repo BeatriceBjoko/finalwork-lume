@@ -9,8 +9,15 @@ import StepIndicator from "../components/ui/StepIndicator";
 import { COLORS, FONTS, TYPOGRAPHY } from "../constants/theme";
 import { useCreateCircle } from "../hooks/useCreateCircle";
 
+const RequiredLabel = ({ text }: { text: string }) => (
+	<Text style={styles.label}>
+		{text} <Text style={{ color: "red" }}>*</Text>
+	</Text>
+);
+
 export default function CreateCircleStep1() {
-	const { circleName, setCircleName, receiverName, setReceiverName, relation, handleRelationSelect, customRelation, setCustomRelation, isDropdownOpen, setIsDropdownOpen, relationOptions, selectedRelationLabel, handleNext } = useCreateCircle();
+	const { circleName, setCircleName, receiverName, setReceiverName, relation, handleRelationSelect, customRelation, setCustomRelation, isDropdownOpen, setIsDropdownOpen, relationOptions, selectedRelationLabel, handleNext, errorMessage } =
+		useCreateCircle();
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -28,13 +35,12 @@ export default function CreateCircleStep1() {
 					<Text style={styles.subtitle}>Nodig mensen uit en hou samen overzicht{"\n"}over zorg en taken.</Text>
 
 					<View style={styles.formContainer}>
-						<Input label="Naam van je zorgkring" variant="outline" placeholder="Zorg voor mama" value={circleName} onChangeText={setCircleName} />
+						<Input label="Naam van je zorgkring" variant="outline" isRequired={true} placeholder="Zorg voor mama" value={circleName} onChangeText={setCircleName} />
 
 						<View style={styles.shadowLayer1}>
 							<View style={styles.shadowLayer2}>
 								<View style={styles.receiverCard}>
 									<View style={styles.fakeInnerShadow} />
-
 									<View style={styles.cardHeader}>
 										<View style={styles.iconWrapper}>
 											<MaterialCommunityIcons name="account-heart-outline" size={28} color={COLORS.primary} />
@@ -42,9 +48,10 @@ export default function CreateCircleStep1() {
 										<Text style={styles.cardTitle}>Zorgontvanger</Text>
 									</View>
 
-									<Input label="Naam zorgontvanger" variant="outline" placeholder="Oma Marie" value={receiverName} onChangeText={setReceiverName} />
-
-									<Text style={styles.label}>Relatie tot zorgontvanger</Text>
+									<Input label="Naam zorgontvanger" variant="outline" isRequired={true} placeholder="Oma Marie" value={receiverName} onChangeText={setReceiverName} />
+									<Text style={styles.label}>
+										Relatie tot zorgontvanger <Text style={{ color: "red" }}>*</Text>
+									</Text>
 									<Pressable style={styles.dropdownButton} onPress={() => setIsDropdownOpen(true)}>
 										<Text style={[styles.dropdownButtonText, !relation && { color: "#888" }]}>{selectedRelationLabel}</Text>
 										<MaterialCommunityIcons name="chevron-down" size={24} color={COLORS.primary} />
@@ -52,7 +59,7 @@ export default function CreateCircleStep1() {
 
 									{relation === "andere" && (
 										<View style={{ marginTop: 10 }}>
-											<Input label="Specificeer je relatie" variant="outline" placeholder="Bijv. Mantelzorger" value={customRelation} onChangeText={setCustomRelation} />
+											<Input label="Specificeer je relatie" variant="outline" isRequired={true} placeholder="Bijv. Mantelzorger" value={customRelation} onChangeText={setCustomRelation} />
 										</View>
 									)}
 
@@ -69,6 +76,12 @@ export default function CreateCircleStep1() {
 							</View>
 						</View>
 					</View>
+
+					{errorMessage !== "" && (
+						<View style={styles.errorContainer}>
+							<Text style={styles.errorText}>{errorMessage}</Text>
+						</View>
+					)}
 
 					<View style={styles.footer}>
 						<Button title="Volgende" onPress={handleNext} variant="primary" />
@@ -222,4 +235,18 @@ const styles = StyleSheet.create({
 	footer: { width: "100%", marginTop: 10 },
 	infoRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 12 },
 	infoText: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.primary, marginLeft: 6 },
+
+	errorContainer: {
+		backgroundColor: "rgba(255, 0, 0, 0.1)",
+		padding: 12,
+		borderRadius: 8,
+		borderLeftWidth: 4,
+		borderLeftColor: "#ff4d4d",
+		width: "100%",
+	},
+	errorText: {
+		fontFamily: FONTS.body,
+		fontSize: 13,
+		color: "#cc0000",
+	},
 });
