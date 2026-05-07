@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 	},
 	safeArea: {
 		flex: 1,
-		paddingHorizontal: 24,
+		paddingHorizontal: 16,
 		paddingTop: 30,
 		paddingBottom: 70,
 		justifyContent: "space-between",

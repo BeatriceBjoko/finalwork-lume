@@ -100,16 +100,18 @@ const styles = StyleSheet.create({
 	},
 	safeArea: {
 		flex: 1,
-		paddingHorizontal: 24,
+		paddingHorizontal: 16,
 		paddingTop: 30,
+		paddingBottom: 40,
 	},
-	headerContainer: { alignItems: "center", marginBottom: 30 },
+	headerContainer: { alignItems: "center" },
 	title: {
 		...TYPOGRAPHY.h1,
 	},
 	contentContainer: {
 		flex: 1,
 		alignItems: "center",
+		justifyContent: "center",
 	},
 
 	cardsWrapper: {
@@ -131,7 +133,7 @@ const styles = StyleSheet.create({
 		elevation: 4,
 	},
 	glassContainer: {
-		backgroundColor: "rgba(255, 255, 255, 0.85)",
+		backgroundColor: "rgba(255, 255, 255, 0.95)",
 		borderRadius: 15,
 		borderWidth: 1,
 		borderColor: "rgba(53, 78, 0, 0.2)",
@@ -146,7 +148,7 @@ const styles = StyleSheet.create({
 	},
 
 	gridWrapper: {
-		marginTop: 30,
+		marginTop: 21,
 		width: 340,
 		height: 340,
 		justifyContent: "space-between",

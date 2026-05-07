@@ -68,8 +68,8 @@
 	},
 	"onboarding": {
 		"step1": {
-			"title": "Prendre soin d'un proche\nest beau. Mais parfois\naussi difficile",
-			"description": "Rendez-vous, médicaments, tâches... tout le monde aide,\nmais la vue d'ensemble manque souvent."
+			"title": "Prendre soin d'un \nproche est beau. \nMais parfois aussi difficile",
+			"description": "Rendez-vous, médicaments, tâches... \ntout le monde aide,mais la vue d'ensemble manque souvent."
 		},
 		"step2": {
 			"title": "Prendre soin ENSEMBLE,\navec plus de tranquillité d'esprit",
@@ -80,7 +80,7 @@
 			"titleLine1": "Commencez votre",
 			"titleLine2": "cercle de soins",
 			"feature1_title": "Aperçu partagé des soins",
-			"feature1_sub": "tout le monde voit le même planning",
+			"feature1_sub": "le même planning pour tous",
 			"feature2_title": "Sécurité des médicaments",
 			"feature2_sub": "scannez et vérifiez en une seconde",
 			"feature3_title": "Moins de charge mentale",

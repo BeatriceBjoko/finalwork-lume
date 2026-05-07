@@ -35,14 +35,14 @@ export default function Step1() {
 				</View>
 				<View style={styles.spacer} />
 				<Text style={styles.paragraph}>{t("onboarding.step1.description", "Afspraken, medicatie, taken... iedereen helpt\nmee, maar het overzicht ontbreekt vaak.")}</Text>
-				<View style={{ height: 80 }} />
+				<View style={{ height: 50 }} />
 			</SafeAreaView>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-	slide: { width: width, height: height },
+	slide: { width: width, height: height, overflow: "hidden" },
 	blob1: {
 		position: "absolute",
 		top: "25%",
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
 	},
 	avatarImage: { width: "100%", height: "100%", borderRadius: 53.5, borderWidth: 1.3, borderColor: "#FFFFFF" },
 	avatarInnerShadow: { ...StyleSheet.absoluteFillObject, borderRadius: 53.5, borderWidth: 4, borderColor: "rgba(70, 74, 0, 0.1)" },
-	safeArea: { flex: 1, justifyContent: "space-between", paddingHorizontal: 24, paddingTop: 30, paddingBottom: 30, zIndex: 10 },
+	safeArea: { flex: 1, justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 30, paddingBottom: 30, zIndex: 10 },
 	spacer: { flex: 1 },
 	headerContainer: { alignItems: "center" },
 	title: { ...TYPOGRAPHY.h1 },
