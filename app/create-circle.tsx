@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
+import ShadowCard from "../components/ui/ShadowCard";
 import StepIndicator from "../components/ui/StepIndicator";
 import { COLORS, FONTS, TYPOGRAPHY } from "../constants/theme";
 import { useCreateCircle } from "../hooks/useCreateCircle";
@@ -37,44 +38,39 @@ export default function CreateCircleStep1() {
 					<View style={styles.formContainer}>
 						<Input label="Naam van je zorgkring" variant="outline" isRequired={true} placeholder="Zorg voor mama" value={circleName} onChangeText={setCircleName} />
 
-						<View style={styles.shadowLayer1}>
-							<View style={styles.shadowLayer2}>
-								<View style={styles.receiverCard}>
-									<View style={styles.fakeInnerShadow} />
-									<View style={styles.cardHeader}>
-										<View style={styles.iconWrapper}>
-											<MaterialCommunityIcons name="account-heart-outline" size={28} color={COLORS.primary} />
-										</View>
-										<Text style={styles.cardTitle}>Zorgontvanger</Text>
-									</View>
-
-									<Input label="Naam zorgontvanger" variant="outline" isRequired={true} placeholder="Oma Marie" value={receiverName} onChangeText={setReceiverName} />
-									<Text style={styles.label}>
-										Relatie tot zorgontvanger <Text style={{ color: "red" }}>*</Text>
-									</Text>
-									<Pressable style={styles.dropdownButton} onPress={() => setIsDropdownOpen(true)}>
-										<Text style={[styles.dropdownButtonText, !relation && { color: "#888" }]}>{selectedRelationLabel}</Text>
-										<MaterialCommunityIcons name="chevron-down" size={24} color={COLORS.primary} />
-									</Pressable>
-
-									{relation === "andere" && (
-										<View style={{ marginTop: 10 }}>
-											<Input label="Specificeer je relatie" variant="outline" isRequired={true} placeholder="Bijv. Mantelzorger" value={customRelation} onChangeText={setCustomRelation} />
-										</View>
-									)}
-
-									<Text style={styles.label}>
-										Profielfoto <Text style={styles.optionalText}>(optioneel)</Text>
-									</Text>
-									<Pressable style={styles.imagePickerBox}>
-										<View style={styles.cameraIconWrapper}>
-											<MaterialCommunityIcons name="camera-plus-outline" size={24} color={COLORS.primary} />
-										</View>
-										<Text style={styles.imagePickerText}>Tik om een afbeelding te uploaden</Text>
-									</Pressable>
+						<ShadowCard>
+							<View style={styles.cardHeader}>
+								<View style={styles.iconWrapper}>
+									<MaterialCommunityIcons name="account-heart-outline" size={28} color={COLORS.primary} />
 								</View>
+								<Text style={styles.cardTitle}>Zorgontvanger</Text>
 							</View>
-						</View>
+
+							<Input label="Naam zorgontvanger" variant="outline" isRequired={true} placeholder="Oma Marie" value={receiverName} onChangeText={setReceiverName} />
+							<Text style={styles.label}>
+								Relatie tot zorgontvanger <Text style={{ color: "red" }}>*</Text>
+							</Text>
+							<Pressable style={styles.dropdownButton} onPress={() => setIsDropdownOpen(true)}>
+								<Text style={[styles.dropdownButtonText, !relation && { color: "#888" }]}>{selectedRelationLabel}</Text>
+								<MaterialCommunityIcons name="chevron-down" size={24} color={COLORS.primary} />
+							</Pressable>
+
+							{relation === "andere" && (
+								<View style={{ marginTop: 10 }}>
+									<Input label="Specificeer je relatie" variant="outline" isRequired={true} placeholder="Bijv. Mantelzorger" value={customRelation} onChangeText={setCustomRelation} />
+								</View>
+							)}
+
+							<Text style={styles.label}>
+								Profielfoto <Text style={styles.optionalText}>(optioneel)</Text>
+							</Text>
+							<Pressable style={styles.imagePickerBox}>
+								<View style={styles.cameraIconWrapper}>
+									<MaterialCommunityIcons name="camera-plus-outline" size={24} color={COLORS.primary} />
+								</View>
+								<Text style={styles.imagePickerText}>Tik om een afbeelding te uploaden</Text>
+							</Pressable>
+						</ShadowCard>
 					</View>
 
 					{errorMessage !== "" && (
@@ -131,43 +127,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 16,
 		paddingVertical: 12,
 		backgroundColor: "#FFFFFF",
-	},
-
-	shadowLayer1: {
-		marginTop: 10,
-		shadowColor: "#233600",
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.45,
-		shadowRadius: 12,
-		elevation: 8,
-	},
-	shadowLayer2: {
-		shadowColor: "#6F9F00",
-		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.25,
-		shadowRadius: 5,
-		elevation: 4,
-	},
-	receiverCard: {
-		backgroundColor: "#FCFDF8",
-		borderWidth: 1,
-		borderColor: "#233600",
-		borderRadius: 20,
-		padding: 20,
-		overflow: "hidden",
-	},
-	fakeInnerShadow: {
-		position: "absolute",
-		top: -4,
-		left: 0,
-		right: 0,
-		height: 8,
-		backgroundColor: "rgba(111, 159, 0, 0.25)",
-		shadowColor: "#6F9F00",
-		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.25,
-		shadowRadius: 15,
-		elevation: 2,
 	},
 
 	cardHeader: { flexDirection: "row", alignItems: "center", marginBottom: 20, zIndex: 2 },
