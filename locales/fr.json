@@ -136,7 +136,9 @@
 			"invitedStatus": "Invité",
 			"linkSectionTitle": "Ou inviter via un lien",
 			"linkSectionSubtitle": "Partagez ce lien avec votre famille",
-			"copyLinkBtn": "Copier le lien d'invitation",
+			"shareLinkBtn": "Partager le lien d'invitation",
+			"linkShared": "Lien partagé !",
+			"shareMessage": "Hey ! J'ai créé un cercle de soins sur Lume. Rejoins-nous pour organiser les soins ensemble. Clique ici : lume.app/invite/12345",
 			"finishBtn": "Créer le cercle de soins"
 		}
 	}

@@ -1,9 +1,9 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import { router } from "expo-router";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../components/ui/Button";
@@ -11,75 +11,12 @@ import CustomAlert from "../components/ui/CustomAlert";
 import ShadowCard from "../components/ui/ShadowCard";
 import StepIndicator from "../components/ui/StepIndicator";
 import { COLORS, FONTS, TYPOGRAPHY } from "../constants/theme";
-
-interface Invitee {
-	id: string;
-	contact: string;
-	name: string;
-	color: string;
-}
-
-const AVATAR_COLORS = ["#FCF6CC", "#F0F4DC", "#DAFFDE"];
+import { useCreateCircleStep2 } from "../hooks/useCreateCircleStep2";
 
 export default function CreateCircleStep2() {
 	const { t } = useTranslation();
-	const params = useLocalSearchParams();
 
-	const [inviteInput, setInviteInput] = useState("");
-	const [inviteList, setInviteList] = useState<Invitee[]>([]);
-
-	const [alertConfig, setAlertConfig] = useState({
-		visible: false,
-		title: "",
-		message: "",
-		isSuccess: false,
-	});
-
-	const isValidEmail = (email: string) => {
-		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return regex.test(email);
-	};
-
-	const handleAddPerson = () => {
-		const inputStr = inviteInput.trim();
-		if (!inputStr) return;
-
-		if (!isValidEmail(inputStr)) {
-			setAlertConfig({
-				visible: true,
-				title: "Oeps!",
-				message: t("errors.invalidEmail"),
-				isSuccess: false,
-			});
-			return;
-		}
-
-		let extractedName = inputStr.split("@")[0];
-		extractedName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
-
-		const newInvitee: Invitee = {
-			id: Math.random().toString(),
-			contact: inputStr,
-			name: extractedName,
-			color: AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)],
-		};
-
-		setInviteList([...inviteList, newInvitee]);
-		setInviteInput("");
-		Keyboard.dismiss();
-	};
-
-	const handleCreateCircle = () => {
-		console.log("Data van stap 1:", params);
-		console.log("Uitgenodigde mensen:", inviteList);
-
-		setAlertConfig({
-			visible: true,
-			title: "Succes",
-			message: "Zorgkring wordt aangemaakt!",
-			isSuccess: true,
-		});
-	};
+	const { inviteInput, setInviteInput, inviteList, hasShared, alertConfig, handleAddPerson, handleShareLink, handleCreateCircle, closeAlert } = useCreateCircleStep2();
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -162,7 +99,7 @@ export default function CreateCircleStep2() {
 							<Text style={styles.linkSubtitle}>{t("createCircle.step2.linkSectionSubtitle")}</Text>
 
 							<View style={styles.copyBtnWrapper}>
-								<Button title={t("createCircle.step2.copyLinkBtn")} variant="secondary" onPress={() => {}} style={styles.copyBtn} />
+								<Button title={hasShared ? "✅  " + t("createCircle.step2.linkShared") : t("createCircle.step2.shareLinkBtn")} variant="secondary" onPress={handleShareLink} style={styles.copyBtn} />
 							</View>
 						</View>
 					</ShadowCard>
@@ -177,18 +114,7 @@ export default function CreateCircleStep2() {
 				</ScrollView>
 			</KeyboardAvoidingView>
 
-			<CustomAlert
-				visible={alertConfig.visible}
-				title={alertConfig.title}
-				message={alertConfig.message}
-				confirmText="OK"
-				onConfirm={() => {
-					setAlertConfig({ ...alertConfig, visible: false });
-					if (alertConfig.isSuccess) {
-						router.push("/");
-					}
-				}}
-			/>
+			<CustomAlert visible={alertConfig.visible} title={alertConfig.title} message={alertConfig.message} confirmText="OK" onConfirm={closeAlert} />
 		</SafeAreaView>
 	);
 }

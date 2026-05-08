@@ -136,7 +136,9 @@
 			"invitedStatus": "Uitgenodigd",
 			"linkSectionTitle": "Of nodig uit via link",
 			"linkSectionSubtitle": "Deel deze link met familie of vrienden",
-			"copyLinkBtn": "Kopieer uitnodigingslink",
+			"shareLinkBtn": "Deel uitnodigingslink",
+			"linkShared": "Uitnodigingslink gedeeld",
+			"shareMessage": "Hey! Ik heb een zorgkring aangemaakt op Lume. Sluit je aan om samen de zorg te organiseren. Klik hier: lume.app/invite/12345",
 			"finishBtn": "Zorgkring aanmaken"
 		}
 	}
