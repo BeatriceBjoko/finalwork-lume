@@ -5,17 +5,12 @@ import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, St
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../components/ui/Button";
+import CustomAlert from "../components/ui/CustomAlert";
 import Input from "../components/ui/Input";
 import ShadowCard from "../components/ui/ShadowCard";
 import StepIndicator from "../components/ui/StepIndicator";
 import { COLORS, FONTS, TYPOGRAPHY } from "../constants/theme";
 import { useCreateCircle } from "../hooks/useCreateCircle";
-
-const RequiredLabel = ({ text }: { text: string }) => (
-	<Text style={styles.label}>
-		{text} <Text style={{ color: "red" }}>*</Text>
-	</Text>
-);
 
 export default function CreateCircleStep1() {
 	const { t } = useTranslation();
@@ -37,6 +32,8 @@ export default function CreateCircleStep1() {
 		errorMessage,
 		profileImage,
 		pickImage,
+		isPermissionAlertVisible,
+		setIsPermissionAlertVisible,
 	} = useCreateCircle();
 
 	return (
@@ -127,6 +124,14 @@ export default function CreateCircleStep1() {
 					</View>
 				</Pressable>
 			</Modal>
+
+			<CustomAlert
+				visible={isPermissionAlertVisible}
+				title={t("createCircle.step1.photoPermissionTitle")}
+				message={t("createCircle.step1.photoPermissionMessage")}
+				confirmText={t("createCircle.step1.photoPermissionButton")}
+				onConfirm={() => setIsPermissionAlertVisible(false)}
+			/>
 		</SafeAreaView>
 	);
 }
