@@ -107,7 +107,10 @@
 			"optional": "(optioneel)",
 			"uploadText": "Tik om een afbeelding te uploaden",
 			"nextButton": "Volgende",
-			"infoText": "Je kan dit later nog aanpassen"
+			"infoText": "Je kan dit later nog aanpassen",
+			"photoPermissionTitle": "Toegang nodig",
+			"photoPermissionMessage": "We hebben toegang tot je foto's nodig om een profielfoto te kunnen kiezen.",
+			"photoPermissionButton": "OK"
 		},
 		"relations": {
 			"partner": "Partner",

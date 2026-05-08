@@ -107,7 +107,10 @@
 			"optional": "(optionnel)",
 			"uploadText": "Appuyez pour télécharger une image",
 			"nextButton": "Suivant",
-			"infoText": "Vous pourrez modifier cela plus tard"
+			"infoText": "Vous pourrez modifier cela plus tard",
+			"photoPermissionTitle": "Accès requis",
+			"photoPermissionMessage": "Nous avons besoin d'accéder à vos photos pour pouvoir choisir une photo de profil.",
+			"photoPermissionButton": "OK"
 		},
 		"relations": {
 			"partner": "Partenaire",

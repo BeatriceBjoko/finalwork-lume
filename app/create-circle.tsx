@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../components/ui/Button";
@@ -20,8 +20,24 @@ const RequiredLabel = ({ text }: { text: string }) => (
 export default function CreateCircleStep1() {
 	const { t } = useTranslation();
 
-	const { circleName, setCircleName, receiverName, setReceiverName, relation, handleRelationSelect, customRelation, setCustomRelation, isDropdownOpen, setIsDropdownOpen, relationOptions, selectedRelationLabel, handleNext, errorMessage } =
-		useCreateCircle();
+	const {
+		circleName,
+		setCircleName,
+		receiverName,
+		setReceiverName,
+		relation,
+		handleRelationSelect,
+		customRelation,
+		setCustomRelation,
+		isDropdownOpen,
+		setIsDropdownOpen,
+		relationOptions,
+		selectedRelationLabel,
+		handleNext,
+		errorMessage,
+		profileImage,
+		pickImage,
+	} = useCreateCircle();
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -67,11 +83,17 @@ export default function CreateCircleStep1() {
 							<Text style={styles.label}>
 								{t("createCircle.step1.profilePhotoLabel")} <Text style={styles.optionalText}>{t("createCircle.step1.optional")}</Text>{" "}
 							</Text>
-							<Pressable style={styles.imagePickerBox}>
-								<View style={styles.cameraIconWrapper}>
-									<MaterialCommunityIcons name="camera-plus-outline" size={24} color={COLORS.primary} />
-								</View>
-								<Text style={styles.imagePickerText}>{t("createCircle.step1.uploadText")}</Text>
+							<Pressable style={styles.imagePickerBox} onPress={pickImage}>
+								{profileImage ? (
+									<Image source={{ uri: profileImage }} style={styles.previewImage} />
+								) : (
+									<>
+										<View style={styles.cameraIconWrapper}>
+											<MaterialCommunityIcons name="camera-plus-outline" size={24} color={COLORS.primary} />
+										</View>
+										<Text style={styles.imagePickerText}>{t("createCircle.step1.uploadText")}</Text>
+									</>
+								)}
 							</Pressable>
 						</ShadowCard>
 					</View>
@@ -210,5 +232,10 @@ const styles = StyleSheet.create({
 		fontFamily: FONTS.body,
 		fontSize: 13,
 		color: "#cc0000",
+	},
+	previewImage: {
+		width: "100%",
+		height: "100%",
+		borderRadius: 14,
 	},
 });
