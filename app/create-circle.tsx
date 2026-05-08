@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,6 +18,8 @@ const RequiredLabel = ({ text }: { text: string }) => (
 );
 
 export default function CreateCircleStep1() {
+	const { t } = useTranslation();
+
 	const { circleName, setCircleName, receiverName, setReceiverName, relation, handleRelationSelect, customRelation, setCustomRelation, isDropdownOpen, setIsDropdownOpen, relationOptions, selectedRelationLabel, handleNext, errorMessage } =
 		useCreateCircle();
 
@@ -25,30 +28,30 @@ export default function CreateCircleStep1() {
 			<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 				<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 					<View style={styles.header}>
-						<Text style={styles.titleText}>Maak jouw</Text>
+						<Text style={styles.titleText}>{t("createCircle.step1.titlePart1")}</Text>
 						<View style={styles.highlightWrapper}>
-							<Text style={styles.highlightText}>zorgkring</Text>
+							<Text style={styles.highlightText}>{t("createCircle.step1.titlePart2")}</Text>
 						</View>
 					</View>
 
 					<StepIndicator currentStep={1} totalSteps={2} />
 
-					<Text style={styles.subtitle}>Nodig mensen uit en hou samen overzicht{"\n"}over zorg en taken.</Text>
+					<Text style={styles.subtitle}>{t("createCircle.step1.subtitle")}</Text>
 
 					<View style={styles.formContainer}>
-						<Input label="Naam van je zorgkring" variant="outline" isRequired={true} placeholder="Zorg voor mama" value={circleName} onChangeText={setCircleName} />
+						<Input label={t("createCircle.step1.circleNameLabel")} variant="outline" isRequired={true} placeholder={t("createCircle.step1.circleNamePlaceholder")} value={circleName} onChangeText={setCircleName} />
 
 						<ShadowCard>
 							<View style={styles.cardHeader}>
 								<View style={styles.iconWrapper}>
 									<MaterialCommunityIcons name="account-heart-outline" size={28} color={COLORS.primary} />
 								</View>
-								<Text style={styles.cardTitle}>Zorgontvanger</Text>
+								<Text style={styles.cardTitle}>{t("createCircle.step1.receiverCardTitle")}</Text>
 							</View>
 
-							<Input label="Naam zorgontvanger" variant="outline" isRequired={true} placeholder="Oma Marie" value={receiverName} onChangeText={setReceiverName} />
+							<Input label={t("createCircle.step1.receiverNameLabel")} variant="outline" isRequired={true} placeholder={t("createCircle.step1.receiverNamePlaceholder")} value={receiverName} onChangeText={setReceiverName} />
 							<Text style={styles.label}>
-								Relatie tot zorgontvanger <Text style={{ color: "red" }}>*</Text>
+								{t("createCircle.step1.relationLabel")} <Text style={{ color: "red" }}>*</Text>
 							</Text>
 							<Pressable style={styles.dropdownButton} onPress={() => setIsDropdownOpen(true)}>
 								<Text style={[styles.dropdownButtonText, !relation && { color: "#888" }]}>{selectedRelationLabel}</Text>
@@ -57,18 +60,18 @@ export default function CreateCircleStep1() {
 
 							{relation === "andere" && (
 								<View style={{ marginTop: 10 }}>
-									<Input label="Specificeer je relatie" variant="outline" isRequired={true} placeholder="Bijv. Mantelzorger" value={customRelation} onChangeText={setCustomRelation} />
+									<Input label={t("createCircle.step1.specifyRelationLabel")} variant="outline" isRequired={true} placeholder={t("createCircle.step1.specifyRelationPlaceholder")} value={customRelation} onChangeText={setCustomRelation} />
 								</View>
 							)}
 
 							<Text style={styles.label}>
-								Profielfoto <Text style={styles.optionalText}>(optioneel)</Text>
+								{t("createCircle.step1.profilePhotoLabel")} <Text style={styles.optionalText}>{t("createCircle.step1.optional")}</Text>{" "}
 							</Text>
 							<Pressable style={styles.imagePickerBox}>
 								<View style={styles.cameraIconWrapper}>
 									<MaterialCommunityIcons name="camera-plus-outline" size={24} color={COLORS.primary} />
 								</View>
-								<Text style={styles.imagePickerText}>Tik om een afbeelding te uploaden</Text>
+								<Text style={styles.imagePickerText}>{t("createCircle.step1.uploadText")}</Text>
 							</Pressable>
 						</ShadowCard>
 					</View>
@@ -80,10 +83,10 @@ export default function CreateCircleStep1() {
 					)}
 
 					<View style={styles.footer}>
-						<Button title="Volgende" onPress={handleNext} variant="primary" />
+						<Button title={t("createCircle.step1.nextButton")} onPress={handleNext} variant="primary" />
 						<View style={styles.infoRow}>
 							<MaterialCommunityIcons name="information-outline" size={20} color={COLORS.primary} />
-							<Text style={styles.infoText}>Je kan dit later nog aanpassen</Text>
+							<Text style={styles.infoText}>{t("createCircle.step1.infoText")}</Text>
 						</View>
 					</View>
 				</ScrollView>

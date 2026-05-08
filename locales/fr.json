@@ -90,6 +90,25 @@
 		}
 	},
 	"createCircle": {
+		"step1": {
+			"titlePart1": "Créez votre",
+			"titlePart2": "cercle de soins",
+			"subtitle": "Invitez des personnes et gardez ensemble\nune vue d'ensemble des soins et des tâches.",
+			"circleNameLabel": "Nom de votre cercle de soins",
+			"circleNamePlaceholder": "Soins pour maman",
+			"receiverCardTitle": "Bénéficiaire de soins",
+			"receiverNameLabel": "Nom du bénéficiaire",
+			"receiverNamePlaceholder": "Mamie Marie",
+			"relationLabel": "Relation avec le bénéficiaire",
+			"specifyRelationLabel": "Précisez votre relation",
+			"specifyRelationPlaceholder": "Ex. Aidant proche",
+			"chooseRelation": "Choisissez une relation",
+			"profilePhotoLabel": "Photo de profil",
+			"optional": "(optionnel)",
+			"uploadText": "Appuyez pour télécharger une image",
+			"nextButton": "Suivant",
+			"infoText": "Vous pourrez modifier cela plus tard"
+		},
 		"relations": {
 			"partner": "Partenaire",
 			"dochter": "Fille",

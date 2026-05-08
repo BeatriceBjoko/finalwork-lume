@@ -90,6 +90,25 @@
 		}
 	},
 	"createCircle": {
+		"step1": {
+			"titlePart1": "Maak jouw",
+			"titlePart2": "zorgkring",
+			"subtitle": "Nodig mensen uit en hou samen overzicht\nover zorg en taken.",
+			"circleNameLabel": "Naam van je zorgkring",
+			"circleNamePlaceholder": "Zorg voor mama",
+			"receiverCardTitle": "Zorgontvanger",
+			"receiverNameLabel": "Naam zorgontvanger",
+			"receiverNamePlaceholder": "Oma Marie",
+			"relationLabel": "Relatie tot zorgontvanger",
+			"specifyRelationLabel": "Specificeer je relatie",
+			"specifyRelationPlaceholder": "Bijv. Mantelzorger",
+			"chooseRelation": "Kies een relatie",
+			"profilePhotoLabel": "Profielfoto",
+			"optional": "(optioneel)",
+			"uploadText": "Tik om een afbeelding te uploaden",
+			"nextButton": "Volgende",
+			"infoText": "Je kan dit later nog aanpassen"
+		},
 		"relations": {
 			"partner": "Partner",
 			"dochter": "Dochter",

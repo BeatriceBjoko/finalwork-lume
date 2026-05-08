@@ -19,7 +19,7 @@ export function useCreateCircle() {
 		label: t(`createCircle.relations.${key}`),
 	}));
 
-	const selectedRelationLabel = relation ? t(`createCircle.relations.${relation}`) : t("createCircle.chooseRelation", "Kies een relatie...");
+	const selectedRelationLabel = relation ? t(`createCircle.relations.${relation}`) : t("createCircle.step1.chooseRelation", "Kies een relatie...");
 
 	const handleRelationSelect = (value: string) => {
 		setRelation(value);
