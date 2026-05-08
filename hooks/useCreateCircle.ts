@@ -25,22 +25,22 @@ export function useCreateCircle() {
 	const selectedRelationLabel = relation ? t(`createCircle.relations.${relation}`) : t("createCircle.step1.chooseRelation", "Kies een relatie...");
 
 	const pickImage = async () => {
-		const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+		try {
+			// We proberen direct de veilige systeem-galerij te openen. Vereist geen extra permissies op moderne OS'en
+			let result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ["images"],
+				allowsEditing: true,
+				aspect: [1, 1],
+				quality: 0.5,
+			});
 
-		if (permissionResult.granted === false) {
+			if (!result.canceled) {
+				setProfileImage(result.assets[0].uri);
+			}
+		} catch (error) {
+			// ALleen als de telefoon echt blokkeert (bijv. oude Android met stricte weigering),
+			// tonen we de custom alert.
 			setIsPermissionAlertVisible(true);
-			return;
-		}
-
-		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ["images"],
-			allowsEditing: true,
-			aspect: [1, 1],
-			quality: 0.5,
-		});
-
-		if (!result.canceled) {
-			setProfileImage(result.assets[0].uri);
 		}
 	};
 
