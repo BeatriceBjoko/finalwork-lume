@@ -131,7 +131,7 @@
 		},
 		"step2": {
 			"inviteLabel": "Voeg mensen toe",
-			"invitePlaceholder": "E-mail of telefoonnummer",
+			"invitePlaceholder": "E-mail",
 			"addBtn": "Voeg toe",
 			"invitedStatus": "Uitgenodigd",
 			"linkSectionTitle": "Of nodig uit via link",

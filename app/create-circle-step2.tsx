@@ -3,10 +3,11 @@ import { BlurView } from "expo-blur";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../components/ui/Button";
+import CustomAlert from "../components/ui/CustomAlert";
 import ShadowCard from "../components/ui/ShadowCard";
 import StepIndicator from "../components/ui/StepIndicator";
 import { COLORS, FONTS, TYPOGRAPHY } from "../constants/theme";
@@ -27,11 +28,33 @@ export default function CreateCircleStep2() {
 	const [inviteInput, setInviteInput] = useState("");
 	const [inviteList, setInviteList] = useState<Invitee[]>([]);
 
+	const [alertConfig, setAlertConfig] = useState({
+		visible: false,
+		title: "",
+		message: "",
+		isSuccess: false,
+	});
+
+	const isValidEmail = (email: string) => {
+		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return regex.test(email);
+	};
+
 	const handleAddPerson = () => {
 		const inputStr = inviteInput.trim();
 		if (!inputStr) return;
 
-		let extractedName = inputStr.includes("@") ? inputStr.split("@")[0] : inputStr;
+		if (!isValidEmail(inputStr)) {
+			setAlertConfig({
+				visible: true,
+				title: "Oeps!",
+				message: t("errors.invalidEmail"),
+				isSuccess: false,
+			});
+			return;
+		}
+
+		let extractedName = inputStr.split("@")[0];
 		extractedName = extractedName.charAt(0).toUpperCase() + extractedName.slice(1);
 
 		const newInvitee: Invitee = {
@@ -49,8 +72,13 @@ export default function CreateCircleStep2() {
 	const handleCreateCircle = () => {
 		console.log("Data van stap 1:", params);
 		console.log("Uitgenodigde mensen:", inviteList);
-		Alert.alert("Succes", "Zorgkring wordt aangemaakt!");
-		router.push("/");
+
+		setAlertConfig({
+			visible: true,
+			title: "Succes",
+			message: "Zorgkring wordt aangemaakt!",
+			isSuccess: true,
+		});
 	};
 
 	return (
@@ -74,7 +102,7 @@ export default function CreateCircleStep2() {
 
 					<Text style={styles.subtitle}>{t("createCircle.step1.subtitle")}</Text>
 
-					<ShadowCard style={{ marginBottom: 20 }}>
+					<ShadowCard style={{ width: "100%", marginBottom: 20 }}>
 						<View style={styles.cardHeader}>
 							<View style={styles.iconWrapper}>
 								<MaterialCommunityIcons name="account-group-outline" size={28} color={COLORS.primary} />
@@ -83,11 +111,20 @@ export default function CreateCircleStep2() {
 						</View>
 
 						<View style={styles.inputWrapper}>
-							<TextInput style={styles.inviteInput} placeholder={t("createCircle.step2.invitePlaceholder")} placeholderTextColor="rgba(35, 54, 0, 0.4)" value={inviteInput} onChangeText={setInviteInput} autoCorrect={false} autoCapitalize="none" />
+							<TextInput
+								style={styles.inviteInput}
+								placeholder={t("createCircle.step2.invitePlaceholder")}
+								placeholderTextColor="rgba(35, 54, 0, 0.4)"
+								value={inviteInput}
+								onChangeText={setInviteInput}
+								autoCorrect={false}
+								autoCapitalize="none"
+								keyboardType="email-address"
+							/>
 
 							<Pressable style={styles.glassAddBtn} onPress={handleAddPerson}>
-								<BlurView intensity={30} tint="light" style={StyleSheet.absoluteFill} />
-								<View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(224, 224, 224, 0.5)" }]} />
+								<BlurView intensity={15} tint="light" style={StyleSheet.absoluteFill} />
+								<View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(224, 224, 224, 0.26)" }]} />
 								<Text style={styles.glassAddBtnText}>{t("createCircle.step2.addBtn")}</Text>
 							</Pressable>
 						</View>
@@ -125,7 +162,7 @@ export default function CreateCircleStep2() {
 							<Text style={styles.linkSubtitle}>{t("createCircle.step2.linkSectionSubtitle")}</Text>
 
 							<View style={styles.copyBtnWrapper}>
-								<Button title={t("createCircle.step2.copyLinkBtn")} variant="secondary" onPress={() => {}} />
+								<Button title={t("createCircle.step2.copyLinkBtn")} variant="secondary" onPress={() => {}} style={styles.copyBtn} />
 							</View>
 						</View>
 					</ShadowCard>
@@ -139,6 +176,19 @@ export default function CreateCircleStep2() {
 					</View>
 				</ScrollView>
 			</KeyboardAvoidingView>
+
+			<CustomAlert
+				visible={alertConfig.visible}
+				title={alertConfig.title}
+				message={alertConfig.message}
+				confirmText="OK"
+				onConfirm={() => {
+					setAlertConfig({ ...alertConfig, visible: false });
+					if (alertConfig.isSuccess) {
+						router.push("/");
+					}
+				}}
+			/>
 		</SafeAreaView>
 	);
 }
@@ -236,6 +286,10 @@ const styles = StyleSheet.create({
 	linkTitle: { fontFamily: "InterBold", fontSize: 14, color: "#354E00" },
 	linkSubtitle: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.primary, textAlign: "center", marginBottom: 16 },
 	copyBtnWrapper: { width: "100%" },
+
+	copyBtn: {
+		backgroundColor: "#FFFFFF",
+	},
 
 	footer: { width: "100%", marginTop: 20 },
 	infoRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 12 },

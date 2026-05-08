@@ -131,7 +131,7 @@
 		},
 		"step2": {
 			"inviteLabel": "Ajouter des personnes",
-			"invitePlaceholder": "E-mail ou numéro de tel",
+			"invitePlaceholder": "E-mail",
 			"addBtn": "Ajouter",
 			"invitedStatus": "Invité",
 			"linkSectionTitle": "Ou inviter via un lien",
