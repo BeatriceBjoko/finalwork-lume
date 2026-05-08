@@ -128,6 +128,16 @@
 			"vertrouwenspersoon": "Vertrouwenspersoon",
 			"vrijwilliger": "Vrijwilliger",
 			"andere": "Andere"
+		},
+		"step2": {
+			"inviteLabel": "Voeg mensen toe",
+			"invitePlaceholder": "E-mail of telefoonnummer",
+			"addBtn": "Voeg toe",
+			"invitedStatus": "Uitgenodigd",
+			"linkSectionTitle": "Of nodig uit via link",
+			"linkSectionSubtitle": "Deel deze link met familie of vrienden",
+			"copyLinkBtn": "Kopieer uitnodigingslink",
+			"finishBtn": "Zorgkring aanmaken"
 		}
 	}
 }

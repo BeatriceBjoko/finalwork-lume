@@ -128,6 +128,16 @@
 			"vertrouwenspersoon": "Personne de confiance",
 			"vrijwilliger": "Bénévole",
 			"andere": "Autre"
+		},
+		"step2": {
+			"inviteLabel": "Ajouter des personnes",
+			"invitePlaceholder": "E-mail ou numéro de tel",
+			"addBtn": "Ajouter",
+			"invitedStatus": "Invité",
+			"linkSectionTitle": "Ou inviter via un lien",
+			"linkSectionSubtitle": "Partagez ce lien avec votre famille",
+			"copyLinkBtn": "Copier le lien d'invitation",
+			"finishBtn": "Créer le cercle de soins"
 		}
 	}
 }
