@@ -5,16 +5,36 @@ import { useTranslation } from "react-i18next";
 
 export const RELATION_KEYS = ["partner", "dochter", "zoon", "moeder", "vader", "zus", "broer", "kleindochter", "kleinzoon", "vriend_vriendin", "buur", "familielid", "vertrouwenspersoon", "vrijwilliger", "andere"];
 
+//  Dit onthoudt de velden in het werkgeheugen, zelfs als het scherm helemaal wordt afgesloten
+export let cachedStep1Data = {
+	circleName: "",
+	receiverName: "",
+	relation: "",
+	customRelation: "",
+	profileImage: null as string | null,
+};
+
+export function clearCircleCache() {
+	Object.assign(cachedStep1Data, {
+		circleName: "",
+		receiverName: "",
+		relation: "",
+		customRelation: "",
+		profileImage: null,
+	});
+}
+
 export function useCreateCircle() {
 	const { t } = useTranslation();
 
-	const [circleName, setCircleName] = useState("");
-	const [receiverName, setReceiverName] = useState("");
-	const [relation, setRelation] = useState("");
-	const [customRelation, setCustomRelation] = useState("");
+	const [circleName, setCircleName] = useState(cachedStep1Data.circleName);
+	const [receiverName, setReceiverName] = useState(cachedStep1Data.receiverName);
+	const [relation, setRelation] = useState(cachedStep1Data.relation);
+	const [customRelation, setCustomRelation] = useState(cachedStep1Data.customRelation);
+	const [profileImage, setProfileImage] = useState<string | null>(cachedStep1Data.profileImage);
+
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
-	const [profileImage, setProfileImage] = useState<string | null>(null);
 	const [isPermissionAlertVisible, setIsPermissionAlertVisible] = useState(false);
 
 	const relationOptions = RELATION_KEYS.map((key) => ({
@@ -26,7 +46,6 @@ export function useCreateCircle() {
 
 	const pickImage = async () => {
 		try {
-			// We proberen direct de veilige systeem-galerij te openen. Vereist geen extra permissies op moderne OS'en
 			let result = await ImagePicker.launchImageLibraryAsync({
 				mediaTypes: ["images"],
 				allowsEditing: true,
@@ -38,8 +57,6 @@ export function useCreateCircle() {
 				setProfileImage(result.assets[0].uri);
 			}
 		} catch (error) {
-			// ALleen als de telefoon echt blokkeert (bijv. oude Android met stricte weigering),
-			// tonen we de custom alert.
 			setIsPermissionAlertVisible(true);
 		}
 	};
@@ -66,15 +83,24 @@ export function useCreateCircle() {
 			return;
 		}
 
-		// naar stap 2 gaan en data meenemen
+		// Update het geheugenbestand vlak voordat we naar stap 2 gaan
+		cachedStep1Data = {
+			circleName: circleName.trim(),
+			receiverName: receiverName.trim(),
+			relation: relation,
+			customRelation: relation === "andere" ? customRelation.trim() : "",
+			profileImage: profileImage,
+		};
+
+		// Naar stap 2 gaan en de data meenemen
 		router.push({
 			pathname: "/create-circle-step2",
 			params: {
-				circleName: circleName.trim(),
-				receiverName: receiverName.trim(),
-				relation: relation,
-				customRelation: relation === "andere" ? customRelation.trim() : "",
-				profileImage: profileImage || "",
+				circleName: cachedStep1Data.circleName,
+				receiverName: cachedStep1Data.receiverName,
+				relation: cachedStep1Data.relation,
+				customRelation: cachedStep1Data.customRelation,
+				profileImage: cachedStep1Data.profileImage || "",
 			},
 		});
 	};

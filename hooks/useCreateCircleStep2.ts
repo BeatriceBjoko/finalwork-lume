@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard, Linking, Share } from "react-native";
+import { clearCircleCache } from "./useCreateCircle";
 
 import { createCareCircleInDB } from "../lib/firebase-service";
 
@@ -102,6 +103,8 @@ export function useCreateCircleStep2() {
 				inviteCode: circleCode,
 				invitees: inviteList.map((i) => ({ contact: i.contact })),
 			});
+
+			clearCircleCache(); // Wis het werkgeheugen nadat de kring is aangemaakt
 
 			setAlertConfig({
 				visible: true,
