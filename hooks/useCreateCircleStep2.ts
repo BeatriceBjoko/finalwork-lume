@@ -125,7 +125,7 @@ export function useCreateCircleStep2() {
 	const closeAlert = () => {
 		setAlertConfig({ ...alertConfig, visible: false });
 		if (alertConfig.isSuccess) {
-			router.push("/daily-summary");
+			router.replace("/");
 		}
 	};
 

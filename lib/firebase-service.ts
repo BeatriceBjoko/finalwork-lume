@@ -34,6 +34,7 @@ export async function register(email: string, password: string, name?: string): 
 		language: "nl",
 		createdAt: new Date().toISOString(),
 		role: "mantelzorger",
+		onboardingCompleted: false,
 	});
 
 	return { user };

@@ -13,16 +13,16 @@ export default function AppLayout() {
 		);
 	}
 
-	//  Niet ingelogd? -> Naar login scherm
+	// 1. Niet ingelogd? -> Naar login scherm
 	if (!user) {
 		return <Redirect href="/sign-in" />;
 	}
 
-	//  Wel ingelogd, maar onboarding in de database is nog NIET afgerond? -> Naar onboarding
-	if (userData && userData.onboardingCompleted === false) {
+	// 2. Wel ingelogd, maar onboarding is false of bestaat nog niet? -> Naar onboarding
+	if (userData && !userData.onboardingCompleted) {
 		return <Redirect href="/onboarding" />;
 	}
 
-	// Alles veilig en afgerond? -> Laat de (app) schermen zien
+	//  Alles veilig en afgerond? -> Laat de (app) schermen zien
 	return <Slot />;
 }
