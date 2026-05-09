@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
-import { collection, doc, setDoc, writeBatch } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, where, writeBatch } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "./firebase-config";
 
@@ -52,11 +52,11 @@ export interface CreateCircleParams {
 
 export async function uploadImageAsync(uri: string, path: string): Promise<string> {
 	try {
-		//  Haal de lokale afbeelding op en zet hem om naar een "Blob" (Data-pakketje)
+		// Haal de lokale afbeelding op en zet hem om naar een "Blob" (Data-pakketje)
 		const response = await fetch(uri);
 		const blob = await response.blob();
 
-		//  Vertel Firebase waar we de foto willen opslaan
+		// Vertel Firebase waar we de foto willen opslaan
 		const storageRef = ref(storage, path);
 
 		// Upload het bestand naar Firebase Storage
@@ -137,5 +137,68 @@ export async function createCareCircleInDB(params: CreateCircleParams): Promise<
 		});
 	});
 
+	await batch.commit();
+}
+
+export interface JoinCircleParams {
+	inviteCode: string;
+	relation: string;
+	customRelation: string;
+	profileImage: string;
+}
+
+export async function joinCareCircleInDB(params: JoinCircleParams): Promise<void> {
+	const currentUser = auth.currentUser;
+	if (!currentUser) throw new Error("Je bent niet ingelogd.");
+	const currentUserId = currentUser.uid;
+
+	// Zoek de zorgkring met deze code
+	const circlesRef = collection(db, "careCircles");
+	const q = query(circlesRef, where("inviteCode", "==", params.inviteCode));
+	const querySnapshot = await getDocs(q);
+
+	if (querySnapshot.empty) {
+		throw new Error("NOT_FOUND");
+	}
+
+	// Pak de data van de gevonden zorgkring
+	const circleDoc = querySnapshot.docs[0];
+	const circleId = circleDoc.id;
+
+	let uploadedPhotoUrl = "";
+	if (params.profileImage) {
+		// Uniek pad voor de profielfoto van deze gebruiker
+		const imagePath = `users/${currentUserId}/profile_${Date.now()}.jpg`;
+		uploadedPhotoUrl = await uploadImageAsync(params.profileImage, imagePath);
+	}
+
+	const batch = writeBatch(db);
+
+	// Voeg de gebruiker toe als 'member' aan de zorgkring
+	const memberRef = doc(db, "careCircleMembers", `${circleId}_${currentUserId}`);
+	batch.set(memberRef, {
+		careCircleId: circleId,
+		userId: currentUserId,
+		role: "member",
+		relationshipToCareReceiver: params.relation === "andere" ? params.customRelation : params.relation,
+		status: "active",
+		joinedAt: new Date().toISOString(),
+		photoUrl: uploadedPhotoUrl,
+	});
+
+	//  Update het User profiel (zodat de onboarding klaar is)
+	const userRef = doc(db, "users", currentUserId);
+	const userUpdates: any = {
+		onboardingCompleted: true,
+		careCircleId: circleId,
+	};
+
+	if (uploadedPhotoUrl) {
+		userUpdates.photoUrl = uploadedPhotoUrl;
+	}
+
+	batch.update(userRef, userUpdates);
+
+	// Alles tegelijk opslaan!
 	await batch.commit();
 }

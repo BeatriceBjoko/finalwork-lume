@@ -2,6 +2,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { joinCareCircleInDB } from "../lib/firebase-service";
 import { RELATION_KEYS } from "./useCreateCircle";
 
 export function useJoinCircle() {
@@ -63,14 +64,23 @@ export function useJoinCircle() {
 
 		try {
 			const fullCode = `LUME-${inviteCode}`;
-			console.log("Zoeken naar kring met code:", fullCode);
 
-			await new Promise((resolve) => setTimeout(resolve, 1500));
+			// Firebase backend aanroepen
+			await joinCareCircleInDB({
+				inviteCode: fullCode,
+				relation,
+				customRelation: relation === "andere" ? customRelation.trim() : "",
+				profileImage: profileImage || "",
+			});
 
 			setAlertConfig({ visible: true, title: "Welkom!", message: t("joinCircle.success", "Je bent succesvol toegevoegd aan de zorgkring."), isSuccess: true });
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Fout bij joinen:", error);
-			setAlertConfig({ visible: true, title: "Oeps!", message: t("joinCircle.errors.notFound", "Geen zorgkring gevonden met deze code."), isSuccess: false });
+			if (error.message === "NOT_FOUND") {
+				setAlertConfig({ visible: true, title: "Oeps!", message: t("joinCircle.errors.notFound", "Geen zorgkring gevonden met deze code."), isSuccess: false });
+			} else {
+				setAlertConfig({ visible: true, title: "Oeps!", message: t("errors.default", "Er is een onbekende fout opgetreden. Probeer het opnieuw."), isSuccess: false });
+			}
 		} finally {
 			setIsLoading(false);
 		}
