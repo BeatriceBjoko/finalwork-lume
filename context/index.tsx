@@ -1,7 +1,7 @@
 import { User, onAuthStateChanged } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth, db } from "../lib/firebase-config"; // DB toegevoegd!
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { auth, db } from "../lib/firebase-config";
 import { login, logout, register } from "../lib/firebase-service";
 
 //  wat we uit de database verwachten
@@ -61,21 +61,23 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 		};
 	}, []);
 
-	const handleSignIn = async (email: string, password: string) => {
+	const handleSignIn = useCallback(async (email: string, password: string) => {
 		const response = await login(email, password);
 		return response?.user;
-	};
+	}, []);
 
-	const handleSignUp = async (email: string, password: string, name?: string) => {
+	const handleSignUp = useCallback(async (email: string, password: string, name?: string) => {
 		const response = await register(email, password, name);
 		return response?.user;
-	};
+	}, []);
 
-	const handleSignOut = async () => {
+	const handleSignOut = useCallback(async () => {
 		await logout();
 		setUser(null);
 		setUserData(null);
-	};
+	}, []);
 
-	return <AuthContext.Provider value={{ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, userData, isLoading }}>{props.children}</AuthContext.Provider>;
+	const value = useMemo(() => ({ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, userData, isLoading }), [handleSignIn, handleSignUp, handleSignOut, user, userData, isLoading]);
+
+	return <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>;
 }
