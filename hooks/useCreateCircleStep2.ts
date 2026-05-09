@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Keyboard, Share } from "react-native";
+import { Keyboard, Linking, Share } from "react-native";
 
 import { createCareCircleInDB } from "../lib/firebase-service";
 
@@ -124,7 +124,18 @@ export function useCreateCircleStep2() {
 
 	const closeAlert = () => {
 		setAlertConfig({ ...alertConfig, visible: false });
+
 		if (alertConfig.isSuccess) {
+			// Als er e-mailadressen zijn ingevuld, open de mail app
+			if (inviteList.length > 0) {
+				const emails = inviteList.map((i) => i.contact).join(",");
+				const subject = encodeURIComponent("Uitnodiging voor Zorgkring op Lume");
+				const body = encodeURIComponent(`${t("createCircle.step2.shareMessage")}\n\nCode: ${circleCode}`);
+
+				// Open de native mail app met BCC (zodat ze elkaars adres niet zien)
+				Linking.openURL(`mailto:?bcc=${emails}&subject=${subject}&body=${body}`).catch((err) => console.error("Kon de mail app niet openen:", err));
+			}
+
 			router.replace("/");
 		}
 	};
