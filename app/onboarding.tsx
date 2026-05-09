@@ -11,8 +11,10 @@ const { width } = Dimensions.get("window");
 
 const ONBOARDING_PAGES = [{ id: "1" }, { id: "2" }, { id: "3" }];
 
+let savedStepIndex = 0;
+
 export default function Onboarding() {
-	const [currentIndex, setCurrentIndex] = useState(0);
+	const [currentIndex, setCurrentIndex] = useState(savedStepIndex);
 	const flatListRef = useRef<FlatList>(null);
 
 	const handleNext = () => {
@@ -31,9 +33,17 @@ export default function Onboarding() {
 
 	const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
 		if (viewableItems.length > 0) {
-			setCurrentIndex(viewableItems[0].index ?? 0);
+			const newIndex = viewableItems[0].index ?? 0;
+			setCurrentIndex(newIndex);
+			savedStepIndex = newIndex;
 		}
 	}).current;
+
+	const getItemLayout = (_: any, index: number) => ({
+		length: width,
+		offset: width * index,
+		index,
+	});
 
 	const renderItem = ({ index }: { index: number }) => {
 		if (index === 0) return <Step1 />;
@@ -55,6 +65,8 @@ export default function Onboarding() {
 				viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
 				keyExtractor={(item) => item.id}
 				bounces={false}
+				initialScrollIndex={savedStepIndex} // Start de lijst op de opgeslagen index
+				getItemLayout={getItemLayout}
 			/>
 
 			<SafeAreaView style={styles.footerOverlay} pointerEvents="box-none">

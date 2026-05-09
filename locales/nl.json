@@ -5,7 +5,6 @@
 		"email": "E-mail",
 		"password": "Wachtwoord",
 		"button": "Log In",
-		"forgot": "Wachtwoord vergeten?",
 		"noAccount": "Nog geen account?",
 		"createAccount": "Account aanmaken"
 	},
@@ -58,7 +57,7 @@
 		]
 	},
 	"errors": {
-		"missingFields": "Vul aub alle velden in.",
+		"missingFields": "Vul aub alle verplichte velden in.",
 		"invalidEmail": "Dit e-mailadres is ongeldig.",
 		"emailInUse": "Dit e-mailadres is al in gebruik.",
 		"weakPassword": "Je wachtwoord moet minimaal 6 tekens lang zijn.",

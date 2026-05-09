@@ -114,7 +114,7 @@ export function useCreateCircleStep2() {
 			setAlertConfig({
 				visible: true,
 				title: "Oeps!",
-				message: "Er ging iets mis bij het opslaan. Ben je wel ingelogd?",
+				message: t("errors.default"),
 				isSuccess: false,
 			});
 		} finally {

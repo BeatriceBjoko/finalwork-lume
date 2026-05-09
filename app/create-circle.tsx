@@ -1,4 +1,5 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -14,6 +15,7 @@ import { useCreateCircle } from "../hooks/useCreateCircle";
 
 export default function CreateCircleStep1() {
 	const { t } = useTranslation();
+	const router = useRouter();
 
 	const {
 		circleName,
@@ -39,6 +41,12 @@ export default function CreateCircleStep1() {
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+				<View style={styles.backButtonContainer}>
+					<Pressable onPress={() => router.back()} style={styles.backButton}>
+						<Ionicons name="chevron-back" size={28} color={COLORS.primary} />
+					</Pressable>
+				</View>
+
 				<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 					<View style={styles.header}>
 						<Text style={styles.titleText}>{t("createCircle.step1.titlePart1")}</Text>
@@ -132,7 +140,7 @@ export default function CreateCircleStep1() {
 				confirmText={t("createCircle.step1.photoPermissionButton")}
 				onConfirm={() => {
 					setIsPermissionAlertVisible(false);
-					Linking.openSettings(); //  opent de instellingen van de telefoon.
+					Linking.openSettings();
 				}}
 			/>
 		</SafeAreaView>
@@ -141,14 +149,27 @@ export default function CreateCircleStep1() {
 
 const styles = StyleSheet.create({
 	safeArea: { flex: 1, backgroundColor: "#FFFFFF" },
-	scrollContent: { paddingHorizontal: 16, paddingTop: 40, paddingBottom: 40, alignItems: "center" },
+
+	backButtonContainer: {
+		width: "100%",
+		paddingHorizontal: 16,
+		paddingTop: 10,
+		zIndex: 10,
+	},
+	backButton: {
+		padding: 8,
+		marginLeft: -8,
+		alignSelf: "flex-start",
+	},
+
+	scrollContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 40, alignItems: "center" },
 
 	header: { alignItems: "center", marginBottom: 20 },
 	titleText: { ...TYPOGRAPHY.h1, color: COLORS.primary, zIndex: 10 },
 	highlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 16, paddingVertical: 2, borderRadius: 20, marginTop: -5 },
 	highlightText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
 
-	subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.primary, textAlign: "center", marginBottom: 30, lineHeight: 20 },
+	subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.primary, textAlign: "center", marginBottom: 30, lineHeight: 20, marginTop: 20 },
 	formContainer: { width: "100%", marginBottom: 20 },
 	label: { ...TYPOGRAPHY.h4, marginBottom: 8, marginTop: 10 },
 	optionalText: { fontFamily: FONTS.body, fontSize: 14, fontWeight: "normal" },

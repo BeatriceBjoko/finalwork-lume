@@ -45,7 +45,7 @@ export default function Step3() {
 
 				<View style={styles.buttonsContainer}>
 					<Button title={t("onboarding.step3.btn_primary", "Zorgkring aanmaken")} variant="primary" onPress={() => router.push("/create-circle")} />
-					<Button title={t("onboarding.step3.btn_secondary", "Join zorgkring")} variant="secondary" onPress={() => {}} />
+					<Button title={t("onboarding.step3.btn_secondary", "Join zorgkring")} variant="secondary" onPress={() => router.push("/join-circle")} />
 				</View>
 			</SafeAreaView>
 		</View>
