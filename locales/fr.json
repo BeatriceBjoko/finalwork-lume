@@ -140,5 +140,19 @@
 			"shareMessage": "Hey! J'ai créé un cercle de soins sur Lume. Rejoins-nous pour organiser les soins ensemble. Clique ici : lume.app/invite/12345",
 			"finishBtn": "Créer le cercle de soins"
 		}
+	},
+	"joinCircle": {
+		"titlePart1": "Rejoignez un",
+		"titlePart2": "cercle de soins",
+		"subtitle": "Entrez votre code d'invitation et configurez votre profil",
+		"codeLabel": "Code d'invitation",
+		"cardTitle": "Votre rôle dans le cercle",
+		"button": "Rejoindre",
+		"noCode": "Pas de code ? Demandez une invitation à l'administrateur",
+		"success": "Vous avez rejoint le cercle de soins avec succès.",
+		"errors": {
+			"invalidCode": "Le code doit comporter exactement 6 caractères.",
+			"notFound": "Aucun cercle de soins trouvé avec ce code."
+		}
 	}
 }

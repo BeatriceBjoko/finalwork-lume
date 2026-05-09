@@ -140,5 +140,19 @@
 			"shareMessage": "Hey! Ik heb een zorgkring aangemaakt op Lume. Sluit je aan om samen de zorg te organiseren. Klik hier: lume.app/invite/12345",
 			"finishBtn": "Zorgkring aanmaken"
 		}
+	},
+	"joinCircle": {
+		"titlePart1": "Word lid van een",
+		"titlePart2": "zorgkring",
+		"subtitle": "Voer je uitnodigingscode in en stel je profiel in",
+		"codeLabel": "Uitnodigingscode",
+		"cardTitle": "Jouw rol in de zorgkring",
+		"button": "Toetreden",
+		"noCode": "Geen code? Vraag de beheerder om een uitnodiging",
+		"success": "Je bent succesvol toegevoegd aan de zorgkring.",
+		"errors": {
+			"invalidCode": "De code moet precies 6 tekens lang zijn.",
+			"notFound": "Geen zorgkring gevonden met deze code."
+		}
 	}
 }
