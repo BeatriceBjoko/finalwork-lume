@@ -1,13 +1,22 @@
 import { User, onAuthStateChanged } from "firebase/auth";
+import { doc, onSnapshot } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../lib/firebase-config";
+import { auth, db } from "../lib/firebase-config"; // DB toegevoegd!
 import { login, logout, register } from "../lib/firebase-service";
+
+//  wat we uit de database verwachten
+interface UserData {
+	onboardingCompleted?: boolean;
+	careCircleId?: string;
+	role?: string;
+}
 
 interface AuthContextType {
 	signIn: (email: string, password: string) => Promise<User | undefined>;
 	signUp: (email: string, password: string, name?: string) => Promise<User | undefined>;
 	signOut: () => Promise<void>;
 	user: User | null;
+	userData: UserData | null;
 	isLoading: boolean;
 }
 
@@ -21,14 +30,35 @@ export function useSession() {
 
 export function SessionProvider(props: { children: React.ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
+	const [userData, setUserData] = useState<UserData | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (user) => {
-			setUser(user);
-			setIsLoading(false);
+		let unsubscribeDoc: () => void;
+
+		const unsubscribeAuth = onAuthStateChanged(auth, (authUser) => {
+			setUser(authUser);
+
+			if (authUser) {
+				// Als we zijn ingelogd, haal dan live de extra Firestore data op
+				const docRef = doc(db, "users", authUser.uid);
+				unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
+					if (docSnap.exists()) {
+						setUserData(docSnap.data() as UserData);
+					}
+					setIsLoading(false);
+				});
+			} else {
+				setUserData(null);
+				setIsLoading(false);
+				if (unsubscribeDoc) unsubscribeDoc();
+			}
 		});
-		return () => unsubscribe();
+
+		return () => {
+			unsubscribeAuth();
+			if (unsubscribeDoc) unsubscribeDoc();
+		};
 	}, []);
 
 	const handleSignIn = async (email: string, password: string) => {
@@ -44,7 +74,8 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 	const handleSignOut = async () => {
 		await logout();
 		setUser(null);
+		setUserData(null);
 	};
 
-	return <AuthContext.Provider value={{ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, isLoading }}>{props.children}</AuthContext.Provider>;
+	return <AuthContext.Provider value={{ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, userData, isLoading }}>{props.children}</AuthContext.Provider>;
 }

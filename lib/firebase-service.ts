@@ -1,6 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
 import { collection, doc, setDoc, writeBatch } from "firebase/firestore";
-import { auth, db } from "./firebase-config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { auth, db, storage } from "./firebase-config";
 
 export interface FirebaseUserResponse {
 	user: User;
@@ -48,6 +49,26 @@ export interface CreateCircleParams {
 	invitees: Array<{ contact: string }>;
 }
 
+export async function uploadImageAsync(uri: string, path: string): Promise<string> {
+	try {
+		//  Haal de lokale afbeelding op en zet hem om naar een "Blob" (Data-pakketje)
+		const response = await fetch(uri);
+		const blob = await response.blob();
+
+		//  Vertel Firebase waar we de foto willen opslaan
+		const storageRef = ref(storage, path);
+
+		// Upload het bestand naar Firebase Storage
+		await uploadBytes(storageRef, blob);
+
+		// Vraag de publieke "https://" download-link op en geef deze terug
+		return await getDownloadURL(storageRef);
+	} catch (error) {
+		console.error("Fout bij uploaden afbeelding:", error);
+		throw error;
+	}
+}
+
 export async function createCareCircleInDB(params: CreateCircleParams): Promise<void> {
 	const currentUser = auth.currentUser;
 	if (!currentUser) throw new Error("Je bent niet ingelogd.");
@@ -59,12 +80,19 @@ export async function createCareCircleInDB(params: CreateCircleParams): Promise<
 	const circleRef = doc(collection(db, "careCircles"));
 	const circleId = circleRef.id;
 
+	let uploadedPhotoUrl = "";
+	if (params.profileImage) {
+		// hier uniek pad maken in Storage: careCircles/ID/profile_tijdstip.jpg
+		const imagePath = `careCircles/${circleId}/profile_${Date.now()}.jpg`;
+		uploadedPhotoUrl = await uploadImageAsync(params.profileImage, imagePath);
+	}
+
 	batch.set(circleRef, {
 		id: circleId,
 		name: params.circleName,
 		careReceiver: {
 			name: params.receiverName,
-			photoUrl: params.profileImage || "",
+			photoUrl: uploadedPhotoUrl,
 		},
 		createdBy: currentUserId,
 		inviteCode: params.inviteCode,

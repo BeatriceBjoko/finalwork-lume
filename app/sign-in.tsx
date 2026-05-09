@@ -11,12 +11,10 @@ import { COLORS, FONTS } from "../constants/theme";
 import { useSignIn } from "../hooks/useSignIn";
 
 export default function SignIn() {
-	// Haal de vertaalfunctie en de i18n instantie op
 	const { t, i18n } = useTranslation();
 
 	const { email, setEmail, password, setPassword, isSubmitting, errorMessage, handleSignInPress } = useSignIn();
 
-	// functie om de taal te wisselen
 	const toggleLanguage = () => {
 		const nextLang = i18n.language === "nl" ? "fr" : "nl";
 		i18n.changeLanguage(nextLang);
@@ -50,18 +48,6 @@ export default function SignIn() {
 					<Input label={t("login.password")} value={password} onChangeText={setPassword} secureTextEntry placeholder="••••••••" />
 
 					<Button title={isSubmitting ? "..." : t("login.button")} onPress={handleSignInPress} disabled={isSubmitting} style={{ marginTop: 16 }} />
-
-					<Link href="/sign-up" asChild>
-						<Pressable style={styles.forgotPassword}>
-							<Text style={styles.forgotPasswordText}>{t("login.forgot")}</Text>
-						</Pressable>
-					</Link>
-
-					<Link href="/onboarding" asChild>
-						<Pressable style={{ backgroundColor: "yellow", padding: 10, marginTop: 20, alignItems: "center", borderRadius: 10 }}>
-							<Text style={{ fontWeight: "bold" }}>TEST DE ONBOARDING </Text>
-						</Pressable>
-					</Link>
 
 					<View style={styles.footer}>
 						<Text style={styles.footerText}>{t("login.noAccount")} </Text>
@@ -119,8 +105,6 @@ const styles = StyleSheet.create({
 		color: "#cc0000",
 	},
 
-	forgotPassword: { marginTop: 24, alignItems: "center", zIndex: 1 },
-	forgotPasswordText: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.primary, textDecorationLine: "underline" },
 	footer: { flexDirection: "row", justifyContent: "center", marginTop: 24, zIndex: 1 },
 	footerText: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.primary },
 	footerLink: { fontFamily: FONTS.button, fontSize: 13, color: COLORS.primary, textDecorationLine: "underline" },

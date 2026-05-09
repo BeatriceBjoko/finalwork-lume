@@ -3,7 +3,7 @@ import { ActivityIndicator, View } from "react-native";
 import { useSession } from "../../context";
 
 export default function AppLayout() {
-	const { user, isLoading } = useSession();
+	const { user, userData, isLoading } = useSession();
 
 	if (isLoading) {
 		return (
@@ -13,11 +13,16 @@ export default function AppLayout() {
 		);
 	}
 
-	// Redirect to sign-in if not logged in
+	//  Niet ingelogd? -> Naar login scherm
 	if (!user) {
 		return <Redirect href="/sign-in" />;
 	}
 
-	// Render the protected screens
+	//  Wel ingelogd, maar onboarding in de database is nog NIET afgerond? -> Naar onboarding
+	if (userData && userData.onboardingCompleted === false) {
+		return <Redirect href="/onboarding" />;
+	}
+
+	// Alles veilig en afgerond? -> Laat de (app) schermen zien
 	return <Slot />;
 }
