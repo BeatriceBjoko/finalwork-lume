@@ -81,7 +81,7 @@ export function useCreateCircleStep2() {
 
 			if (result.action === Share.sharedAction) {
 				setHasShared(true);
-				setTimeout(() => setHasShared(false), 3000);
+				setTimeout(() => setHasShared(false), 7000);
 			}
 		} catch (error: any) {
 			console.error("Fout bij delen:", error.message);
