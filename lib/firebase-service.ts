@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, setDoc, writeBatch } from "firebase/firestore";
 import { auth, db } from "./firebase-config";
 
 export interface FirebaseUserResponse {
@@ -36,4 +36,77 @@ export async function register(email: string, password: string, name?: string): 
 	});
 
 	return { user };
+}
+
+export interface CreateCircleParams {
+	circleName: string;
+	receiverName: string;
+	profileImage: string;
+	relation: string;
+	customRelation: string;
+	inviteCode: string;
+	invitees: Array<{ contact: string }>;
+}
+
+export async function createCareCircleInDB(params: CreateCircleParams): Promise<void> {
+	const currentUser = auth.currentUser;
+	if (!currentUser) throw new Error("Je bent niet ingelogd.");
+	const currentUserId = currentUser.uid;
+
+	const batch = writeBatch(db);
+
+	// Zorgkring aanmaken
+	const circleRef = doc(collection(db, "careCircles"));
+	const circleId = circleRef.id;
+
+	batch.set(circleRef, {
+		id: circleId,
+		name: params.circleName,
+		careReceiver: {
+			name: params.receiverName,
+			photoUrl: params.profileImage || "",
+		},
+		createdBy: currentUserId,
+		inviteCode: params.inviteCode,
+		createdAt: new Date().toISOString(),
+	});
+
+	// Maker als Admin toevoegen
+	const memberRef = doc(db, "careCircleMembers", `${circleId}_${currentUserId}`);
+	batch.set(memberRef, {
+		careCircleId: circleId,
+		userId: currentUserId,
+		role: "admin",
+		relationshipToCareReceiver: params.relation === "andere" ? params.customRelation : params.relation,
+		status: "active",
+		joinedAt: new Date().toISOString(),
+	});
+
+	// User updaten
+	const userRef = doc(db, "users", currentUserId);
+	batch.update(userRef, {
+		onboardingCompleted: true,
+		careCircleId: circleId,
+	});
+
+	// Uitnodigingen opslaan
+	const expiresAtDate = new Date();
+	expiresAtDate.setDate(expiresAtDate.getDate() + 7);
+
+	params.invitees.forEach((invitee) => {
+		const inviteRef = doc(collection(db, "careCircleInvites"));
+		batch.set(inviteRef, {
+			id: inviteRef.id,
+			careCircleId: circleId,
+			emailOrPhone: invitee.contact,
+			invitedBy: currentUserId,
+			inviteCode: params.inviteCode,
+			roleOnJoin: "member",
+			status: "pending",
+			createdAt: new Date().toISOString(),
+			expiresAt: expiresAtDate.toISOString(),
+		});
+	});
+
+	await batch.commit();
 }
