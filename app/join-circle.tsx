@@ -69,14 +69,18 @@ export default function JoinCircle() {
 					<View style={styles.formContainer}>
 						<Text style={styles.label}>{t("joinCircle.codeLabel", "Uitnodigingscode")}</Text>
 
-						<Pressable style={styles.codeBoxesContainer} onPress={() => inputRef.current?.focus()}>
-							{[0, 1, 2, 3, 4, 5].map((index) => (
-								<View key={index} style={[styles.codeBox, inviteCode.length === index && styles.codeBoxActive]}>
-									<Text style={styles.codeText}>{inviteCode[index] || ""}</Text>
-								</View>
-							))}
-							<TextInput ref={inputRef} style={styles.hiddenInput} value={inviteCode} onChangeText={handleCodeChange} maxLength={6} keyboardType="default" autoCapitalize="characters" autoCorrect={false} caretHidden={true} />
-						</Pressable>
+						<View style={styles.codeWrapperRow}>
+							<Text style={styles.lumePrefix}>LUME -</Text>
+
+							<Pressable style={styles.codeBoxesContainer} onPress={() => inputRef.current?.focus()}>
+								{[0, 1, 2, 3, 4, 5].map((index) => (
+									<View key={index} style={[styles.codeBox, inviteCode.length === index && styles.codeBoxActive]}>
+										<Text style={styles.codeText}>{inviteCode[index] || ""}</Text>
+									</View>
+								))}
+								<TextInput ref={inputRef} style={styles.hiddenInput} value={inviteCode} onChangeText={handleCodeChange} maxLength={6} keyboardType="default" autoCapitalize="characters" autoCorrect={false} caretHidden={true} />
+							</Pressable>
+						</View>
 
 						<ShadowCard style={{ marginTop: 20 }}>
 							<View style={styles.cardHeader}>
@@ -193,11 +197,22 @@ const styles = StyleSheet.create({
 	label: { ...TYPOGRAPHY.h4, marginBottom: 8, marginTop: 10 },
 	optionalText: { fontFamily: FONTS.body, fontSize: 14, fontWeight: "normal" },
 
+	codeWrapperRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		width: "100%",
+		marginBottom: 10,
+	},
+	lumePrefix: {
+		fontFamily: FONTS.heading,
+		fontSize: 18,
+		color: "rgba(35, 54, 0, 0.92)",
+		marginRight: 8,
+	},
 	codeBoxesContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
-		width: "100%",
-		marginBottom: 10,
+		flex: 1,
 		position: "relative",
 	},
 	codeBox: {
