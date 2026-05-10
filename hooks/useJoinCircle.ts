@@ -75,10 +75,11 @@ export function useJoinCircle() {
 
 			setAlertConfig({ visible: true, title: "Welkom!", message: t("joinCircle.success", "Je bent succesvol toegevoegd aan de zorgkring."), isSuccess: true });
 		} catch (error: any) {
-			console.error("Fout bij joinen:", error);
 			if (error.message === "NOT_FOUND") {
+				// Toon alleen CustomAlert, geen rode Expo error box
 				setAlertConfig({ visible: true, title: "Oeps!", message: t("joinCircle.errors.notFound", "Geen zorgkring gevonden met deze code."), isSuccess: false });
 			} else {
+				console.error("Echte backend crash:", error);
 				setAlertConfig({ visible: true, title: "Oeps!", message: t("errors.default", "Er is een onbekende fout opgetreden. Probeer het opnieuw."), isSuccess: false });
 			}
 		} finally {
