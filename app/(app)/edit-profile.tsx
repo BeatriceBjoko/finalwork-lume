@@ -2,13 +2,14 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../../components/ui/Button";
 import CustomAlert from "../../components/ui/CustomAlert";
 import Input from "../../components/ui/Input";
 import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
+import { useSession } from "../../context";
 import { RELATION_KEYS } from "../../hooks/useCreateCircle";
 import { useEditProfile } from "../../hooks/useEditProfile";
 
@@ -27,6 +28,7 @@ const SectionHeader = ({ iconName, title }: { iconName: string; title: string })
 export default function EditProfileScreen() {
 	const { t } = useTranslation();
 	const router = useRouter();
+	const { signOut } = useSession();
 
 	const { name, setName, email, setEmail, relation, setRelation, password, setPassword, repeatPassword, setRepeatPassword, profileImage, pickImage, isDropdownOpen, setIsDropdownOpen, isLoading, handleSave, alertConfig, setAlertConfig } =
 		useEditProfile();
@@ -79,7 +81,8 @@ export default function EditProfileScreen() {
 
 					<View style={styles.section}>
 						<SectionHeader iconName="phone-outline" title={t("editProfile.sectionContact", "Contact")} />
-						<Input label={t("editProfile.emailLabel", "E-mail")} placeholder="jouw@email.com" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" variant="outline" />
+						<Input label={t("editProfile.emailLabel", "E-mail")} value={email} editable={false} variant="outline" style={{ backgroundColor: "#F5F5F5", color: "#888" }} />
+						<Text style={styles.emailNote}>{t("editProfile.emailLockedNote", "E-mailadres kan niet worden gewijzigd")}</Text>
 					</View>
 
 					<View style={styles.section}>
@@ -100,7 +103,7 @@ export default function EditProfileScreen() {
 					</View>
 
 					<View style={styles.footer}>
-						<Button title={isLoading ? "Laden..." : t("editProfile.saveBtn", "Profiel opslaan")} onPress={onSavePress} variant="primary" />
+						<Button title={isLoading ? t("common.loading", "Laden...") : t("editProfile.saveBtn", "Profiel opslaan")} onPress={onSavePress} variant="primary" />
 					</View>
 				</ScrollView>
 			</KeyboardAvoidingView>
@@ -125,22 +128,28 @@ export default function EditProfileScreen() {
 					</View>
 				</Pressable>
 			</Modal>
+
 			<CustomAlert
 				visible={alertConfig.visible}
-				title={alertConfig.title}
-				message={alertConfig.message}
-				onConfirm={() => {
+				title={alertConfig.title || ""}
+				message={alertConfig.message || ""}
+				confirmText="OK"
+				cancelText={alertConfig.title === t("editProfile.alerts.securityTitle") ? t("common.cancel") : ""}
+				onCancel={() => setAlertConfig({ ...alertConfig, visible: false })}
+				onConfirm={async () => {
+					const isSecurityAlert = alertConfig.title === t("editProfile.alerts.securityTitle");
+					const isSuccess = alertConfig.type === "success";
+
 					setAlertConfig({ ...alertConfig, visible: false });
 
-					if (alertConfig.type === "success") {
+					if (isSecurityAlert) {
+						await signOut();
+						return;
+					}
+					if (isSuccess) {
 						router.back();
 					}
-
-					if (alertConfig.title === t("createCircle.step1.photoPermissionTitle")) {
-						Linking.openSettings();
-					}
 				}}
-				confirmText="OK"
 			/>
 		</SafeAreaView>
 	);
@@ -148,16 +157,12 @@ export default function EditProfileScreen() {
 
 const styles = StyleSheet.create({
 	safeArea: { flex: 1, backgroundColor: COLORS.white },
-
 	backButtonContainer: { width: "100%", paddingHorizontal: 16, paddingTop: 10, zIndex: 10 },
 	backButton: { padding: 8, marginLeft: -8, alignSelf: "flex-start" },
-
 	scrollContent: { paddingHorizontal: 24, paddingTop: 10, paddingBottom: 60, alignItems: "center" },
-
 	titleRow: { flexDirection: "row", alignItems: "center", marginBottom: 32 },
 	titleText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary, zIndex: 2 },
 	highlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 12, paddingVertical: 2, borderRadius: 20, marginLeft: -6, zIndex: 1 },
-
 	photoContainer: { marginBottom: 24, alignItems: "center" },
 	photoGlow: { position: "relative", shadowColor: "#EFFC00", shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 8 },
 	photoBorder: { width: PHOTO_SIZE + 6, height: PHOTO_SIZE + 6, borderRadius: (PHOTO_SIZE + 6) / 2, borderWidth: 3, borderColor: "#EFFC00", justifyContent: "center", alignItems: "center" },
@@ -165,7 +170,6 @@ const styles = StyleSheet.create({
 	photo: { width: PHOTO_SIZE, height: PHOTO_SIZE },
 	initialsBox: { width: PHOTO_SIZE, height: PHOTO_SIZE, backgroundColor: "rgba(176, 248, 0, 0.2)", justifyContent: "center", alignItems: "center" },
 	photoInnerGlow: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(239, 252, 0, 0.12)" },
-
 	cameraBadge: {
 		position: "absolute",
 		bottom: 4,
@@ -184,7 +188,6 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: "rgba(35, 54, 0, 0.1)",
 	},
-
 	section: { width: "100%", marginBottom: 16 },
 	sectionHeader: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
 	sectionIconWrapper: {
@@ -197,7 +200,6 @@ const styles = StyleSheet.create({
 		marginRight: 12,
 	},
 	sectionTitle: { fontFamily: "BricolageMedium", fontSize: 18, color: COLORS.primary },
-
 	inputLabel: { ...TYPOGRAPHY.h4, marginBottom: 8 },
 	dropdownButton: {
 		flexDirection: "row",
@@ -210,13 +212,18 @@ const styles = StyleSheet.create({
 		paddingVertical: 14,
 		backgroundColor: "#FFFFFF",
 	},
+	emailNote: {
+		fontFamily: "InterRegular",
+		fontSize: 12,
+		color: "#666",
+		marginTop: 4,
+		marginLeft: 4,
+	},
 	dropdownButtonText: { fontFamily: "InterRegular", fontSize: 16, color: COLORS.primary },
-
 	modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.3)", justifyContent: "center", paddingHorizontal: 24 },
 	modalContent: { backgroundColor: "#FFF", borderRadius: 16, maxHeight: 400, paddingVertical: 10, elevation: 10 },
 	modalOption: { paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#F0F0F0" },
 	modalOptionText: { fontFamily: "InterRegular", fontSize: 16, color: COLORS.primary },
 	modalOptionTextActive: { fontFamily: "InterBold", color: "#6F9F00" },
-
 	footer: { width: "100%", marginTop: 10 },
 });

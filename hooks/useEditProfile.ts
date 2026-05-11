@@ -96,46 +96,46 @@ export function useEditProfile() {
 		blob.close();
 		return await getDownloadURL(fileRef);
 	};
+
 	const handleSave = async () => {
 		if (!user || !userData) return false;
 
 		if (password && password !== repeatPassword) {
 			setAlertConfig({
 				visible: true,
-				title: t("errors.default", "Fout"),
+				title: t("errors.errorTitle"),
 				message: t("editProfile.alerts.passwordMismatch"),
 				type: "error",
 			});
 			return false;
 		}
 
+		if (password && password.length < 6) {
+			setAlertConfig({
+				visible: true,
+				title: t("errors.errorTitle"),
+				message: t("errors.weakPassword"),
+				type: "error",
+			});
+			return false;
+		}
+
 		setIsLoading(true);
+		let wasPasswordChanged = false;
+
 		try {
 			let finalPhotoUrl = profileImage;
 
-			// Foto uploaden indien gewijzigd
 			if (profileImage && (profileImage.startsWith("file://") || profileImage.startsWith("content://"))) {
 				finalPhotoUrl = await uploadImageAsync(profileImage);
-			}
-
-			// 3. Update Firebase Auth & Firestore
-			await updateProfile(user, { displayName: name, photoURL: finalPhotoUrl });
-
-			const userRef = doc(db, "users", user.uid);
-			await updateDoc(userRef, { name: name, photoUrl: finalPhotoUrl });
-
-			if (userData.careCircleId) {
-				const memberRef = doc(db, "careCircleMembers", `${userData.careCircleId}_${user.uid}`);
-				await updateDoc(memberRef, {
-					relationshipToCareReceiver: relation,
-					photoUrl: finalPhotoUrl,
-					name: name,
-				});
 			}
 
 			if (password) {
 				try {
 					await updatePassword(user, password);
+					wasPasswordChanged = true;
+					setPassword("");
+					setRepeatPassword("");
 				} catch (pwError: any) {
 					if (pwError.code === "auth/requires-recent-login") {
 						setAlertConfig({
@@ -151,20 +151,33 @@ export function useEditProfile() {
 				}
 			}
 
+			// De rest van de updates (Database & Auth Profile)
+			const userRef = doc(db, "users", user.uid);
+			await updateDoc(userRef, { name: name, photoUrl: finalPhotoUrl });
+
+			if (userData.careCircleId) {
+				const memberRef = doc(db, "careCircleMembers", `${userData.careCircleId}_${user.uid}`);
+				await updateDoc(memberRef, {
+					relationshipToCareReceiver: relation,
+					photoUrl: finalPhotoUrl,
+					name: name,
+				});
+			}
+			await updateProfile(user, { displayName: name, photoURL: finalPhotoUrl });
+
 			setAlertConfig({
 				visible: true,
 				title: t("editProfile.alerts.successTitle"),
-				message: t("editProfile.alerts.successMessage"),
+				message: wasPasswordChanged ? t("editProfile.alerts.successWithPassword", "Je profiel en wachtwoord zijn succesvol bijgewerkt!") : t("editProfile.alerts.successMessage"),
 				type: "success",
 			});
 
 			return true;
-		} catch (error) {
-			console.error("Opslaan mislukt:", error);
+		} catch (error: any) {
 			setAlertConfig({
 				visible: true,
 				title: t("errors.default"),
-				message: t("errors.default"),
+				message: error.message || t("errors.default"),
 				type: "error",
 			});
 			return false;
@@ -172,7 +185,6 @@ export function useEditProfile() {
 			setIsLoading(false);
 		}
 	};
-
 	return {
 		name,
 		setName,
