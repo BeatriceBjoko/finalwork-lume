@@ -2,10 +2,11 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../../components/ui/Button";
+import CustomAlert from "../../components/ui/CustomAlert";
 import Input from "../../components/ui/Input";
 import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
 import { RELATION_KEYS } from "../../hooks/useCreateCircle";
@@ -27,13 +28,11 @@ export default function EditProfileScreen() {
 	const { t } = useTranslation();
 	const router = useRouter();
 
-	const { name, setName, email, setEmail, relation, setRelation, password, setPassword, repeatPassword, setRepeatPassword, profileImage, pickImage, isDropdownOpen, setIsDropdownOpen, isLoading, handleSave } = useEditProfile();
+	const { name, setName, email, setEmail, relation, setRelation, password, setPassword, repeatPassword, setRepeatPassword, profileImage, pickImage, isDropdownOpen, setIsDropdownOpen, isLoading, handleSave, alertConfig, setAlertConfig } =
+		useEditProfile();
 
 	const onSavePress = async () => {
-		const success = await handleSave();
-		if (success) {
-			router.back();
-		}
+		await handleSave();
 	};
 
 	return (
@@ -126,6 +125,23 @@ export default function EditProfileScreen() {
 					</View>
 				</Pressable>
 			</Modal>
+			<CustomAlert
+				visible={alertConfig.visible}
+				title={alertConfig.title}
+				message={alertConfig.message}
+				onConfirm={() => {
+					setAlertConfig({ ...alertConfig, visible: false });
+
+					if (alertConfig.type === "success") {
+						router.back();
+					}
+
+					if (alertConfig.title === t("createCircle.step1.photoPermissionTitle")) {
+						Linking.openSettings();
+					}
+				}}
+				confirmText="OK"
+			/>
 		</SafeAreaView>
 	);
 }

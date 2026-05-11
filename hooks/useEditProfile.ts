@@ -1,23 +1,37 @@
 import * as ImagePicker from "expo-image-picker";
-import { doc, getDoc } from "firebase/firestore";
+import { updatePassword, updateProfile } from "firebase/auth";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
-import { db } from "../lib/firebase-config";
+import { db, storage } from "../lib/firebase-config";
 
 export function useEditProfile() {
 	const { user, userData } = useSession();
+	const { t } = useTranslation();
 
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [relation, setRelation] = useState("");
 	const [password, setPassword] = useState("");
 	const [repeatPassword, setRepeatPassword] = useState("");
-
 	const [profileImage, setProfileImage] = useState<string | null>(null);
 
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+
+	const [alertConfig, setAlertConfig] = useState<{
+		visible: boolean;
+		title: string;
+		message: string;
+		type: "success" | "error" | "info";
+	}>({
+		visible: false,
+		title: "",
+		message: "",
+		type: "info",
+	});
 
 	useEffect(() => {
 		if (user && userData) {
@@ -46,34 +60,113 @@ export function useEditProfile() {
 	}, [user, userData]);
 
 	const pickImage = async () => {
-		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status !== "granted") {
-			Alert.alert("Toegang nodig", "We hebben toegang tot je foto's nodig.");
-			return;
-		}
+		try {
+			let result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ["images"],
+				allowsEditing: true,
+				aspect: [1, 1],
+				quality: 0.5,
+			});
 
-		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ["images"],
-			allowsEditing: true,
-			aspect: [1, 1],
-			quality: 0.5,
-		});
-
-		if (!result.canceled) {
-			setProfileImage(result.assets[0].uri);
+			if (!result.canceled) {
+				setProfileImage(result.assets[0].uri);
+			}
+		} catch (error) {
+			setAlertConfig({
+				visible: true,
+				title: t("createCircle.step1.photoPermissionTitle"),
+				message: t("createCircle.step1.photoPermissionMessage"),
+				type: "info",
+			});
 		}
 	};
 
+	const uploadImageAsync = async (uri: string) => {
+		const blob: any = await new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.onload = () => resolve(xhr.response);
+			xhr.onerror = () => reject(new TypeError("Network request failed"));
+			xhr.responseType = "blob";
+			xhr.open("GET", uri, true);
+			xhr.send(null);
+		});
+
+		const fileRef = ref(storage, `profilePhotos/${user?.uid}_${Date.now()}`);
+		await uploadBytes(fileRef, blob);
+		blob.close();
+		return await getDownloadURL(fileRef);
+	};
 	const handleSave = async () => {
+		if (!user || !userData) return false;
+
+		if (password && password !== repeatPassword) {
+			setAlertConfig({
+				visible: true,
+				title: t("errors.default", "Fout"),
+				message: t("editProfile.alerts.passwordMismatch"),
+				type: "error",
+			});
+			return false;
+		}
+
 		setIsLoading(true);
 		try {
-			console.log("Opslaan data:", { name, email, relation, password, profileImage });
+			let finalPhotoUrl = profileImage;
 
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			// Foto uploaden indien gewijzigd
+			if (profileImage && (profileImage.startsWith("file://") || profileImage.startsWith("content://"))) {
+				finalPhotoUrl = await uploadImageAsync(profileImage);
+			}
+
+			// 3. Update Firebase Auth & Firestore
+			await updateProfile(user, { displayName: name, photoURL: finalPhotoUrl });
+
+			const userRef = doc(db, "users", user.uid);
+			await updateDoc(userRef, { name: name, photoUrl: finalPhotoUrl });
+
+			if (userData.careCircleId) {
+				const memberRef = doc(db, "careCircleMembers", `${userData.careCircleId}_${user.uid}`);
+				await updateDoc(memberRef, {
+					relationshipToCareReceiver: relation,
+					photoUrl: finalPhotoUrl,
+					name: name,
+				});
+			}
+
+			if (password) {
+				try {
+					await updatePassword(user, password);
+				} catch (pwError: any) {
+					if (pwError.code === "auth/requires-recent-login") {
+						setAlertConfig({
+							visible: true,
+							title: t("editProfile.alerts.securityTitle"),
+							message: t("editProfile.alerts.reauthRequired"),
+							type: "info",
+						});
+						setIsLoading(false);
+						return false;
+					}
+					throw pwError;
+				}
+			}
+
+			setAlertConfig({
+				visible: true,
+				title: t("editProfile.alerts.successTitle"),
+				message: t("editProfile.alerts.successMessage"),
+				type: "success",
+			});
 
 			return true;
 		} catch (error) {
-			console.error("Fout bij opslaan:", error);
+			console.error("Opslaan mislukt:", error);
+			setAlertConfig({
+				visible: true,
+				title: t("errors.default"),
+				message: t("errors.default"),
+				type: "error",
+			});
 			return false;
 		} finally {
 			setIsLoading(false);
@@ -97,5 +190,7 @@ export function useEditProfile() {
 		setIsDropdownOpen,
 		isLoading,
 		handleSave,
+		alertConfig,
+		setAlertConfig,
 	};
 }

@@ -181,6 +181,13 @@
 		"sectionSettings": "Instellingen",
 		"passwordLabel": "Wachtwoord veranderen",
 		"repeatPasswordLabel": "Herhaal wachtwoord",
-		"saveBtn": "Profiel opslaan"
+		"saveBtn": "Profiel opslaan",
+		"alerts": {
+			"successTitle": "Profiel bijgewerkt",
+			"successMessage": "Je wijzigingen zijn succesvol opgeslagen!",
+			"passwordMismatch": "De wachtwoorden komen niet overeen.",
+			"securityTitle": "Beveiliging",
+			"reauthRequired": "Log opnieuw in om je wachtwoord te wijzigen."
+		}
 	}
 }

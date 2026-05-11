@@ -181,6 +181,13 @@
 		"sectionSettings": "Paramètres",
 		"passwordLabel": "Changer le mot de passe",
 		"repeatPasswordLabel": "Répéter le mot de passe",
-		"saveBtn": "Enregistrer le profil"
+		"saveBtn": "Enregistrer le profil",
+		"alerts": {
+			"successTitle": "Profil mis à jour",
+			"successMessage": "Vos modifications ont été enregistrées avec succès !",
+			"passwordMismatch": "Les mots de passe ne correspondent pas.",
+			"securityTitle": "Sécurité",
+			"reauthRequired": "Veuillez vous reconnecter pour modifier votre mot de passe."
+		}
 	}
 }
