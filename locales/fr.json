@@ -168,5 +168,19 @@
 		"logout": "Se déconnecter",
 		"roleAdmin": "administrateur",
 		"roleMember": "membre"
+	},
+	"editProfile": {
+		"titlePart1": "Modifier mon",
+		"titlePart2": "profil",
+		"sectionProfile": "Profil",
+		"nameLabel": "Prénom + nom",
+		"sectionContact": "Contact",
+		"emailLabel": "E-mail",
+		"sectionRole": "Rôle",
+		"relationLabel": "Relation avec le bénéficiaire",
+		"sectionSettings": "Paramètres",
+		"passwordLabel": "Changer le mot de passe",
+		"repeatPasswordLabel": "Répéter le mot de passe",
+		"saveBtn": "Enregistrer le profil"
 	}
 }

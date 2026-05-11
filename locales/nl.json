@@ -168,5 +168,19 @@
 		"logout": "Uitloggen",
 		"roleAdmin": "beheerder",
 		"roleMember": "lid"
+	},
+	"editProfile": {
+		"titlePart1": "Pas mijn",
+		"titlePart2": "profiel aan",
+		"sectionProfile": "Profiel",
+		"nameLabel": "Voornaam + naam",
+		"sectionContact": "Contact",
+		"emailLabel": "E-mail",
+		"sectionRole": "Zorgrol",
+		"relationLabel": "Relatie tot zorgontvanger",
+		"sectionSettings": "Instellingen",
+		"passwordLabel": "Wachtwoord veranderen",
+		"repeatPasswordLabel": "Herhaal wachtwoord",
+		"saveBtn": "Profiel opslaan"
 	}
 }
