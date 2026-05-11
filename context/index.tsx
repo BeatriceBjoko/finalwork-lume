@@ -9,6 +9,10 @@ interface UserData {
 	onboardingCompleted?: boolean;
 	careCircleId?: string;
 	role?: string;
+	name?: string;
+	email?: string;
+	photoUrl?: string;
+	language?: string;
 }
 
 interface AuthContextType {
