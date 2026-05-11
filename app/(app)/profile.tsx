@@ -1,9 +1,9 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import Button from "../../components/ui/Button";
 import { COLORS, FONTS } from "../../constants/theme";
 import { useProfile } from "../../hooks/useProfile";
@@ -33,6 +33,7 @@ function MenuItem({ iconName, label, onPress, iconColor = COLORS.iconColor, icon
 
 export default function ProfileScreen() {
 	const { t } = useTranslation();
+	const router = useRouter();
 	const { displayName, roleDisplay, relationDisplay, profileImage, getInitials, handleLogout, isLangModalVisible, setLangModalVisible, changeLanguage, currentLanguage } = useProfile();
 
 	return (
@@ -69,7 +70,7 @@ export default function ProfileScreen() {
 					<Text style={styles.relationText}>{relationDisplay}</Text>
 
 					<View style={styles.editBtn}>
-						<Button title={t("profile.editProfile", "Profiel bewerken")} onPress={() => {}} variant="primary" />
+						<Button title={t("profile.editProfile", "Profiel bewerken")} onPress={() => router.push("/edit-profile")} variant="primary" />
 					</View>
 				</View>
 
