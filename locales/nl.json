@@ -165,6 +165,8 @@
 		"circleOverview": "Overzicht van de kring",
 		"receiverInfo": "Zorgontvanger informatie",
 		"emergencyContacts": "Belangrijke contactpersonen",
-		"logout": "Uitloggen"
+		"logout": "Uitloggen",
+		"roleAdmin": "beheerder",
+		"roleMember": "lid"
 	}
 }

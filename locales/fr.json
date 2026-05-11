@@ -165,6 +165,8 @@
 		"circleOverview": "Aperçu du cercle",
 		"receiverInfo": "Informations sur le patient",
 		"emergencyContacts": "Contacts d'urgence",
-		"logout": "Se déconnecter"
+		"logout": "Se déconnecter",
+		"roleAdmin": "administrateur",
+		"roleMember": "membre"
 	}
 }

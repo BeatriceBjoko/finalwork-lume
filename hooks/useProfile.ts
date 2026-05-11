@@ -63,13 +63,17 @@ export function useProfile() {
 	};
 
 	const displayName = user?.displayName || userData?.name || "Gebruiker";
-	const roleDisplay = circleRole === "admin" ? "beheerder" : "lid";
+
+	const { t } = useTranslation();
+	const roleDisplay = circleRole === "admin" ? t("profile.roleAdmin", "beheerder") : t("profile.roleMember", "lid");
+
+	const relationDisplay = relation ? t(`createCircle.relations.${relation}`, relation) : t("profile.unknownRelation", "Onbekend");
 	const profileImage = memberPhoto || userData?.photoUrl || null;
 
 	return {
 		displayName,
 		roleDisplay,
-		relation,
+		relationDisplay,
 		profileImage,
 		getInitials,
 		handleLogout,

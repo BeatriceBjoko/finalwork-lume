@@ -33,7 +33,7 @@ function MenuItem({ iconName, label, onPress, iconColor = COLORS.iconColor, icon
 
 export default function ProfileScreen() {
 	const { t } = useTranslation();
-	const { displayName, roleDisplay, relation, profileImage, getInitials, handleLogout, isLangModalVisible, setLangModalVisible, changeLanguage, currentLanguage } = useProfile();
+	const { displayName, roleDisplay, relationDisplay, profileImage, getInitials, handleLogout, isLangModalVisible, setLangModalVisible, changeLanguage, currentLanguage } = useProfile();
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -66,7 +66,7 @@ export default function ProfileScreen() {
 						{roleDisplay ? ` (${roleDisplay})` : ""}
 					</Text>
 
-					<Text style={styles.relationText}>{relation ? relation.charAt(0).toUpperCase() + relation.slice(1) : t("profile.unknownRelation", "Onbekend")}</Text>
+					<Text style={styles.relationText}>{relationDisplay}</Text>
 
 					<View style={styles.editBtn}>
 						<Button title={t("profile.editProfile", "Profiel bewerken")} onPress={() => {}} variant="primary" />
