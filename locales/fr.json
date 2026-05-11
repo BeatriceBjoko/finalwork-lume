@@ -154,5 +154,17 @@
 			"invalidCode": "Le code doit comporter exactement 6 caractères.",
 			"notFound": "Aucun cercle de soins trouvé avec ce code."
 		}
+	},
+	"profile": {
+		"titlePart1": "Profil",
+		"titlePart2": "& cercle",
+		"unknownRelation": "Inconnu",
+		"editProfile": "Modifier le profil",
+		"settings": "Paramètres",
+		"changeLanguage": "Changer de langue",
+		"circleOverview": "Aperçu du cercle",
+		"receiverInfo": "Informations sur le patient",
+		"emergencyContacts": "Contacts d'urgence",
+		"logout": "Se déconnecter"
 	}
 }

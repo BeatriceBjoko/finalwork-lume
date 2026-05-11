@@ -154,5 +154,17 @@
 			"invalidCode": "De code moet precies 6 tekens lang zijn.",
 			"notFound": "Geen zorgkring gevonden met deze code."
 		}
+	},
+	"profile": {
+		"titlePart1": "Profiel",
+		"titlePart2": "& kring",
+		"unknownRelation": "Onbekend",
+		"editProfile": "Profiel bewerken",
+		"settings": "Instellingen",
+		"changeLanguage": "Taal veranderen",
+		"circleOverview": "Overzicht van de kring",
+		"receiverInfo": "Zorgontvanger informatie",
+		"emergencyContacts": "Belangrijke contactpersonen",
+		"logout": "Uitloggen"
 	}
 }
