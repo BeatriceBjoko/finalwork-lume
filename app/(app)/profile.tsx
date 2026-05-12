@@ -81,7 +81,7 @@ export default function ProfileScreen() {
 
 							<MenuItem iconName="web" label={t("profile.changeLanguage", "Taal veranderen")} onPress={() => setLangModalVisible(true)} />
 							<MenuItem iconName="account-group-outline" label={t("profile.circleOverview", "Overzicht van de kring")} onPress={() => {}} />
-							<MenuItem iconName="account-heart-outline" label={t("profile.receiverInfo", "Zorgontvanger informatie")} onPress={() => {}} />
+							<MenuItem iconName="account-heart-outline" label={t("profile.receiverInfo", "Zorgontvanger informatie")} onPress={() => router.push("/receiver-profile")} />
 							<MenuItem iconName="phone-outline" label={t("profile.emergencyContacts", "Belangrijke contactpersonen")} onPress={() => {}} />
 
 							<View style={styles.logoutSeparator} />
