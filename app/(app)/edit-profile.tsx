@@ -90,7 +90,7 @@ export default function EditProfileScreen() {
 
 					<View style={styles.section}>
 						<SectionHeader iconName="phone-outline" title={t("editProfile.sectionContact", "Contact")} />
-						<Input label={t("editProfile.emailLabel", "E-mail")} value={email} editable={false} variant="outline" style={{ backgroundColor: "#F5F5F5", color: "#888" }} />
+						<Input label={t("editProfile.emailLabel", "E-mail")} value={email} editable={false} variant="outline" style={{ backgroundColor: "#F5F5F5" }} />
 						<Text style={styles.emailNote}>{t("editProfile.emailLockedNote", "E-mailadres kan niet worden gewijzigd")}</Text>
 					</View>
 

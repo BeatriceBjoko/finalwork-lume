@@ -1,16 +1,18 @@
 import { Feather } from "@expo/vector-icons";
-import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, TextInputProps, View } from "react-native";
+import React, { useRef, useState } from "react";
+import { Pressable, StyleProp, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from "react-native";
 import { COLORS, FONTS } from "../../constants/theme";
 
-interface InputProps extends TextInputProps {
+interface InputProps extends Omit<TextInputProps, "style"> {
 	label?: string;
 	variant?: "underline" | "outline";
 	isRequired?: boolean;
+	style?: StyleProp<ViewStyle>;
 }
 
-export default function Input({ label, secureTextEntry, variant = "underline", isRequired = false, ...props }: InputProps) {
+export default function Input({ label, secureTextEntry, variant = "underline", isRequired = false, style, ...props }: InputProps) {
 	const [isPasswordHidden, setIsPasswordHidden] = useState(secureTextEntry);
+	const inputRef = useRef<TextInput>(null);
 
 	return (
 		<View style={styles.container}>
@@ -19,19 +21,14 @@ export default function Input({ label, secureTextEntry, variant = "underline", i
 					{label} {isRequired && <Text style={{ color: "red" }}>*</Text>}
 				</Text>
 			)}
-			<View
-				style={[
-					styles.inputContainer,
-					variant === "outline" && styles.inputContainerOutline, // Wissel van stijl
-				]}
-			>
-				<TextInput style={styles.input} secureTextEntry={isPasswordHidden} placeholderTextColor={COLORS.inputPlaceholder} {...props} />
+			<Pressable onPress={() => inputRef.current?.focus()} style={[styles.inputContainer, variant === "outline" && styles.inputContainerOutline, style]}>
+				<TextInput ref={inputRef} style={styles.input} secureTextEntry={isPasswordHidden} placeholderTextColor={COLORS.inputPlaceholder} {...props} />
 				{secureTextEntry && (
 					<Pressable onPress={() => setIsPasswordHidden(!isPasswordHidden)} style={styles.icon}>
 						<Feather name={isPasswordHidden ? "eye-off" : "eye"} size={20} color={COLORS.iconColor} />
 					</Pressable>
 				)}
-			</View>
+			</Pressable>
 		</View>
 	);
 }
@@ -61,8 +58,8 @@ const styles = StyleSheet.create({
 		borderColor: COLORS.primary,
 		borderRadius: 12,
 		paddingHorizontal: 16,
-		paddingVertical: 16,
-		minHeight: 48,
+		paddingVertical: 14,
+		minHeight: 52,
 		backgroundColor: "#FFFFFF",
 	},
 	input: {
@@ -71,6 +68,7 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: COLORS.primary,
 		paddingVertical: 0,
+		height: "100%",
 	},
 	icon: { paddingLeft: 8 },
 });

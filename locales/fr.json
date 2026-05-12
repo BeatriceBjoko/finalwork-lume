@@ -197,5 +197,33 @@
 			"securityTitle": "Sécurité",
 			"reauthRequired": "Veuillez vous reconnecter pour modifier votre mot de passe."
 		}
+	},
+	"receiverProfile": {
+		"titlePart1": "Bénéficiaire",
+		"titlePart2": "aperçu",
+		"subtitle": "Informations sur votre proche",
+		"sectionPersonal": "Données personnelles",
+		"sectionMedical": "Informations médicales",
+		"helperMedical": "Ce sont des exemples. Appuyez sur le texte pour l'adapter à la situation du bénéficiaire.",
+		"nameLabel": "Nom",
+		"dobLabel": "Date de naissance",
+		"dobPlaceholder": "Choisir une date",
+		"hobbiesLabel": "Loisirs",
+		"hobbiesPlaceholder": "ex. Échecs...",
+		"addressLabel": "Adresse",
+		"addressPlaceholder": "ex. Rue de la Loi 10, Bruxelles",
+		"medicationTitle": "Médication",
+		"medicationPlaceholder": "ex. Metformine 500mg",
+		"allergiesTitle": "Allergies",
+		"allergiesPlaceholder": "ex. Pénicilline",
+		"diagnosesTitle": "Diagnostics",
+		"diagnosesPlaceholder": "ex. Diabète de type 2",
+		"gpVisitTitle": "Visite médicale",
+		"gpVisitPlaceholder": "ex. 15 mars 2026",
+		"saveBtn": "Enregistrer le profil",
+		"savingBtn": "Enregistrement...",
+		"savedSuccess": "Données enregistrées !",
+		"modalDateTitle": "Choisir la date de naissance",
+		"savedSuccessMessage": "Les modifications du profil ont été enregistrées avec succès."
 	}
 }

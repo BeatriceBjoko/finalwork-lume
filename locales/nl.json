@@ -197,5 +197,33 @@
 			"securityTitle": "Beveiliging",
 			"reauthRequired": "Log opnieuw in om je wachtwoord te wijzigen."
 		}
+	},
+	"receiverProfile": {
+		"titlePart1": "Zorgontvanger",
+		"titlePart2": "overzicht",
+		"subtitle": "Informatie over je dierbare",
+		"sectionPersonal": "Persoonlijke gegevens",
+		"sectionMedical": "Medische informatie",
+		"helperMedical": "Dit zijn voorbeelden. Tik op de tekst om deze aan te passen naar de situatie van de zorgontvanger.",
+		"nameLabel": "Naam",
+		"dobLabel": "Geboortedatum",
+		"dobPlaceholder": "Kies datum",
+		"hobbiesLabel": "Hobby's",
+		"hobbiesPlaceholder": "bv. Schaken...",
+		"addressLabel": "Adres",
+		"addressPlaceholder": "bv. Hofstraat 12, Gent",
+		"medicationTitle": "Medicatie",
+		"medicationPlaceholder": "bv. Metformine 500mg",
+		"allergiesTitle": "Allergieën",
+		"allergiesPlaceholder": "bv. Penicilline",
+		"diagnosesTitle": "Diagnoses",
+		"diagnosesPlaceholder": "bv. Diabetes type 2",
+		"gpVisitTitle": "Huisartsbezoek",
+		"gpVisitPlaceholder": "bv. 15 maart 2026",
+		"saveBtn": "Profiel opslaan",
+		"savingBtn": "Bezig met opslaan...",
+		"savedSuccess": "Gegevens opgeslagen!",
+		"modalDateTitle": "Kies geboortedatum",
+		"savedSuccessMessage": "De aanpassingen aan het profiel zijn succesvol opgeslagen."
 	}
 }

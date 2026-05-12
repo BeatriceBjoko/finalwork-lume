@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
-import { collection, doc, getDocs, query, setDoc, where, writeBatch } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore"; // updateDoc toegevoegd!
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "./firebase-config";
 
@@ -94,6 +94,13 @@ export async function createCareCircleInDB(params: CreateCircleParams): Promise<
 		careReceiver: {
 			name: params.receiverName,
 			photoUrl: uploadedPhotoUrl,
+			dob: null,
+			hobbies: "",
+			address: "",
+			medication: "",
+			allergies: "",
+			diagnoses: "",
+			gpVisit: "",
 		},
 		createdBy: currentUserId,
 		inviteCode: params.inviteCode,
@@ -201,4 +208,11 @@ export async function joinCareCircleInDB(params: JoinCircleParams): Promise<void
 
 	// Alles tegelijk opslaan!
 	await batch.commit();
+}
+
+export async function updateCareReceiverInDB(circleId: string, data: any): Promise<void> {
+	const circleRef = doc(db, "careCircles", circleId);
+	await updateDoc(circleRef, {
+		careReceiver: data,
+	});
 }
