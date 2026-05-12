@@ -30,11 +30,20 @@ export default function EditProfileScreen() {
 	const router = useRouter();
 	const { signOut } = useSession();
 
-	const { name, setName, email, setEmail, relation, setRelation, password, setPassword, repeatPassword, setRepeatPassword, profileImage, pickImage, isDropdownOpen, setIsDropdownOpen, isLoading, handleSave, alertConfig, setAlertConfig } =
-		useEditProfile();
+	const { name, setName, email, relation, setRelation, password, setPassword, repeatPassword, setRepeatPassword, profileImage, pickImage, isDropdownOpen, setIsDropdownOpen, isLoading, handleSave, alertConfig, setAlertConfig } = useEditProfile();
 
 	const onSavePress = async () => {
 		await handleSave();
+	};
+
+	const getInitials = (userName: string) => {
+		if (!userName) return "?";
+		return userName
+			.split(" ")
+			.map((n) => n[0])
+			.join("")
+			.toUpperCase()
+			.slice(0, 2);
 	};
 
 	return (
@@ -62,7 +71,7 @@ export default function EditProfileScreen() {
 										<Image source={{ uri: profileImage }} style={styles.photo} />
 									) : (
 										<View style={styles.initialsBox}>
-											<MaterialCommunityIcons name="account" size={60} color={COLORS.primary} />
+											<Text style={styles.initialsText}>{getInitials(name)}</Text>
 										</View>
 									)}
 									<View style={styles.photoInnerGlow} pointerEvents="none" />
@@ -168,7 +177,8 @@ const styles = StyleSheet.create({
 	photoBorder: { width: PHOTO_SIZE + 6, height: PHOTO_SIZE + 6, borderRadius: (PHOTO_SIZE + 6) / 2, borderWidth: 3, borderColor: "#EFFC00", justifyContent: "center", alignItems: "center" },
 	photoClip: { width: PHOTO_SIZE, height: PHOTO_SIZE, borderRadius: PHOTO_SIZE / 2, overflow: "hidden", position: "relative" },
 	photo: { width: PHOTO_SIZE, height: PHOTO_SIZE },
-	initialsBox: { width: PHOTO_SIZE, height: PHOTO_SIZE, backgroundColor: "rgba(176, 248, 0, 0.2)", justifyContent: "center", alignItems: "center" },
+	initialsBox: { width: PHOTO_SIZE, height: PHOTO_SIZE, backgroundColor: COLORS.accent, justifyContent: "center", alignItems: "center" },
+	initialsText: { fontFamily: FONTS.heading, fontSize: 42, color: COLORS.primary },
 	photoInnerGlow: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(239, 252, 0, 0.12)" },
 	cameraBadge: {
 		position: "absolute",
