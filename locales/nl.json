@@ -260,5 +260,13 @@
 			"addressGent3": "Sportweg 2\n9000 Gent",
 			"addressMobile": "Mobiele diensten\nRegio Gent"
 		}
+	},
+	"circleOverview": {
+		"titlePart1": "Mijn ",
+		"titlePart2": "kring",
+		"subtitle": "Familie, vrienden en helpers die voor je klaarstaan.",
+		"templateMessage": "Dit is een voorbeeld van hoe je kring eruit zal zien. Nodig mensen uit of verwijder ze om je eigen kring te maken!",
+		"inviteBtn": "Persoon uitnodigen",
+		"inviteInfo": "Uitgenodigden ontvangen een veilige uitnodiging"
 	}
 }

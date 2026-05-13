@@ -260,5 +260,13 @@
 			"addressGent3": "Chemin des Sports 2\n9000 Gand",
 			"addressMobile": "Services mobiles\nRégion de Gand"
 		}
+	},
+	"circleOverview": {
+		"titlePart1": "Mon ",
+		"titlePart2": "cercle",
+		"subtitle": "Famille, amis et aidants prêts à vous aider.",
+		"templateMessage": "Ceci est un exemple de ce à quoi ressemblera votre cercle. Invitez ou supprimez des personnes pour créer votre propre cercle !",
+		"inviteBtn": "Inviter une personne",
+		"inviteInfo": "Les invités reçoivent une invitation sécurisée"
 	}
 }
