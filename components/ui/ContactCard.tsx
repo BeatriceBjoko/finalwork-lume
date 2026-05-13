@@ -25,7 +25,6 @@ interface ContactCardProps {
 	onDelete?: (id: string) => void;
 }
 
-// 2. component met react meme voor performance
 const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, cardHeight, isFocused, onFocus, onEdit, onDelete }) => {
 	const SKIA_PADDING = 30;
 	const isStacked = index > 0;
@@ -53,6 +52,7 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 
 	const handleCardPress = () => {
 		setMenuVisible(false);
+
 		if (!isFocused) {
 			onFocus();
 		} else {
@@ -79,11 +79,11 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 
 	const cardClipPath = useMemo(() => rrect(rect(0, 0, cardWidth, cardHeight), 24, 24), [cardWidth, cardHeight]);
 
-	const renderSkiaBackground = () => (
+	const SkiaBackground = () => (
 		<Canvas style={{ position: "absolute", top: -SKIA_PADDING, left: -SKIA_PADDING, width: cardWidth + SKIA_PADDING * 2, height: cardHeight + SKIA_PADDING * 2 }} pointerEvents="none">
 			<Group transform={[{ translateX: SKIA_PADDING }, { translateY: SKIA_PADDING }]}>
 				<Group clip={cardClipPath}>
-					<RoundedRect rect={cardClipPath} color="rgba(255, 255, 255, 0.85)" />
+					<RoundedRect rect={cardClipPath} color="rgba(255, 255, 255, 0.90)" />
 					<Circle cx={cardWidth * 0.85} cy={10} r={65} color={contact.blob1}>
 						<BlurMask blur={40} style="normal" />
 					</Circle>
@@ -102,12 +102,20 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 	);
 
 	return (
-		<Animated.View style={[styles.cardWrapper, { marginTop: isStacked ? -60 : 0, zIndex: isFocused ? 100 : index, transform: [{ translateY }] }]}>
-			<View style={[styles.shadowBase, isFocused && styles.shadowBaseFocused]} />
-
+		<Animated.View
+			style={[
+				styles.cardWrapper,
+				{
+					marginTop: isStacked ? -60 : 0,
+					zIndex: isFocused ? 100 : index,
+					transform: [{ translateY }],
+				},
+			]}
+		>
 			<Animated.View style={[styles.cardFace, { transform: [{ rotateY: frontRotateY }] }]}>
+				<View style={[styles.shadowBase, isFocused && styles.shadowBaseFocused]} />
 				<Pressable style={StyleSheet.absoluteFill} onPress={handleCardPress} />
-				{renderSkiaBackground()}
+				<SkiaBackground />
 
 				<View style={styles.cardContent} pointerEvents="box-none">
 					<View style={styles.cardTopRow} pointerEvents="box-none">
@@ -166,8 +174,9 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 			</Animated.View>
 
 			<Animated.View style={[styles.cardFace, styles.cardBack, { transform: [{ rotateY: backRotateY }] }]} pointerEvents={isFlipped ? "auto" : "none"}>
+				<View style={[styles.shadowBase, isFocused && styles.shadowBaseFocused]} />
 				<Pressable style={{ flex: 1, justifyContent: "center", alignItems: "center" }} onPress={handleCardPress}>
-					{renderSkiaBackground()}
+					<SkiaBackground />
 					<View style={styles.cardContentBack} pointerEvents="none">
 						<Ionicons name="location" size={32} color="#233600" style={{ marginBottom: 8 }} />
 						<Text style={styles.backTitle}>Adresgegevens</Text>
@@ -183,13 +192,27 @@ const styles = StyleSheet.create({
 	cardWrapper: { width: "100%", height: 140, position: "relative" },
 	cardFace: { width: "100%", height: "100%", position: "absolute", backfaceVisibility: "hidden" },
 	cardBack: {},
-	shadowBase: { ...StyleSheet.absoluteFillObject, backgroundColor: "white", borderRadius: 24, shadowColor: "#233600", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 8 },
-	shadowBaseFocused: { shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.12, shadowRadius: 24, elevation: 16 },
+	shadowBase: {
+		...StyleSheet.absoluteFillObject,
+		backgroundColor: "white",
+		borderRadius: 24,
+		shadowColor: "#233600",
+		shadowOffset: { width: 0, height: 6 },
+		shadowOpacity: 0.1,
+		shadowRadius: 10,
+		elevation: 6,
+	},
+	shadowBaseFocused: {
+		shadowOffset: { width: 0, height: 12 },
+		shadowOpacity: 0.15,
+		shadowRadius: 20,
+		elevation: 12,
+	},
 	cardContent: { flex: 1, padding: 20, justifyContent: "space-between", zIndex: 2 },
 	cardTopRow: { flexDirection: "row", alignItems: "center" },
 	avatarContainer: { marginRight: 16 },
-	dummyAvatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: "rgba(255, 255, 255, 0.7)", justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "rgba(255, 255, 255, 0.9)" },
-	avatar: { width: 50, height: 50, borderRadius: 25 },
+	dummyAvatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: "rgba(255, 255, 255, 0.7)", justifyContent: "center", alignItems: "center", borderWidth: 2, borderColor: "rgba(255, 179, 0, 0.35)" },
+	avatar: { width: 50, height: 50, borderRadius: 25, borderWidth: 2, borderColor: "rgba(255, 180, 0, 0.7)" },
 	textContainer: { flex: 1 },
 	contactName: { fontFamily: "BricolageMedium", fontSize: 18, color: "#233600" },
 	contactRole: { fontFamily: "InterRegular", fontSize: 14, color: "#475569", marginTop: 2 },

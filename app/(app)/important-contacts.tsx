@@ -7,7 +7,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "../../components/ui/Button";
 import ContactCard, { Contact } from "../../components/ui/ContactCard";
 
-// Mock Data erna firebase
 const INITIAL_CONTACTS: Contact[] = [
 	{
 		id: "1",
@@ -26,8 +25,8 @@ const INITIAL_CONTACTS: Contact[] = [
 		phone: "09 234 56 78",
 		photo: null,
 		address: "Zonnelaan 88\n9000 Gent",
-		blob1: "rgba(160, 220, 140, 0.35)",
-		blob2: "rgba(120, 190, 100, 0.25)",
+		blob1: "rgba(255, 100, 200, 0.25)",
+		blob2: "rgba(150, 50, 255, 0.15)",
 	},
 	{
 		id: "3",
@@ -36,8 +35,8 @@ const INITIAL_CONTACTS: Contact[] = [
 		phone: "0488 99 88 77",
 		photo: null,
 		address: "Sportweg 2\n9000 Gent",
-		blob1: "rgba(255, 100, 200, 0.25)",
-		blob2: "rgba(150, 50, 255, 0.15)",
+		blob1: "rgba(239, 252, 0, 0.25)",
+		blob2: "rgba(197, 207, 0, 0.15)",
 	},
 	{
 		id: "4",
@@ -62,7 +61,6 @@ export default function ImportantContactsScreen() {
 
 	const handleEditContact = (id: string) => {
 		console.log("Navigeer naar edit formulier voor ID:", id);
-		// router.push(`/edit-contact/${id}`);
 	};
 
 	const handleDeleteContact = (id: string) => {
