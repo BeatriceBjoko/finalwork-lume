@@ -225,5 +225,23 @@
 		"savedSuccess": "Gegevens opgeslagen!",
 		"modalDateTitle": "Kies geboortedatum",
 		"savedSuccessMessage": "De aanpassingen aan het profiel zijn succesvol opgeslagen."
+	},
+	"importantContacts": {
+		"title": "Belangrijke contactpersonen",
+		"subtitle": "Lijst met contactkaarten",
+		"loadingBtn": "Laden...",
+		"templateMessage": "Dit zijn voorbeeldkaarten. Pas ze aan of verwijder ze, en klik daarna op 'Wijzigingen opslaan' om je eigen lijst te maken.",
+		"deleteTitle": "Contact verwijderen",
+		"deleteMessage": "Weet je zeker dat je dit contact wil verwijderen?",
+		"saveSuccessTitle": "Opgeslagen",
+		"saveSuccessMessage": "Je belangrijke contacten zijn succesvol opgeslagen!",
+		"addTitle": "Contact toevoegen",
+		"editTitle": "Contact bewerken",
+		"nameLabel": "Naam",
+		"roleLabel": "Rol (bv. Huisarts)",
+		"phoneLabel": "Telefoonnummer",
+		"addressLabel": "Adres",
+		"cancelBtn": "Annuleren",
+		"saveBtn": "Opslaan"
 	}
 }

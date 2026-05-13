@@ -225,5 +225,23 @@
 		"savedSuccess": "Données enregistrées !",
 		"modalDateTitle": "Choisir la date de naissance",
 		"savedSuccessMessage": "Les modifications du profil ont été enregistrées avec succès."
+	},
+	"importantContacts": {
+		"title": "Contacts importants",
+		"subtitle": "Liste des cartes de contact",
+		"loadingBtn": "Chargement...",
+		"templateMessage": "Ce sont des cartes d'exemple. Modifiez-les ou supprimez-les, puis cliquez sur 'Enregistrer les modifications' pour créer votre propre liste.",
+		"deleteTitle": "Supprimer le contact",
+		"deleteMessage": "Êtes-vous sûr de vouloir supprimer ce contact ?",
+		"saveSuccessTitle": "Enregistré",
+		"saveSuccessMessage": "Vos contacts importants ont été enregistrés avec succès !",
+		"addTitle": "Ajouter un contact",
+		"editTitle": "Modifier le contact",
+		"nameLabel": "Nom",
+		"roleLabel": "Rôle (ex. Médecin traitant)",
+		"phoneLabel": "Numéro de téléphone",
+		"addressLabel": "Adresse",
+		"cancelBtn": "Annuler",
+		"saveBtn": "Enregistrer"
 	}
 }
