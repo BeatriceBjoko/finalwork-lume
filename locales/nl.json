@@ -242,6 +242,23 @@
 		"phoneLabel": "Telefoonnummer",
 		"addressLabel": "Adres",
 		"cancelBtn": "Annuleren",
-		"saveBtn": "Opslaan"
+		"saveBtn": "Opslaan",
+		"editAction": "Bewerken",
+		"deleteAction": "Verwijderen",
+		"addressDetails": "Adresgegevens",
+		"dummyData": {
+			"docName": "Dr. Peeters",
+			"docRole": "Huisarts",
+			"pharmName": "Apotheek Voorzorg",
+			"pharmRole": "Apotheker",
+			"physioName": "Kine De Smet",
+			"physioRole": "Kinesist",
+			"nurseName": "Thuiszorg Rita",
+			"nurseRole": "Verpleegkundige",
+			"addressGent1": "Kerkstraat 14\n9000 Gent",
+			"addressGent2": "Zonnelaan 88\n9000 Gent",
+			"addressGent3": "Sportweg 2\n9000 Gent",
+			"addressMobile": "Mobiele diensten\nRegio Gent"
+		}
 	}
 }

@@ -242,6 +242,23 @@
 		"phoneLabel": "Numéro de téléphone",
 		"addressLabel": "Adresse",
 		"cancelBtn": "Annuler",
-		"saveBtn": "Enregistrer"
+		"saveBtn": "Enregistrer",
+		"editAction": "Modifier",
+		"deleteAction": "Supprimer",
+		"addressDetails": "Coordonnées",
+		"dummyData": {
+			"docName": "Dr. Peeters",
+			"docRole": "Médecin traitant",
+			"pharmName": "Pharmacie Voorzorg",
+			"pharmRole": "Pharmacien",
+			"physioName": "Kiné De Smet",
+			"physioRole": "Kinésithérapeute",
+			"nurseName": "Soins à domicile Rita",
+			"nurseRole": "Infirmière",
+			"addressGent1": "Rue de l'Église 14\n9000 Gand",
+			"addressGent2": "Avenue du Soleil 88\n9000 Gand",
+			"addressGent3": "Chemin des Sports 2\n9000 Gand",
+			"addressMobile": "Services mobiles\nRégion de Gand"
+		}
 	}
 }

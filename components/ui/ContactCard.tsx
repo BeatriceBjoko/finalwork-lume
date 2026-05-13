@@ -1,6 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurMask, Canvas, Circle, Group, RoundedRect, Shadow, rect, rrect } from "@shopify/react-native-skia";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Animated, Image, Linking, Pressable, StyleSheet, Text, View } from "react-native";
 
 export interface Contact {
@@ -26,6 +27,7 @@ interface ContactCardProps {
 }
 
 const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, cardHeight, isFocused, onFocus, onEdit, onDelete }) => {
+	const { t } = useTranslation();
 	const SKIA_PADDING = 30;
 	const isStacked = index > 0;
 
@@ -156,7 +158,7 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 							}}
 						>
 							<Ionicons name="pencil" size={16} color="#233600" style={styles.dropdownIcon} />
-							<Text style={styles.dropdownText}>Bewerken</Text>
+							<Text style={styles.dropdownText}>{t("importantContacts.editAction", "Bewerken")}</Text>
 						</Pressable>
 						<View style={styles.dropdownDivider} />
 						<Pressable
@@ -167,7 +169,7 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 							}}
 						>
 							<Ionicons name="trash" size={16} color="#ef4444" style={styles.dropdownIcon} />
-							<Text style={[styles.dropdownText, { color: "#ef4444" }]}>Verwijderen</Text>
+							<Text style={[styles.dropdownText, { color: "#ef4444" }]}>{t("importantContacts.deleteAction", "Verwijderen")}</Text>
 						</Pressable>
 					</View>
 				)}
@@ -179,7 +181,7 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 					<SkiaBackground />
 					<View style={styles.cardContentBack} pointerEvents="none">
 						<Ionicons name="location" size={32} color="#233600" style={{ marginBottom: 8 }} />
-						<Text style={styles.backTitle}>Adresgegevens</Text>
+						<Text style={styles.backTitle}>{t("importantContacts.addressDetails", "Adresgegevens")}</Text>
 						<Text style={styles.backAddress}>{contact.address}</Text>
 					</View>
 				</Pressable>
@@ -212,7 +214,7 @@ const styles = StyleSheet.create({
 	cardTopRow: { flexDirection: "row", alignItems: "center" },
 	avatarContainer: { marginRight: 16 },
 	dummyAvatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: "rgba(255, 255, 255, 0.7)", justifyContent: "center", alignItems: "center", borderWidth: 2, borderColor: "rgba(255, 179, 0, 0.35)" },
-	avatar: { width: 50, height: 50, borderRadius: 25, borderWidth: 2, borderColor: "rgba(255, 180, 0, 0.7)" },
+	avatar: { width: 50, height: 50, borderRadius: 25 },
 	textContainer: { flex: 1 },
 	contactName: { fontFamily: "BricolageMedium", fontSize: 18, color: "#233600" },
 	contactRole: { fontFamily: "InterRegular", fontSize: 14, color: "#475569", marginTop: 2 },

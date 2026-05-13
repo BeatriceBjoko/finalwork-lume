@@ -1,72 +1,41 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import React from "react";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../../components/ui/Button";
-import ContactCard, { Contact } from "../../components/ui/ContactCard";
-
-const INITIAL_CONTACTS: Contact[] = [
-	{
-		id: "1",
-		name: "Dr. Peeters",
-		role: "Huisarts",
-		phone: "0470 12 34 56",
-		photo: null,
-		address: "Kerkstraat 14\n9000 Gent",
-		blob1: "rgba(255, 210, 0, 0.35)",
-		blob2: "rgba(255, 140, 0, 0.25)",
-	},
-	{
-		id: "2",
-		name: "Apotheek Voorzorg",
-		role: "Apotheker",
-		phone: "09 234 56 78",
-		photo: null,
-		address: "Zonnelaan 88\n9000 Gent",
-		blob1: "rgba(255, 100, 200, 0.25)",
-		blob2: "rgba(150, 50, 255, 0.15)",
-	},
-	{
-		id: "3",
-		name: "Kine De Smet",
-		role: "Kinesist",
-		phone: "0488 99 88 77",
-		photo: null,
-		address: "Sportweg 2\n9000 Gent",
-		blob1: "rgba(239, 252, 0, 0.25)",
-		blob2: "rgba(197, 207, 0, 0.15)",
-	},
-	{
-		id: "4",
-		name: "Thuiszorg Rita",
-		role: "Verpleegkundige",
-		phone: "0499 11 22 33",
-		photo: null,
-		address: "Mobiele diensten\nRegio Gent",
-		blob1: "rgba(255, 150, 0, 0.25)",
-		blob2: "rgba(255, 50, 0, 0.15)",
-	},
-];
+import ContactCard from "../../components/ui/ContactCard";
+import ContactFormModal from "../../components/ui/ContactFormModal";
+import CustomAlert from "../../components/ui/CustomAlert";
+import { useImportantContacts } from "../../hooks/useImportantContacts";
 
 export default function ImportantContactsScreen() {
 	const router = useRouter();
 	const { width } = useWindowDimensions();
-	const [contacts, setContacts] = useState<Contact[]>(INITIAL_CONTACTS);
-	const [focusedCardId, setFocusedCardId] = useState<string | null>(null);
-
 	const CARD_WIDTH = width - 48;
 	const CARD_HEIGHT = 140;
 
-	const handleEditContact = (id: string) => {
-		console.log("Navigeer naar edit formulier voor ID:", id);
-	};
-
-	const handleDeleteContact = (id: string) => {
-		console.log("Verwijder contact met ID:", id);
-		setContacts((prev) => prev.filter((c) => c.id !== id));
-	};
+	const {
+		tContacts,
+		contacts,
+		focusedCardId,
+		setFocusedCardId,
+		isLoading,
+		isTemplateMode,
+		isSaving,
+		alertConfig,
+		setAlertConfig,
+		formVisible,
+		setFormVisible,
+		editingContact,
+		handleSaveToDB,
+		confirmDelete,
+		handleAlertConfirm,
+		openAddForm,
+		openEditForm,
+		saveForm,
+	} = useImportantContacts();
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -77,33 +46,58 @@ export default function ImportantContactsScreen() {
 			</View>
 
 			<View style={styles.titleContainer}>
-				<Text style={styles.titleText}>Belangrijke contactpersonen</Text>
-				<Text style={styles.subtitle}>Lijst met contactkaarten</Text>
+				<Text style={styles.titleText}>{tContacts("title")}</Text>
+				<Text style={styles.subtitle}>{tContacts("subtitle")}</Text>
 			</View>
 
-			<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} onScrollBeginDrag={() => setFocusedCardId(null)}>
-				<Pressable style={{ flex: 1 }} onPress={() => setFocusedCardId(null)}>
-					{contacts.map((contact, index) => (
-						<ContactCard
-							key={contact.id}
-							contact={contact}
-							index={index}
-							cardWidth={CARD_WIDTH}
-							cardHeight={CARD_HEIGHT}
-							isFocused={focusedCardId === contact.id}
-							onFocus={() => setFocusedCardId(contact.id)}
-							onEdit={handleEditContact}
-							onDelete={handleDeleteContact}
-						/>
-					))}
-					<View style={{ height: 160 }} />
-				</Pressable>
-			</ScrollView>
+			{isLoading ? (
+				<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+					<ActivityIndicator size="large" color="#233600" />
+				</View>
+			) : (
+				<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} onScrollBeginDrag={() => setFocusedCardId(null)}>
+					{isTemplateMode && (
+						<View style={styles.templateBanner}>
+							<Ionicons name="information-circle" size={24} color="#354E00" style={{ marginRight: 12 }} />
+							<Text style={styles.templateText}>{tContacts("templateMessage")}</Text>
+						</View>
+					)}
+
+					<Pressable style={{ flex: 1 }} onPress={() => setFocusedCardId(null)}>
+						{contacts.map((contact, index) => (
+							<ContactCard
+								key={contact.id}
+								contact={contact}
+								index={index}
+								cardWidth={CARD_WIDTH}
+								cardHeight={CARD_HEIGHT}
+								isFocused={focusedCardId === contact.id}
+								onFocus={() => setFocusedCardId(contact.id)}
+								onEdit={openEditForm}
+								onDelete={confirmDelete}
+							/>
+						))}
+						<View style={{ height: 160 }} />
+					</Pressable>
+				</ScrollView>
+			)}
 
 			<View style={styles.bottomContainer}>
-				<Button title="Contactpersoon toevoegen" onPress={() => console.log("Voeg toe geklikt")} variant="secondary" style={{ marginBottom: 12, borderColor: "#233600" }} />
-				<Button title="Wijzigingen opslaan" onPress={() => console.log("Opslaan geklikt")} variant="primary" />
+				<Button title={tContacts("addTitle")} onPress={openAddForm} variant="secondary" style={{ marginBottom: 12, borderColor: "#233600" }} />
+				<Button title={isSaving ? tContacts("loadingBtn") : tContacts("saveBtn")} onPress={handleSaveToDB} variant="primary" disabled={isSaving} />
 			</View>
+
+			<CustomAlert
+				visible={alertConfig.visible}
+				title={alertConfig.title}
+				message={alertConfig.message}
+				confirmText="OK"
+				cancelText={alertConfig.type === "delete" ? tContacts("cancelBtn") : undefined}
+				onConfirm={handleAlertConfirm}
+				onCancel={() => setAlertConfig({ ...alertConfig, visible: false })}
+			/>
+
+			<ContactFormModal visible={formVisible} initialData={editingContact} onClose={() => setFormVisible(false)} onSave={saveForm} t={tContacts} />
 		</SafeAreaView>
 	);
 }
@@ -117,4 +111,16 @@ const styles = StyleSheet.create({
 	subtitle: { fontFamily: "InterRegular", fontSize: 16, color: "#475569", marginTop: 8 },
 	scrollContent: { paddingHorizontal: 24, paddingTop: 10 },
 	bottomContainer: { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 40, backgroundColor: "rgba(253, 251, 247, 0.95)" },
+
+	templateBanner: {
+		flexDirection: "row",
+		backgroundColor: "rgba(239, 252, 0, 0.3)",
+		padding: 16,
+		borderRadius: 16,
+		marginBottom: 24,
+		alignItems: "center",
+		borderWidth: 1,
+		borderColor: "rgba(35, 54, 0, 0.1)",
+	},
+	templateText: { flex: 1, fontFamily: "InterMedium", fontSize: 14, color: "#354E00", lineHeight: 20 },
 });
