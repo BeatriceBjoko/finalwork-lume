@@ -49,7 +49,7 @@ export default function CircleMember({ name, role, photoUrl, size, onPressOption
 						<Group clip={SVG_PATH}>
 							{skiaImage ? <SkImage image={skiaImage} x={-10} y={-10} width={120} height={120} fit="cover" /> : <Rect x={-10} y={-10} width={120} height={120} color="#E2E8F0" />}
 
-							<Path path={SVG_PATH} color="rgba(156, 217, 0, 0.36)" style="stroke" strokeWidth={25 / scale}>
+							<Path path={SVG_PATH} color="rgba(156, 217, 0, 0.42)" style="stroke" strokeWidth={25 / scale}>
 								<BlurMask blur={15 / scale} style="normal" />
 							</Path>
 						</Group>

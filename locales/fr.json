@@ -267,6 +267,10 @@
 		"subtitle": "Famille, amis et aidants prêts à vous aider.",
 		"templateMessage": "Ceci est un exemple de ce à quoi ressemblera votre cercle. Invitez ou supprimez des personnes pour créer votre propre cercle !",
 		"inviteBtn": "Inviter une personne",
-		"inviteInfo": "Les invités reçoivent une invitation sécurisée"
+		"inviteInfo": "Les invités reçoivent une invitation sécurisée",
+		"removeTitle": "Supprimer la personne ?",
+		"removeMessage": "Cette personne sera supprimée de votre cercle.\nCette action est irréversible.",
+		"removeConfirm": "Supprimer",
+		"removeCancel": "Annuler"
 	}
 }

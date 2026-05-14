@@ -267,6 +267,10 @@
 		"subtitle": "Familie, vrienden en helpers die voor je klaarstaan.",
 		"templateMessage": "Dit is een voorbeeld van hoe je kring eruit zal zien. Nodig mensen uit of verwijder ze om je eigen kring te maken!",
 		"inviteBtn": "Persoon uitnodigen",
-		"inviteInfo": "Uitgenodigden ontvangen een veilige uitnodiging"
+		"inviteInfo": "Uitgenodigden ontvangen een veilige uitnodiging",
+		"removeTitle": "Persoon verwijderen?",
+		"removeMessage": "Deze persoon wordt verwijderd uit jouw kring.\nDit kan niet ongedaan worden gemaakt.",
+		"removeConfirm": "Verwijderen",
+		"removeCancel": "Annuleren"
 	}
 }

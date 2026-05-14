@@ -1,13 +1,13 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../../components/ui/Button";
 import CircleMember from "../../components/ui/CircleMember";
+import CustomAlert from "../../components/ui/CustomAlert";
 import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
 
 import { getCircleMembers, getCurrentUserCircleData, removeCircleMember } from "../../lib/firebase-service";
@@ -110,7 +110,6 @@ export default function CircleOverviewScreen() {
 				) : (
 					<View style={[styles.gridContainer, { height: dynamicGridHeight }]}>
 						{members.map((member, index) => {
-							// Bepaal positie uit de 5-slot array
 							const baseStyle = SLOT_STYLES[index % 5];
 							const verticalOffset = Math.floor(index / 5) * 520;
 
@@ -145,25 +144,18 @@ export default function CircleOverviewScreen() {
 				</View>
 			</View>
 
-			<Modal visible={isRemoveModalVisible} transparent animationType="fade">
-				<BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill}>
-					<View style={styles.modalOverlay}>
-						<View style={styles.modalContent}>
-							<Text style={styles.modalTitle}>Persoon verwijderen?</Text>
-							<Text style={styles.modalSubtitle}>Deze persoon wordt verwijderd uit jouw kring.{"\n"}Dit kan niet ongedaan worden gemaakt.</Text>
-
-							<View style={styles.modalButtonRow}>
-								<Pressable style={styles.modalBtnDelete} onPress={handleConfirmRemove} disabled={isRemoving}>
-									{isRemoving ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.modalBtnDeleteText}>Verwijderen</Text>}
-								</Pressable>
-								<Pressable style={styles.modalBtnCancel} onPress={() => setRemoveModalVisible(false)} disabled={isRemoving}>
-									<Text style={styles.modalBtnCancelText}>Annuleren</Text>
-								</Pressable>
-							</View>
-						</View>
-					</View>
-				</BlurView>
-			</Modal>
+			<CustomAlert
+				visible={isRemoveModalVisible}
+				title={tCircle("removeTitle")}
+				message={tCircle("removeMessage")}
+				confirmText={isRemoving ? t("common.loading") : tCircle("removeConfirm")}
+				cancelText={tCircle("removeCancel")}
+				onConfirm={handleConfirmRemove}
+				onCancel={() => setRemoveModalVisible(false)}
+				messageStyle={{ color: "#C94B47" }}
+				isConfirming={isRemoving}
+				primaryLeft={true}
+			/>
 		</SafeAreaView>
 	);
 }
@@ -187,72 +179,4 @@ const styles = StyleSheet.create({
 	bottomContainer: { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 30, backgroundColor: "rgba(255, 255, 255, 0.95)" },
 	infoRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 12 },
 	infoText: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.primary, marginLeft: 6 },
-
-	modalOverlay: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		paddingHorizontal: 20,
-	},
-	modalContent: {
-		backgroundColor: "#FFFFFF",
-		width: "100%",
-		borderRadius: 20,
-		padding: 24,
-		alignItems: "center",
-		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 10 },
-		shadowOpacity: 0.1,
-		shadowRadius: 20,
-		elevation: 10,
-	},
-	modalTitle: {
-		fontFamily: "BricolageBold",
-		fontSize: 18,
-		color: "#131F00",
-		marginBottom: 12,
-		textAlign: "center",
-	},
-	modalSubtitle: {
-		fontFamily: "InterMedium",
-		fontSize: 14,
-		color: "#C94B47",
-		textAlign: "center",
-		lineHeight: 20,
-		marginBottom: 24,
-	},
-	modalButtonRow: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		width: "100%",
-		gap: 12,
-	},
-	modalBtnDelete: {
-		flex: 1,
-		backgroundColor: "#354E00",
-		paddingVertical: 14,
-		borderRadius: 12,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	modalBtnDeleteText: {
-		fontFamily: "InterMedium",
-		fontSize: 15,
-		color: "#FFFFFF",
-	},
-	modalBtnCancel: {
-		flex: 1,
-		backgroundColor: "#FFFFFF",
-		borderWidth: 1.5,
-		borderColor: "#E2E8F0",
-		paddingVertical: 14,
-		borderRadius: 12,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	modalBtnCancelText: {
-		fontFamily: "InterMedium",
-		fontSize: 15,
-		color: "#131F00",
-	},
 });

@@ -1,6 +1,6 @@
 import { BlurView } from "expo-blur";
 import React from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from "react-native";
 
 import { COLORS, FONTS } from "../../constants/theme";
 import Button from "./Button";
@@ -13,9 +13,12 @@ interface CustomAlertProps {
 	cancelText?: string;
 	onConfirm: () => void;
 	onCancel?: () => void;
+	messageStyle?: StyleProp<TextStyle>;
+	isConfirming?: boolean;
+	primaryLeft?: boolean;
 }
 
-export default function CustomAlert({ visible, title, message, confirmText, cancelText, onConfirm, onCancel }: CustomAlertProps) {
+export default function CustomAlert({ visible, title, message, confirmText, cancelText, onConfirm, onCancel, messageStyle, isConfirming, primaryLeft = false }: CustomAlertProps) {
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel || onConfirm}>
 			<Pressable style={styles.modalOverlay} onPress={onCancel || onConfirm}>
@@ -26,12 +29,21 @@ export default function CustomAlert({ visible, title, message, confirmText, canc
 
 					<View style={styles.textContainer}>
 						<Text style={styles.title}>{title}</Text>
-						<Text style={styles.message}>{message}</Text>
+						<Text style={[styles.message, messageStyle]}>{message}</Text>
 					</View>
 
 					<View style={styles.buttonContainer}>
-						{cancelText && onCancel && <Button title={cancelText} onPress={onCancel} variant="secondary" style={styles.alertButton} />}
-						<Button title={confirmText} onPress={onConfirm} variant="primary" style={styles.alertButton} />
+						{primaryLeft ? (
+							<>
+								<Button title={confirmText} onPress={onConfirm} variant="primary" style={[styles.alertButton, { flex: 1.2 }]} disabled={isConfirming} />
+								{cancelText && onCancel && <Button title={cancelText} onPress={onCancel} variant="secondary" style={[styles.alertButton, { flex: 0.95 }]} disabled={isConfirming} />}
+							</>
+						) : (
+							<>
+								{cancelText && onCancel && <Button title={cancelText} onPress={onCancel} variant="secondary" style={styles.alertButton} disabled={isConfirming} />}
+								<Button title={confirmText} onPress={onConfirm} variant="primary" style={styles.alertButton} disabled={isConfirming} />
+							</>
+						)}
 					</View>
 				</Pressable>
 			</Pressable>
@@ -53,7 +65,6 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: "rgba(53, 78, 0, 0.20)",
 		overflow: "hidden",
-
 		shadowColor: "#354E00",
 		shadowOffset: { width: 0, height: 25 },
 		shadowOpacity: 1,
