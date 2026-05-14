@@ -272,5 +272,12 @@
 		"removeMessage": "Cette personne sera supprimée de votre cercle.\nCette action est irréversible.",
 		"removeConfirm": "Supprimer",
 		"removeCancel": "Annuler"
+	},
+	"inviteModal": {
+		"title": "PARTAGEZ CE CODE",
+		"timerSubtitle": "Le code expire dans 5 minutes",
+		"or": "Ou",
+		"shareText": "Envoyez un lien pour ajouter quelqu'un",
+		"shareMessage": "Hey ! J'ai créé un cercle de soins sur Lume. Rejoignez-nous pour organiser les soins ensemble. Entrez ce code dans l'application : {{code}}"
 	}
 }
