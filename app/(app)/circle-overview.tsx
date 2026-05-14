@@ -1,28 +1,84 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../../components/ui/Button";
 import CircleMember from "../../components/ui/CircleMember";
 import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
 
+import { getCircleMembers, getCurrentUserCircleData, removeCircleMember } from "../../lib/firebase-service";
+
 export default function CircleOverviewScreen() {
 	const router = useRouter();
 	const { t } = useTranslation();
 	const tCircle = (key: string) => t(`circleOverview.${key}`);
 
-	const [isTemplateMode, setIsTemplateMode] = useState(true);
+	const [members, setMembers] = useState<any[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [circleData, setCircleData] = useState<{ careCircleId: string; role: string; currentUserId: string } | null>(null);
 
-	const dummyMembers = [
-		{ id: "1", name: "Thomas B.", role: "Broer", photo: require("../../assets/images/thomas.jpg") },
-		{ id: "2", name: "Arnaud", role: "Buurman", photo: require("../../assets/images/arnaud.jpg") },
-		{ id: "3", name: "Beatrice B.", role: "Zus", photo: require("../../assets/images/beatrice.jpg") },
-		{ id: "4", name: "Vanessa B.", role: "Zus", photo: require("../../assets/images/vanessa.jpg") },
-		{ id: "5", name: "Amin H.", role: "Nonkel", photo: require("../../assets/images/amin.jpg") },
+	const [isRemoveModalVisible, setRemoveModalVisible] = useState(false);
+	const [selectedMemberToRemove, setSelectedMemberToRemove] = useState<string | null>(null);
+	const [isRemoving, setIsRemoving] = useState(false);
+
+	const isTemplateMode = members.length <= 1;
+	const isAdmin = circleData?.role === "admin";
+
+	const SLOT_STYLES = [
+		{ left: 0, top: 0, zIndex: 1, size: 130, isCenter: false },
+		{ right: 0, top: 40, zIndex: 1, size: 130, isCenter: false },
+		{ left: "50%", transform: [{ translateX: -95 }], top: 165, zIndex: 10, size: 190, isCenter: true },
+		{ left: 10, top: 380, zIndex: 1, size: 130, isCenter: false },
+		{ right: 10, top: 360, zIndex: 1, size: 130, isCenter: false },
 	];
+
+	useEffect(() => {
+		loadData();
+	}, []);
+
+	const loadData = async () => {
+		try {
+			setIsLoading(true);
+			const data = await getCurrentUserCircleData();
+			if (data && data.careCircleId) {
+				setCircleData(data);
+				const fetchedMembers = await getCircleMembers(data.careCircleId);
+				setMembers(fetchedMembers);
+			}
+		} catch (error) {
+			console.error("Fout bij laden leden:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleOpenRemoveModal = (memberId: string) => {
+		setSelectedMemberToRemove(memberId);
+		setRemoveModalVisible(true);
+	};
+
+	const handleConfirmRemove = async () => {
+		if (!circleData?.careCircleId || !selectedMemberToRemove) return;
+
+		try {
+			setIsRemoving(true);
+			await removeCircleMember(circleData.careCircleId, selectedMemberToRemove);
+
+			setMembers((prev) => prev.filter((m) => m.id !== selectedMemberToRemove));
+			setRemoveModalVisible(false);
+		} catch (error) {
+			console.error("Kon lid niet verwijderen:", error);
+		} finally {
+			setIsRemoving(false);
+		}
+	};
+
+	const blocksOfFive = Math.max(1, Math.ceil(members.length / 5));
+	const dynamicGridHeight = blocksOfFive * 520;
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -42,45 +98,72 @@ export default function CircleOverviewScreen() {
 
 				<Text style={styles.subtitle}>{tCircle("subtitle")}</Text>
 
-				{isTemplateMode && (
+				{isTemplateMode && !isLoading && (
 					<View style={styles.templateBanner}>
 						<MaterialCommunityIcons name="information-outline" size={20} color="#354E00" style={{ marginRight: 10 }} />
 						<Text style={styles.templateText}>{tCircle("templateMessage")}</Text>
 					</View>
 				)}
 
-				<View style={styles.gridContainer}>
-					<View style={[styles.memberWrapper, { left: 0, top: 0, zIndex: 1 }]}>
-						<CircleMember size={130} name={dummyMembers[0].name} role={dummyMembers[0].role} photoUrl={dummyMembers[0].photo} onPressOptions={() => console.log("Opties 1")} />
-					</View>
+				{isLoading ? (
+					<ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 50 }} />
+				) : (
+					<View style={[styles.gridContainer, { height: dynamicGridHeight }]}>
+						{members.map((member, index) => {
+							// Bepaal positie uit de 5-slot array
+							const baseStyle = SLOT_STYLES[index % 5];
+							const verticalOffset = Math.floor(index / 5) * 520;
 
-					<View style={[styles.memberWrapper, { right: 0, top: 40, zIndex: 1 }]}>
-						<CircleMember size={130} name={dummyMembers[1].name} role={dummyMembers[1].role} photoUrl={dummyMembers[1].photo} onPressOptions={() => console.log("Opties 2")} />
-					</View>
+							const positionStyle: any = {
+								position: "absolute",
+								top: baseStyle.top + verticalOffset,
+								zIndex: baseStyle.zIndex,
+							};
+							if (baseStyle.left !== undefined) positionStyle.left = baseStyle.left;
+							if (baseStyle.right !== undefined) positionStyle.right = baseStyle.right;
+							if (baseStyle.transform) positionStyle.transform = baseStyle.transform;
 
-					<View style={[styles.memberWrapper, { left: "50%", transform: [{ translateX: -95 }], top: 165, zIndex: 10 }]}>
-						<CircleMember size={190} name={dummyMembers[2].name} role={dummyMembers[2].role} photoUrl={dummyMembers[2].photo} onPressOptions={() => console.log("Opties 3")} />
-					</View>
+							const canShowOptions = isAdmin && member.id !== circleData?.currentUserId;
 
-					<View style={[styles.memberWrapper, { left: 10, top: 380, zIndex: 1 }]}>
-						<CircleMember size={130} name={dummyMembers[3].name} role={dummyMembers[3].role} photoUrl={dummyMembers[3].photo} onPressOptions={() => console.log("Opties 4")} />
+							return (
+								<View key={member.id} style={positionStyle}>
+									<CircleMember size={baseStyle.size} name={member.name} role={member.role} photoUrl={member.photoUrl} onPressOptions={canShowOptions ? () => handleOpenRemoveModal(member.id) : undefined} />
+								</View>
+							);
+						})}
 					</View>
-
-					<View style={[styles.memberWrapper, { right: 10, top: 360, zIndex: 1 }]}>
-						<CircleMember size={130} name={dummyMembers[4].name} role={dummyMembers[4].role} photoUrl={dummyMembers[4].photo} onPressOptions={() => console.log("Opties 5")} />
-					</View>
-				</View>
+				)}
 
 				<View style={{ height: 180 }} />
 			</ScrollView>
 
 			<View style={styles.bottomContainer}>
-				<Button title={tCircle("inviteBtn")} onPress={() => console.log("Uitnodigen")} variant="primary" />
+				<Button title={tCircle("inviteBtn")} onPress={() => console.log("Code popup later!")} variant="primary" />
 				<View style={styles.infoRow}>
 					<MaterialCommunityIcons name="information-outline" size={20} color={COLORS.primary} />
 					<Text style={styles.infoText}>{tCircle("inviteInfo")}</Text>
 				</View>
 			</View>
+
+			<Modal visible={isRemoveModalVisible} transparent animationType="fade">
+				<BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill}>
+					<View style={styles.modalOverlay}>
+						<View style={styles.modalContent}>
+							<Text style={styles.modalTitle}>Persoon verwijderen?</Text>
+							<Text style={styles.modalSubtitle}>Deze persoon wordt verwijderd uit jouw kring.{"\n"}Dit kan niet ongedaan worden gemaakt.</Text>
+
+							<View style={styles.modalButtonRow}>
+								<Pressable style={styles.modalBtnDelete} onPress={handleConfirmRemove} disabled={isRemoving}>
+									{isRemoving ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.modalBtnDeleteText}>Verwijderen</Text>}
+								</Pressable>
+								<Pressable style={styles.modalBtnCancel} onPress={() => setRemoveModalVisible(false)} disabled={isRemoving}>
+									<Text style={styles.modalBtnCancelText}>Annuleren</Text>
+								</Pressable>
+							</View>
+						</View>
+					</View>
+				</BlurView>
+			</Modal>
 		</SafeAreaView>
 	);
 }
@@ -90,20 +173,86 @@ const styles = StyleSheet.create({
 	backButtonContainer: { width: "100%", paddingHorizontal: 16, paddingTop: 10, zIndex: 10 },
 	backButton: { padding: 8, marginLeft: -8, alignSelf: "flex-start" },
 	scrollContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 40 },
-
 	header: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 15, gap: 6 },
 	titleText: { ...TYPOGRAPHY.h1, color: COLORS.primary, zIndex: 10 },
-
 	highlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 12, paddingVertical: 2, borderRadius: 20 },
 	highlightText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
-
 	subtitle: { fontFamily: "InterMedium", fontSize: 14, color: COLORS.primary, textAlign: "center", marginBottom: 30, lineHeight: 20 },
 
 	templateBanner: { flexDirection: "row", backgroundColor: "rgba(233, 248, 0, 0.15)", padding: 12, borderRadius: 12, marginBottom: 20, alignItems: "center", borderWidth: 1, borderColor: "rgba(154, 217, 0, 0.2)", width: "100%" },
 	templateText: { flex: 1, fontFamily: FONTS.body, fontSize: 13, color: "#354E00", lineHeight: 18 },
-	gridContainer: { position: "relative", height: 520, width: "100%", marginTop: 10 },
-	memberWrapper: { position: "absolute" },
+
+	gridContainer: { position: "relative", width: "100%", marginTop: 10 },
+
 	bottomContainer: { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 30, backgroundColor: "rgba(255, 255, 255, 0.95)" },
 	infoRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 12 },
 	infoText: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.primary, marginLeft: 6 },
+
+	modalOverlay: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		paddingHorizontal: 20,
+	},
+	modalContent: {
+		backgroundColor: "#FFFFFF",
+		width: "100%",
+		borderRadius: 20,
+		padding: 24,
+		alignItems: "center",
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 10 },
+		shadowOpacity: 0.1,
+		shadowRadius: 20,
+		elevation: 10,
+	},
+	modalTitle: {
+		fontFamily: "BricolageBold",
+		fontSize: 18,
+		color: "#131F00",
+		marginBottom: 12,
+		textAlign: "center",
+	},
+	modalSubtitle: {
+		fontFamily: "InterMedium",
+		fontSize: 14,
+		color: "#C94B47",
+		textAlign: "center",
+		lineHeight: 20,
+		marginBottom: 24,
+	},
+	modalButtonRow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "100%",
+		gap: 12,
+	},
+	modalBtnDelete: {
+		flex: 1,
+		backgroundColor: "#354E00",
+		paddingVertical: 14,
+		borderRadius: 12,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	modalBtnDeleteText: {
+		fontFamily: "InterMedium",
+		fontSize: 15,
+		color: "#FFFFFF",
+	},
+	modalBtnCancel: {
+		flex: 1,
+		backgroundColor: "#FFFFFF",
+		borderWidth: 1.5,
+		borderColor: "#E2E8F0",
+		paddingVertical: 14,
+		borderRadius: 12,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	modalBtnCancelText: {
+		fontFamily: "InterMedium",
+		fontSize: 15,
+		color: "#131F00",
+	},
 });

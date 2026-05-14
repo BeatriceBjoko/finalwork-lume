@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
-import { collection, doc, getDocs, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore"; // updateDoc toegevoegd!
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "./firebase-config";
 
@@ -214,5 +214,60 @@ export async function updateCareReceiverInDB(circleId: string, data: any): Promi
 	const circleRef = doc(db, "careCircles", circleId);
 	await updateDoc(circleRef, {
 		careReceiver: data,
+	});
+}
+
+// 1. Haal de ID van de huidige kring en de rol van de ingelogde gebruiker op
+export async function getCurrentUserCircleData(): Promise<{ careCircleId: string; role: string; currentUserId: string } | null> {
+	const currentUser = auth.currentUser;
+	if (!currentUser) return null;
+
+	const userRef = doc(db, "users", currentUser.uid);
+	const userSnap = await getDoc(userRef);
+	if (!userSnap.exists() || !userSnap.data().careCircleId) return null;
+
+	const careCircleId = userSnap.data().careCircleId;
+
+	const memberRef = doc(db, "careCircleMembers", `${careCircleId}_${currentUser.uid}`);
+	const memberSnap = await getDoc(memberRef);
+	const role = memberSnap.exists() ? memberSnap.data().role : "member";
+
+	return { careCircleId, role, currentUserId: currentUser.uid };
+}
+
+// 2. Haal alle leden van een specifieke kring op
+export async function getCircleMembers(circleId: string): Promise<any[]> {
+	const membersRef = collection(db, "careCircleMembers");
+	const q = query(membersRef, where("careCircleId", "==", circleId));
+	const snapshot = await getDocs(q);
+
+	const members = [];
+	for (const docSnap of snapshot.docs) {
+		const data = docSnap.data();
+
+		const userSnap = await getDoc(doc(db, "users", data.userId));
+		const userData = userSnap.exists() ? userSnap.data() : {};
+
+		members.push({
+			id: data.userId,
+			name: userData.name || "Onbekend",
+			role: data.relationshipToCareReceiver || "Lid",
+			photoUrl: data.photoUrl || userData.photoUrl || null,
+			isAdmin: data.role === "admin",
+		});
+	}
+	return members;
+}
+
+// 3. Verwijder een lid uit de kring (Alleen admin kan dit doen)
+export async function removeCircleMember(circleId: string, userIdToRemove: string): Promise<void> {
+	// 1. Verwijder de relatie uit careCircleMembers
+	const memberRef = doc(db, "careCircleMembers", `${circleId}_${userIdToRemove}`);
+	await deleteDoc(memberRef);
+
+	// 2. Haal de careCircleId weg bij de user zelf, zodat ze weer bij onboarding komen
+	const userRef = doc(db, "users", userIdToRemove);
+	await updateDoc(userRef, {
+		careCircleId: null,
 	});
 }
