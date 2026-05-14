@@ -271,3 +271,13 @@ export async function removeCircleMember(circleId: string, userIdToRemove: strin
 		careCircleId: null,
 	});
 }
+
+// Haal specifiek de uitnodigingscode van een kring op
+export async function getCircleInviteCode(circleId: string): Promise<string | null> {
+	const circleRef = doc(db, "careCircles", circleId);
+	const snap = await getDoc(circleRef);
+	if (snap.exists() && snap.data().inviteCode) {
+		return snap.data().inviteCode.replace("LUME-", "");
+	}
+	return null;
+}

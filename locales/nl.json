@@ -275,7 +275,7 @@
 	},
 	"inviteModal": {
 		"title": "DEEL DEZE CODE",
-		"timerSubtitle": "De code verloopt binnen 5 minuten",
+		"timerSubtitle": "De code verloopt binnen 20 minuten",
 		"or": "Of",
 		"shareText": "Stuur een link om iemand toe te voegen",
 		"shareMessage": "Hey! Ik heb een zorgkring aangemaakt op Lume. Sluit je aan om samen de zorg te organiseren. Vul deze code in op de app: {{code}}"

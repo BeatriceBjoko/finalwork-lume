@@ -8,7 +8,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "../../components/ui/Button";
 import CircleMember from "../../components/ui/CircleMember";
 import CustomAlert from "../../components/ui/CustomAlert";
+import InviteModal from "../../components/ui/InviteModal";
 import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
+import { useCircleInvite } from "../../hooks/useCircleInvite";
 
 import { getCircleMembers, getCurrentUserCircleData, removeCircleMember } from "../../lib/firebase-service";
 
@@ -27,6 +29,9 @@ export default function CircleOverviewScreen() {
 
 	const isTemplateMode = members.length <= 1;
 	const isAdmin = circleData?.role === "admin";
+
+	// Let op: shareSMS uit de hook gehaald (in plaats van shareWhatsApp)
+	const { isVisible: isInviteModalVisible, setIsVisible: setInviteModalVisible, inviteCode, formattedTime, shareSMS, shareEmail } = useCircleInvite(circleData?.careCircleId);
 
 	const SLOT_STYLES = [
 		{ left: 0, top: 0, zIndex: 1, size: 130, isCenter: false },
@@ -137,7 +142,7 @@ export default function CircleOverviewScreen() {
 			</ScrollView>
 
 			<View style={styles.bottomContainer}>
-				<Button title={tCircle("inviteBtn")} onPress={() => console.log("Code popup later!")} variant="primary" />
+				<Button title={tCircle("inviteBtn")} onPress={() => setInviteModalVisible(true)} variant="primary" />
 				<View style={styles.infoRow}>
 					<MaterialCommunityIcons name="information-outline" size={20} color={COLORS.primary} />
 					<Text style={styles.infoText}>{tCircle("inviteInfo")}</Text>
@@ -156,6 +161,8 @@ export default function CircleOverviewScreen() {
 				isConfirming={isRemoving}
 				primaryLeft={true}
 			/>
+
+			<InviteModal visible={isInviteModalVisible} onClose={() => setInviteModalVisible(false)} inviteCode={inviteCode} formattedTime={formattedTime} onShareSMS={shareSMS} onShareEmail={shareEmail} />
 		</SafeAreaView>
 	);
 }
