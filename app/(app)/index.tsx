@@ -1,46 +1,173 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { QuoteCard } from "../../components/ui/QuoteCard";
+import { TaskCard, TaskData } from "../../components/ui/TaskCard";
+import { TaskSummaryCards } from "../../components/ui/TaskSummaryCards";
+import { COLORS, FONTS } from "../../constants/theme";
 import { useSession } from "../../context";
+
+const DAILY_QUOTE = "Je hoeft het niet allemaal alleen te dragen";
+
+const MOCK_TASKS: (TaskData & { expanded: boolean })[] = [
+	{
+		id: "1",
+		title: "Ochtend vitals & medicatie",
+		time: "08:00",
+		status: "Voltooid",
+		theme: "yellow",
+		icon: "pill",
+		expanded: false,
+		description: ["Bloeddruk en hartslag controleren", "Ochtendmedicatie geven na het ontbijt", "Noteer als er iets ongewoon is"],
+		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
+	},
+	{
+		id: "2",
+		title: "Tuintherapie",
+		time: "09:00",
+		status: "Nog te doen",
+		theme: "purple",
+		icon: "flower-outline",
+		expanded: false,
+		description: ["Rustige wandeling in de tuin", "Let op vermoeidheid of duizeligheid", "Water meenemen"],
+	},
+	{
+		id: "3",
+		title: "Voedzame lunch",
+		time: "11:30",
+		status: "Nog te doen",
+		theme: "yellow",
+		icon: "food-fork-drink",
+		expanded: false,
+		description: ["Lichte lunch met zalm, groenten en rijst klaarmaken", "Zorg voor een rustig eetmoment zonder haast", "Noteer of de maaltijd goed werd opgegeten"],
+	},
+	{
+		id: "4",
+		title: "Kinesitherapie – Controle na operatie",
+		time: "15:30",
+		status: "Voltooid",
+		theme: "purple",
+		icon: "clipboard-pulse-outline",
+		expanded: true,
+		description: ["Opvolgafspraak bij UZ Brussel", "Kamer 402 – hoofdgebouw", "Vergeet je medische dossiers niet mee te nemen"],
+		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
+	},
+];
 
 export default function DailySummaryHome() {
 	const { user } = useSession();
-	const router = useRouter();
+	const [tasks, setTasks] = useState(MOCK_TASKS);
 
-	const displayName = user?.displayName || user?.email?.split("@")[0] || "Mantelzorger";
+	const displayName = user?.displayName || "Beatrice Bjoko";
+	const totalToday = tasks.length;
+	const completed = tasks.filter((t) => t.status === "Voltooid").length;
+	const open = tasks.filter((t) => t.status !== "Voltooid").length;
+
+	const toggleTask = (id: string) => {
+		setTasks(tasks.map((t) => (t.id === id ? { ...t, expanded: !t.expanded } : t)));
+	};
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<View style={styles.header}>
-				<Text style={styles.greeting}>Dag {displayName},</Text>
-				<Text style={styles.title}>Dagelijkse Samenvatting</Text>
-			</View>
+			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+				<View style={styles.header}>
+					<Text style={styles.title}>
+						Dagelijkse <Text style={styles.titleAccent}>samenvatting</Text>
+					</Text>
+					<Text style={styles.greeting}>Halloo! {displayName}</Text>
+				</View>
 
-			<View style={styles.content}>
-				<Text style={styles.placeholder}>Hier komt straks de tijdlijn...</Text>
+				<View style={styles.section}>
+					<QuoteCard quote={DAILY_QUOTE} />
+				</View>
 
-				<Pressable style={styles.testButton} onPress={() => router.push("/profile")}>
-					<Text style={styles.testButtonText}>Ga naar Mijn Profiel ➔</Text>
-				</Pressable>
-			</View>
+				<View style={styles.dateRow}>
+					<View>
+						<Text style={styles.dateNum}>27.04</Text>
+						<Text style={styles.dateDay}>Zaterdag</Text>
+					</View>
+					<View style={styles.timeBlock}>
+						<View style={styles.timeDivider} />
+						<Text style={styles.timeText}>14:50 uur</Text>
+					</View>
+				</View>
+
+				<View style={styles.section}>
+					<TaskSummaryCards totalToday={totalToday} completed={completed} open={open} />
+				</View>
+
+				<View style={styles.panel}>
+					<Text style={styles.panelTitle}>Taken van vandaag</Text>
+
+					{tasks.map((task, idx) => (
+						<TaskCard key={task.id} task={task} expanded={task.expanded} onPress={() => toggleTask(task.id)} overlap={!task.expanded && idx < tasks.length - 1} stackIndex={idx} />
+					))}
+
+					<View style={styles.addWrapper}>
+						<Pressable style={styles.addButton}>
+							<Text style={styles.addButtonText}>Taak toevoegen</Text>
+						</Pressable>
+					</View>
+				</View>
+			</ScrollView>
 		</SafeAreaView>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: "#FDFBF7", paddingHorizontal: 24 },
-	header: { marginTop: 40, marginBottom: 20 },
-	greeting: { fontSize: 18, color: "#666", marginBottom: 4 },
-	title: { fontSize: 32, fontWeight: "bold", color: "#354E00", marginBottom: 12 },
-	content: { flex: 1, justifyContent: "center", alignItems: "center" },
-	placeholder: { color: "#7FA99B", textAlign: "center", fontStyle: "italic", fontSize: 16, marginBottom: 40 },
+	container: { flex: 1, backgroundColor: COLORS.background },
+	scroll: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 60 },
 
-	testButton: {
-		backgroundColor: "#354E00",
-		paddingVertical: 14,
-		paddingHorizontal: 32,
+	header: { alignItems: "center", marginBottom: 28 },
+	title: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary, textAlign: "center" },
+	titleAccent: {
+		color: COLORS.accent,
+		backgroundColor: COLORS.primary,
 		borderRadius: 12,
+		overflow: "hidden",
+		paddingHorizontal: 4,
 	},
-	testButtonText: { color: "#D5FF8C", fontSize: 16, fontWeight: "bold" },
+	greeting: { fontFamily: FONTS.body, fontSize: 15, color: COLORS.primary, marginTop: 8, opacity: 0.75 },
+
+	section: { marginBottom: 24 },
+
+	dateRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 24 },
+	dateNum: { fontFamily: FONTS.body, fontSize: 48, color: COLORS.primary, lineHeight: 52 },
+	dateDay: { fontFamily: FONTS.heading, fontSize: 32, color: COLORS.primary, lineHeight: 36 },
+	timeBlock: { flexDirection: "row", alignItems: "center" },
+	timeDivider: { width: 1, height: 48, backgroundColor: "rgba(35, 54, 0, 0.15)", marginRight: 14 },
+	timeText: { fontFamily: "InterSemiBold", fontSize: 15, color: COLORS.primary },
+
+	panel: {
+		backgroundColor: COLORS.white,
+		marginHorizontal: -24,
+		paddingHorizontal: 24,
+		paddingTop: 28,
+		borderTopLeftRadius: 36,
+		borderTopRightRadius: 36,
+		borderWidth: 1,
+		borderColor: "rgba(35, 54, 0, 0.10)",
+		borderBottomWidth: 0,
+		shadowColor: COLORS.primary,
+		shadowOffset: { width: 0, height: -4 },
+		shadowOpacity: 0.05,
+		shadowRadius: 12,
+		elevation: 8,
+		minHeight: 400,
+	},
+	panelTitle: { fontFamily: FONTS.heading, fontSize: 18, color: COLORS.primary, marginBottom: 18 },
+
+	addWrapper: { alignItems: "center", marginTop: 12, marginBottom: 32 },
+	addButton: {
+		backgroundColor: COLORS.buttonFill,
+		paddingVertical: 14,
+		paddingHorizontal: 28,
+		borderRadius: 12,
+		shadowColor: COLORS.buttonShadow,
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.4,
+		shadowRadius: 8,
+		elevation: 4,
+	},
+	addButtonText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.buttonText },
 });
