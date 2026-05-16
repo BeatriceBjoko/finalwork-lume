@@ -11,7 +11,7 @@ import { COLORS, FONTS } from "../../constants/theme";
 import { useDailySummary } from "../../hooks/useDailySummary";
 
 export default function DailySummaryHome() {
-	const { displayName, formattedTime, formattedDate, capitalizedDayName, dailyQuote, tasks, note, totalToday, completed, open, isTemplateMode, toggleTask } = useDailySummary();
+	const { displayName, formattedTime, formattedDate, capitalizedDayName, dailyQuote, tasks, note, totalToday, completed, open, isTemplateMode, toggleTaskExpanded, handleToggleTaskStatus } = useDailySummary();
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -58,7 +58,17 @@ export default function DailySummaryHome() {
 					{tasks.map((task, idx) => {
 						const taskTheme = idx % 2 === 0 ? "yellow" : "purple";
 
-						return <TaskCard key={task.id} task={{ ...task, theme: taskTheme }} expanded={task.expanded} onPress={() => toggleTask(task.id)} overlap={!task.expanded && idx < tasks.length - 1} stackIndex={idx} />;
+						return (
+							<TaskCard
+								key={task.id}
+								task={{ ...task, theme: taskTheme }}
+								expanded={task.expanded}
+								onPress={() => toggleTaskExpanded(task.id)}
+								onToggleStatus={() => handleToggleTaskStatus(task.id, task.status)}
+								overlap={!task.expanded && idx < tasks.length - 1}
+								stackIndex={idx}
+							/>
+						);
 					})}
 
 					<View style={styles.addWrapper}>

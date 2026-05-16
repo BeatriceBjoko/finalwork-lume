@@ -26,6 +26,7 @@ interface TaskCardProps {
 	task: TaskData;
 	expanded: boolean;
 	onPress: () => void;
+	onToggleStatus?: () => void;
 	overlap?: boolean;
 	stackIndex?: number;
 }
@@ -33,7 +34,7 @@ interface TaskCardProps {
 const CARD_RADIUS = 10;
 const OVERLAP_OFFSET = 12;
 
-export function TaskCard({ task, expanded, onPress, overlap = false, stackIndex = 0 }: TaskCardProps) {
+export function TaskCard({ task, expanded, onPress, onToggleStatus, overlap = false, stackIndex = 0 }: TaskCardProps) {
 	const [cardWidth, setCardWidth] = useState(0);
 	const [cardHeight, setCardHeight] = useState(0);
 
@@ -44,9 +45,7 @@ export function TaskCard({ task, expanded, onPress, overlap = false, stackIndex 
 	const iconColor = isYellow ? "#464A00" : "#FFFFFF";
 
 	const strokeColor = isYellow ? "rgba(255, 228, 0, 0.60)" : "rgba(196, 176, 230, 0.70)";
-
 	const dropShadowColor = isYellow ? "rgba(239, 252, 0, 0.30)" : "rgba(180, 140, 230, 0.30)";
-
 	const innerShadowColor = isYellow ? "rgba(239, 252, 0, 0.10)" : "rgba(180, 140, 230, 0.10)";
 
 	const glowStart = isYellow ? "rgba(255, 230, 0, 0.42)" : "rgba(196, 176, 230, 0.31)";
@@ -160,9 +159,16 @@ export function TaskCard({ task, expanded, onPress, overlap = false, stackIndex 
 										<Text style={styles.initials}>{task.assignee.initials}</Text>
 									</View>
 								))}
-							<View style={[styles.badge, isCompleted ? styles.badgeDone : styles.badgeOpen]}>
+
+							<Pressable
+								onPress={(e) => {
+									e.stopPropagation();
+									if (onToggleStatus) onToggleStatus();
+								}}
+								style={[styles.badge, isCompleted ? styles.badgeDone : styles.badgeOpen]}
+							>
 								<Text style={[styles.badgeText, isCompleted ? styles.badgeTextDone : styles.badgeTextOpen]}>{task.status}</Text>
-							</View>
+							</Pressable>
 						</View>
 					</View>
 				</View>
