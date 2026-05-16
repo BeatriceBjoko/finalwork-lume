@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Button from "../../components/ui/Button";
 import { NoteCard, NoteData } from "../../components/ui/NoteCard";
 import { QuoteCard } from "../../components/ui/QuoteCard";
 import { TaskCard, TaskData } from "../../components/ui/TaskCard";
@@ -81,9 +82,12 @@ export default function DailySummaryHome() {
 		<SafeAreaView style={styles.container}>
 			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 				<View style={styles.header}>
-					<Text style={styles.title}>
-						Dagelijkse <Text style={styles.titleAccent}>samenvatting</Text>
-					</Text>
+					<View style={styles.titleRow}>
+						<Text style={styles.titleText}>Dagelijkse</Text>
+						<View style={styles.highlightWrapper}>
+							<Text style={styles.highlightText}>samenvatting</Text>
+						</View>
+					</View>
 					<Text style={styles.greeting}>Halloo! {displayName}</Text>
 				</View>
 
@@ -121,16 +125,17 @@ export default function DailySummaryHome() {
 				</View>
 
 				<View style={styles.notesSection}>
-					<Text style={styles.notesTitle}>
-						Mijn <Text style={styles.notesAccent}>notities</Text>
-					</Text>
+					<View style={styles.notesTitleRow}>
+						<Text style={styles.notesTitleText}>Mijn</Text>
+						<View style={styles.notesHighlightWrapper}>
+							<Text style={styles.notesHighlightText}>notities</Text>
+						</View>
+					</View>
 
 					<NoteCard note={MOCK_NOTE} />
 
 					<View style={styles.seeMoreWrapper}>
-						<Pressable style={styles.seeMoreButton}>
-							<Text style={styles.seeMoreText}>Zie meer notities</Text>
-						</Pressable>
+						<Button title="Zie meer notities" onPress={() => {}} variant="primary" />
 					</View>
 				</View>
 			</ScrollView>
@@ -143,21 +148,17 @@ const styles = StyleSheet.create({
 	scroll: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 60 },
 
 	header: { alignItems: "center", marginBottom: 28 },
-	title: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary, textAlign: "center" },
-	titleAccent: {
-		color: COLORS.accent,
-		backgroundColor: COLORS.primary,
-		borderRadius: 12,
-		overflow: "hidden",
-		paddingHorizontal: 4,
-	},
+	titleRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 },
+	titleText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary },
+	highlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 20 },
+	highlightText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary },
 	greeting: { fontFamily: FONTS.body, fontSize: 15, color: COLORS.primary, marginTop: 8, opacity: 0.75 },
 
 	section: { marginBottom: 24 },
 
 	dateRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 24 },
-	dateNum: { fontFamily: FONTS.body, fontSize: 48, color: COLORS.primary, lineHeight: 52 },
-	dateDay: { fontFamily: FONTS.heading, fontSize: 32, color: COLORS.primary, lineHeight: 36 },
+	dateNum: { fontFamily: "InterMedium", fontSize: 48, color: "#000000", lineHeight: 52 },
+	dateDay: { fontFamily: "InterMedium", fontSize: 32, color: "#233600", lineHeight: 36 },
 	timeBlock: { flexDirection: "row", alignItems: "center" },
 	timeDivider: { width: 1, height: 48, backgroundColor: "rgba(35, 54, 0, 0.15)", marginRight: 14 },
 	timeText: { fontFamily: "InterSemiBold", fontSize: 15, color: COLORS.primary },
@@ -179,44 +180,9 @@ const styles = StyleSheet.create({
 		elevation: 8,
 		minHeight: 400,
 	},
-	panelTitle: { fontFamily: FONTS.heading, fontSize: 18, color: COLORS.primary, marginBottom: 18 },
+	panelTitle: { fontFamily: "BricolageMedium", fontSize: 18, color: COLORS.primary, marginBottom: 18 },
 
 	addWrapper: { alignItems: "center", marginTop: 12, marginBottom: 32 },
-
-	notesSection: {
-		marginTop: 32,
-		paddingHorizontal: 0,
-	},
-	notesTitle: {
-		fontFamily: FONTS.heading,
-		fontSize: 22,
-		color: COLORS.primary,
-		marginBottom: 4,
-	},
-	notesAccent: {
-		color: COLORS.primary,
-		backgroundColor: COLORS.accent,
-		borderRadius: 8,
-		overflow: "hidden",
-		paddingHorizontal: 4,
-	},
-	seeMoreWrapper: {
-		alignItems: "center",
-		marginTop: 20,
-		marginBottom: 16,
-	},
-	seeMoreButton: {
-		borderWidth: 1.5,
-		borderColor: COLORS.primary,
-		borderRadius: 12,
-		paddingVertical: 12,
-		paddingHorizontal: 28,
-	},
-	seeMoreText: {
-		fontFamily: FONTS.button,
-		fontSize: 14,
-		color: COLORS.primary,
-	},
 	addButton: {
 		backgroundColor: COLORS.buttonFill,
 		paddingVertical: 14,
@@ -229,4 +195,17 @@ const styles = StyleSheet.create({
 		elevation: 4,
 	},
 	addButtonText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.buttonText },
+
+	notesSection: { marginTop: 32, paddingHorizontal: 0, alignItems: "center" },
+	notesTitleRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 16, gap: 6 },
+	notesTitleText: { fontFamily: FONTS.heading, fontSize: 22, color: COLORS.primary },
+	notesHighlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 16 },
+	notesHighlightText: { fontFamily: FONTS.heading, fontSize: 22, color: COLORS.primary },
+
+	seeMoreWrapper: {
+		alignItems: "stretch",
+		width: "100%",
+		marginTop: 20,
+		marginBottom: 16,
+	},
 });

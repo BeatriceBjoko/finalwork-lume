@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
 	titleBlock: { flex: 1 },
 	title: {
 		fontFamily: "InterSemiBold",
-		fontSize: 15,
+		fontSize: 16,
 		color: COLORS.primary,
 		marginBottom: 2,
 		lineHeight: 20,
@@ -215,6 +215,11 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: COLORS.primary,
 		opacity: 0.6,
+	},
+	timeExpanded: {
+		fontFamily: "InterRegular",
+		fontSize: 12,
+		color: "#475569",
 	},
 
 	chevronCircle: {
@@ -251,11 +256,7 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		marginTop: 14,
 	},
-	timeExpanded: {
-		fontFamily: "InterRegular",
-		fontSize: 12,
-		color: "#475569",
-	},
+
 	footerRight: {
 		flexDirection: "row",
 		alignItems: "center",

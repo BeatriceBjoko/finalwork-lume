@@ -68,7 +68,8 @@ const styles = StyleSheet.create({
 	},
 
 	quoteText: {
-		fontSize: 17,
+		fontFamily: "InterRegular",
+		fontSize: 16,
 		color: COLORS.primary,
 		lineHeight: 26,
 	},
