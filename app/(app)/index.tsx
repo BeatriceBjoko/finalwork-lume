@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { NoteCard, NoteData } from "../../components/ui/NoteCard";
 import { QuoteCard } from "../../components/ui/QuoteCard";
 import { TaskCard, TaskData } from "../../components/ui/TaskCard";
 import { TaskSummaryCards } from "../../components/ui/TaskSummaryCards";
@@ -8,6 +9,15 @@ import { COLORS, FONTS } from "../../constants/theme";
 import { useSession } from "../../context";
 
 const DAILY_QUOTE = "Je hoeft het niet allemaal alleen te dragen";
+
+const MOCK_NOTE: NoteData = {
+	id: "1",
+	title: "Praktische info",
+	time: "15:00",
+	icon: "notebook-outline",
+	tag: "Vandaag",
+	content: "Nieuwe medicatie moet morgen nog opgehaald worden. Doktersbrief moet nog ingevuld worden. Boodschappen zijn bijna op en het verband moet vervangen worden om 18u.",
+};
 
 const MOCK_TASKS: (TaskData & { expanded: boolean })[] = [
 	{
@@ -109,6 +119,20 @@ export default function DailySummaryHome() {
 						</Pressable>
 					</View>
 				</View>
+
+				<View style={styles.notesSection}>
+					<Text style={styles.notesTitle}>
+						Mijn <Text style={styles.notesAccent}>notities</Text>
+					</Text>
+
+					<NoteCard note={MOCK_NOTE} />
+
+					<View style={styles.seeMoreWrapper}>
+						<Pressable style={styles.seeMoreButton}>
+							<Text style={styles.seeMoreText}>Zie meer notities</Text>
+						</Pressable>
+					</View>
+				</View>
 			</ScrollView>
 		</SafeAreaView>
 	);
@@ -158,6 +182,41 @@ const styles = StyleSheet.create({
 	panelTitle: { fontFamily: FONTS.heading, fontSize: 18, color: COLORS.primary, marginBottom: 18 },
 
 	addWrapper: { alignItems: "center", marginTop: 12, marginBottom: 32 },
+
+	notesSection: {
+		marginTop: 32,
+		paddingHorizontal: 0,
+	},
+	notesTitle: {
+		fontFamily: FONTS.heading,
+		fontSize: 22,
+		color: COLORS.primary,
+		marginBottom: 4,
+	},
+	notesAccent: {
+		color: COLORS.primary,
+		backgroundColor: COLORS.accent,
+		borderRadius: 8,
+		overflow: "hidden",
+		paddingHorizontal: 4,
+	},
+	seeMoreWrapper: {
+		alignItems: "center",
+		marginTop: 20,
+		marginBottom: 16,
+	},
+	seeMoreButton: {
+		borderWidth: 1.5,
+		borderColor: COLORS.primary,
+		borderRadius: 12,
+		paddingVertical: 12,
+		paddingHorizontal: 28,
+	},
+	seeMoreText: {
+		fontFamily: FONTS.button,
+		fontSize: 14,
+		color: COLORS.primary,
+	},
 	addButton: {
 		backgroundColor: COLORS.buttonFill,
 		paddingVertical: 14,

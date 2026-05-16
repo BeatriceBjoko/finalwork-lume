@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BackdropBlur, Canvas, Fill, Group, RoundedRect, Shadow, rect, rrect } from "@shopify/react-native-skia";
 import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
@@ -46,7 +47,10 @@ export function TaskCard({ task, expanded, onPress, overlap = false, stackIndex 
 
 	const dropShadowColor = isYellow ? "rgba(239, 252, 0, 0.30)" : "rgba(180, 140, 230, 0.30)";
 
-	const innerShadowColor = isYellow ? "rgba(239, 252, 0, 0.50)" : "rgba(180, 140, 230, 0.50)";
+	const innerShadowColor = isYellow ? "rgba(239, 252, 0, 0.10)" : "rgba(180, 140, 230, 0.10)";
+
+	const glowStart = isYellow ? "rgba(255, 230, 0, 0.42)" : "rgba(196, 176, 230, 0.31)";
+	const glowMid = isYellow ? "rgba(255, 230, 0, 0)" : "rgba(196, 176, 230, 0)";
 
 	// Description fade
 	const descOpacity = useSharedValue(expanded ? 1 : 0);
@@ -62,7 +66,7 @@ export function TaskCard({ task, expanded, onPress, overlap = false, stackIndex 
 	return (
 		<Pressable onPress={onPress} style={[styles.pressable, overlap && { marginBottom: -OVERLAP_OFFSET }, { zIndex: stackIndex }]} onLayout={(e) => setCardWidth(e.nativeEvent.layout.width)}>
 			<View style={{ position: "relative", minHeight: 72 }} onLayout={(e) => setCardHeight(e.nativeEvent.layout.height)}>
-				{/* Skia canvas: all 3 effects  */}
+				{/* Skia canvas: drop shadow + glass + inner shadow + stroke */}
 				{hasSize && clipPath && (
 					<Canvas
 						style={{
@@ -85,7 +89,7 @@ export function TaskCard({ task, expanded, onPress, overlap = false, stackIndex 
 
 								<Group blendMode="screen">
 									<RoundedRect x={0} y={0} width={cardWidth} height={cardHeight} r={CARD_RADIUS} color="rgba(255, 255, 255, 0.090)">
-										<Shadow dx={0} dy={4} blur={30} color={innerShadowColor} inner />
+										<Shadow dx={0} dy={-4} blur={55} color={innerShadowColor} inner />
 									</RoundedRect>
 								</Group>
 							</Group>
@@ -96,6 +100,23 @@ export function TaskCard({ task, expanded, onPress, overlap = false, stackIndex 
 				)}
 
 				<BlurView intensity={5} tint="light" style={[StyleSheet.absoluteFill, styles.glassClip]} pointerEvents="none" />
+
+				<View style={[StyleSheet.absoluteFill, styles.glassClip]} pointerEvents="none">
+					<LinearGradient
+						colors={[glowStart, glowMid, "transparent"]}
+						start={{ x: 0, y: 0 }}
+						end={{ x: 0, y: 1 }}
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							right: 0,
+							height: 70,
+							borderTopLeftRadius: CARD_RADIUS,
+							borderTopRightRadius: CARD_RADIUS,
+						}}
+					/>
+				</View>
 
 				<View style={styles.content}>
 					<View style={styles.topRow}>
@@ -263,9 +284,9 @@ const styles = StyleSheet.create({
 	initials: { fontFamily: "InterBold", fontSize: 11, color: COLORS.primary },
 
 	badge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
-	badgeDone: { backgroundColor: "#D4EAAA" },
-	badgeOpen: { backgroundColor: "#F0E2C4" },
+	badgeDone: { backgroundColor: "#d4eaaa5f" },
+	badgeOpen: { backgroundColor: "#f2e3c676" },
 	badgeText: { fontFamily: "InterSemiBold", fontSize: 11 },
 	badgeTextDone: { color: "#4A7A1E" },
-	badgeTextOpen: { color: "#9B7B30" },
+	badgeTextOpen: { color: "#C07828" },
 });
