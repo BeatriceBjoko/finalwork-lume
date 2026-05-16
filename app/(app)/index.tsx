@@ -1,82 +1,17 @@
-import React, { useState } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "../../components/ui/Button";
-import { NoteCard, NoteData } from "../../components/ui/NoteCard";
+import { NoteCard } from "../../components/ui/NoteCard";
 import { QuoteCard } from "../../components/ui/QuoteCard";
-import { TaskCard, TaskData } from "../../components/ui/TaskCard";
+import { TaskCard } from "../../components/ui/TaskCard";
 import { TaskSummaryCards } from "../../components/ui/TaskSummaryCards";
 import { COLORS, FONTS } from "../../constants/theme";
-import { useSession } from "../../context";
-
-const DAILY_QUOTE = "Je hoeft het niet allemaal alleen te dragen";
-
-const MOCK_NOTE: NoteData = {
-	id: "1",
-	title: "Praktische info",
-	time: "15:00",
-	icon: "notebook-outline",
-	tag: "Vandaag",
-	content: "Nieuwe medicatie moet morgen nog opgehaald worden. Doktersbrief moet nog ingevuld worden. Boodschappen zijn bijna op en het verband moet vervangen worden om 18u.",
-};
-
-const MOCK_TASKS: (TaskData & { expanded: boolean })[] = [
-	{
-		id: "1",
-		title: "Ochtend vitals & medicatie",
-		time: "08:00",
-		status: "Voltooid",
-		theme: "yellow",
-		icon: "pill",
-		expanded: false,
-		description: ["Bloeddruk en hartslag controleren", "Ochtendmedicatie geven na het ontbijt", "Noteer als er iets ongewoon is"],
-		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
-	},
-	{
-		id: "2",
-		title: "Tuintherapie",
-		time: "09:00",
-		status: "Nog te doen",
-		theme: "purple",
-		icon: "flower-outline",
-		expanded: false,
-		description: ["Rustige wandeling in de tuin", "Let op vermoeidheid of duizeligheid", "Water meenemen"],
-	},
-	{
-		id: "3",
-		title: "Voedzame lunch",
-		time: "11:30",
-		status: "Nog te doen",
-		theme: "yellow",
-		icon: "food-fork-drink",
-		expanded: false,
-		description: ["Lichte lunch met zalm, groenten en rijst klaarmaken", "Zorg voor een rustig eetmoment zonder haast", "Noteer of de maaltijd goed werd opgegeten"],
-	},
-	{
-		id: "4",
-		title: "Kinesitherapie – Controle na operatie",
-		time: "15:30",
-		status: "Voltooid",
-		theme: "purple",
-		icon: "clipboard-pulse-outline",
-		expanded: true,
-		description: ["Opvolgafspraak bij UZ Brussel", "Kamer 402 – hoofdgebouw", "Vergeet je medische dossiers niet mee te nemen"],
-		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
-	},
-];
+import { useDailySummary } from "../../hooks/useDailySummary";
 
 export default function DailySummaryHome() {
-	const { user } = useSession();
-	const [tasks, setTasks] = useState(MOCK_TASKS);
-
-	const displayName = user?.displayName || "Beatrice Bjoko";
-	const totalToday = tasks.length;
-	const completed = tasks.filter((t) => t.status === "Voltooid").length;
-	const open = tasks.filter((t) => t.status !== "Voltooid").length;
-
-	const toggleTask = (id: string) => {
-		setTasks(tasks.map((t) => (t.id === id ? { ...t, expanded: !t.expanded } : t)));
-	};
+	const { displayName, formattedTime, formattedDate, capitalizedDayName, dailyQuote, tasks, note, totalToday, completed, open, isTemplateMode, toggleTask } = useDailySummary();
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -92,17 +27,17 @@ export default function DailySummaryHome() {
 				</View>
 
 				<View style={styles.section}>
-					<QuoteCard quote={DAILY_QUOTE} />
+					<QuoteCard quote={dailyQuote} />
 				</View>
 
 				<View style={styles.dateRow}>
 					<View>
-						<Text style={styles.dateNum}>27.04</Text>
-						<Text style={styles.dateDay}>Zaterdag</Text>
+						<Text style={styles.dateNum}>{formattedDate}</Text>
+						<Text style={styles.dateDay}>{capitalizedDayName}</Text>
 					</View>
 					<View style={styles.timeBlock}>
 						<View style={styles.timeDivider} />
-						<Text style={styles.timeText}>14:50 uur</Text>
+						<Text style={styles.timeText}>{formattedTime} uur</Text>
 					</View>
 				</View>
 
@@ -113,9 +48,18 @@ export default function DailySummaryHome() {
 				<View style={styles.panel}>
 					<Text style={styles.panelTitle}>Taken van vandaag</Text>
 
-					{tasks.map((task, idx) => (
-						<TaskCard key={task.id} task={task} expanded={task.expanded} onPress={() => toggleTask(task.id)} overlap={!task.expanded && idx < tasks.length - 1} stackIndex={idx} />
-					))}
+					{isTemplateMode && (
+						<View style={styles.templateBanner}>
+							<MaterialCommunityIcons name="information-outline" size={20} color="#354E00" style={{ marginRight: 10 }} />
+							<Text style={styles.templateText}>Dit zijn voorbeeldtaken om te laten zien hoe de app werkt. Verwijder deze gerust en voeg je eigen taken toe!</Text>
+						</View>
+					)}
+
+					{tasks.map((task, idx) => {
+						const taskTheme = idx % 2 === 0 ? "yellow" : "purple";
+
+						return <TaskCard key={task.id} task={{ ...task, theme: taskTheme }} expanded={task.expanded} onPress={() => toggleTask(task.id)} overlap={!task.expanded && idx < tasks.length - 1} stackIndex={idx} />;
+					})}
 
 					<View style={styles.addWrapper}>
 						<Pressable style={styles.addButton}>
@@ -132,7 +76,7 @@ export default function DailySummaryHome() {
 						</View>
 					</View>
 
-					<NoteCard note={MOCK_NOTE} />
+					{note && <NoteCard note={note} />}
 
 					<View style={styles.seeMoreWrapper}>
 						<Button title="Zie meer notities" onPress={() => {}} variant="primary" />
@@ -181,6 +125,18 @@ const styles = StyleSheet.create({
 		minHeight: 400,
 	},
 	panelTitle: { fontFamily: "BricolageMedium", fontSize: 18, color: COLORS.primary, marginBottom: 18 },
+
+	templateBanner: {
+		flexDirection: "row",
+		backgroundColor: "rgba(233, 248, 0, 0.15)",
+		padding: 14,
+		borderRadius: 14,
+		marginBottom: 20,
+		alignItems: "center",
+		borderWidth: 1,
+		borderColor: "rgba(154, 217, 0, 0.2)",
+	},
+	templateText: { flex: 1, fontFamily: FONTS.body, fontSize: 13, color: "#354E00", lineHeight: 18 },
 
 	addWrapper: { alignItems: "center", marginTop: 12, marginBottom: 32 },
 	addButton: {
