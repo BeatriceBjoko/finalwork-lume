@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { COLORS } from "../../constants/theme";
@@ -153,9 +154,11 @@ function SmallCard({ config, index }: { config: CardConfig; index: number }) {
 }
 
 export function TaskSummaryCards({ totalToday, completed, open }: TaskSummaryCardsProps) {
+	const { t } = useTranslation();
+
 	const largeCard: CardConfig = {
-		label: "Taken vandaag",
-		sublabel: `${totalToday} taken`,
+		label: t("tasks.today"),
+		sublabel: t("tasks.tasksCount", { count: totalToday }),
 		value: totalToday,
 		icon: "calendar-month",
 		bg: "#FEFBE0",
@@ -165,8 +168,8 @@ export function TaskSummaryCards({ totalToday, completed, open }: TaskSummaryCar
 
 	const smallCards: CardConfig[] = [
 		{
-			label: "Voltooid",
-			sublabel: `${completed} taken`,
+			label: t("tasks.completed"),
+			sublabel: t("tasks.tasksCount", { count: completed }),
 			value: completed,
 			icon: "check-circle-outline",
 			bg: "#E8F5DC",
@@ -174,8 +177,8 @@ export function TaskSummaryCards({ totalToday, completed, open }: TaskSummaryCar
 			iconColor: "#2A7A3A",
 		},
 		{
-			label: "Nog te doen",
-			sublabel: `${open} taken`,
+			label: t("tasks.open"),
+			sublabel: t("tasks.tasksCount", { count: open }),
 			value: open,
 			icon: "clock-outline",
 			bg: "#FFE8C8",

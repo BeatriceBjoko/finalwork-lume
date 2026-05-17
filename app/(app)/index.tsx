@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -15,6 +16,7 @@ import { useSession } from "../../context";
 import { useDailySummary } from "../../hooks/useDailySummary";
 
 export default function DailySummaryHome() {
+	const { t } = useTranslation();
 	const { user, userData } = useSession();
 
 	const [isAddTaskModalVisible, setAddTaskModalVisible] = useState(false);
@@ -59,12 +61,12 @@ export default function DailySummaryHome() {
 			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 				<View style={styles.header}>
 					<View style={styles.titleRow}>
-						<Text style={styles.titleText}>Dagelijkse</Text>
+						<Text style={styles.titleText}>{t("dailySummary.titlePart1")}</Text>
 						<View style={styles.highlightWrapper}>
-							<Text style={styles.highlightText}>samenvatting</Text>
+							<Text style={styles.highlightText}>{t("dailySummary.titlePart2")}</Text>
 						</View>
 					</View>
-					<Text style={styles.greeting}>Halloo! {displayName}</Text>
+					<Text style={styles.greeting}>{t("dailySummary.greeting", { name: displayName })}</Text>
 				</View>
 
 				<View style={styles.section}>
@@ -87,12 +89,12 @@ export default function DailySummaryHome() {
 				</View>
 
 				<View style={styles.panel}>
-					<Text style={styles.panelTitle}>Taken van vandaag</Text>
+					<Text style={styles.panelTitle}>{t("dailySummary.tasksToday")}</Text>
 
 					{isTemplateMode && (
 						<View style={styles.templateBanner}>
 							<MaterialCommunityIcons name="information-outline" size={20} color="#354E00" style={{ marginRight: 10 }} />
-							<Text style={styles.templateText}>Dit zijn voorbeeldtaken om te laten zien hoe de app werkt. Verwijder deze gerust en voeg je eigen taken toe!</Text>
+							<Text style={styles.templateText}>{t("dailySummary.templateBanner")}</Text>
 						</View>
 					)}
 
@@ -128,23 +130,23 @@ export default function DailySummaryHome() {
 								setAddTaskModalVisible(true);
 							}}
 						>
-							<Text style={styles.addButtonText}>Taak toevoegen</Text>
+							<Text style={styles.addButtonText}>{t("tasks.addTask")}</Text>
 						</Pressable>
 					</View>
 				</View>
 
 				<View style={styles.notesSection}>
 					<View style={styles.notesTitleRow}>
-						<Text style={styles.notesTitleText}>Mijn</Text>
+						<Text style={styles.notesTitleText}>{t("dailySummary.my")}</Text>
 						<View style={styles.notesHighlightWrapper}>
-							<Text style={styles.notesHighlightText}>notities</Text>
+							<Text style={styles.notesHighlightText}>{t("dailySummary.notes")}</Text>
 						</View>
 					</View>
 
 					{note && <NoteCard note={note} />}
 
 					<View style={styles.seeMoreWrapper}>
-						<Button title="Zie meer notities" onPress={() => {}} variant="primary" />
+						<Button title={t("dailySummary.seeMoreNotes")} onPress={() => {}} variant="primary" />
 					</View>
 				</View>
 			</ScrollView>

@@ -3,6 +3,7 @@ import { BackdropBlur, Canvas, Fill, Group, RoundedRect, Shadow, rect, rrect } f
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
@@ -41,6 +42,7 @@ const CARD_RADIUS = 10;
 const OVERLAP_OFFSET = 12;
 
 export function TaskCard({ task, expanded, onPress, onToggleStatus, canManage = false, onEdit, onDelete, overlap = false, stackIndex = 0 }: TaskCardProps) {
+	const { t } = useTranslation();
 	const [cardWidth, setCardWidth] = useState(0);
 	const [cardHeight, setCardHeight] = useState(0);
 
@@ -183,7 +185,7 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, canManage = 
 									}}
 									style={[styles.badge, isCompleted ? styles.badgeDone : styles.badgeOpen]}
 								>
-									<Text style={[styles.badgeText, isCompleted ? styles.badgeTextDone : styles.badgeTextOpen]}>{task.status}</Text>
+									<Text style={[styles.badgeText, isCompleted ? styles.badgeTextDone : styles.badgeTextOpen]}>{isCompleted ? t("tasks.completed") : t("tasks.open")}</Text>
 								</Pressable>
 							</View>
 						</View>
@@ -193,10 +195,10 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, canManage = 
 
 			<CustomAlert
 				visible={isDeleteAlertVisible}
-				title="Taak verwijderen?"
-				message="Weet je zeker dat je deze taak wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
-				confirmText="Verwijderen"
-				cancelText="Annuleren"
+				title={t("tasks.deleteTitle")}
+				message={t("tasks.deleteMessage")}
+				confirmText={t("tasks.deleteConfirm")}
+				cancelText={t("tasks.deleteCancel")}
 				primaryLeft={true}
 				onConfirm={() => {
 					setDeleteAlertVisible(false);

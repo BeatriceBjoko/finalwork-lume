@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 import { useSession } from "../context";
 import { getCircleMembers } from "../lib/firebase-service";
@@ -16,6 +17,7 @@ export const TASK_ICONS = [
 ];
 
 export function useTaskForm(selectedDateStr: string, onTaskSaved: () => void, taskToEdit?: any) {
+	const { t } = useTranslation();
 	const { user, userData } = useSession();
 	const circleId = userData?.careCircleId;
 
@@ -69,11 +71,11 @@ export function useTaskForm(selectedDateStr: string, onTaskSaved: () => void, ta
 
 	const handleSaveTask = async () => {
 		if (!circleId || !user?.uid) {
-			Alert.alert("Fout", "Je bent niet gekoppeld aan een zorgkring.");
+			Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.noCircle"));
 			return;
 		}
 		if (!title.trim()) {
-			Alert.alert("Verplicht", "Geef de taak een titel.");
+			Alert.alert(t("tasks.errors.required"), t("tasks.errors.noTitle"));
 			return;
 		}
 
@@ -102,7 +104,6 @@ export function useTaskForm(selectedDateStr: string, onTaskSaved: () => void, ta
 			};
 
 			if (taskToEdit && taskToEdit.id && !taskToEdit.id.startsWith("tmpl_")) {
-				// EDIT BESTAANDE TAAK
 				await updateTaskInDB(taskToEdit.id, taskData);
 			} else {
 				await addTaskToDB(circleId, taskData, user.uid);
@@ -111,7 +112,7 @@ export function useTaskForm(selectedDateStr: string, onTaskSaved: () => void, ta
 			onTaskSaved();
 		} catch (error) {
 			console.error(error);
-			Alert.alert("Fout", "Kon de taak niet opslaan.");
+			Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.saveFailed"));
 		} finally {
 			setIsSaving(false);
 		}

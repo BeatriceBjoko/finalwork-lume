@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 import { NoteData } from "../components/ui/NoteCard";
 import { getDailyQuote } from "../constants/quotes";
@@ -6,30 +7,8 @@ import { useSession } from "../context";
 import { getDailyNote } from "../services/firebase/notes.service";
 import { deleteTaskFromDB, getTasksForDate, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
 
-const TEMPLATE_TASKS = [
-	{
-		id: "tmpl_1",
-		title: "Voedzame lunch",
-		time: "11:30",
-		status: "Nog te doen" as const,
-		icon: "food-fork-drink" as const,
-		createdBy: "demo",
-		description: ["Lichte lunch met zalm, groenten en rijst klaarmaken"],
-	},
-	{
-		id: "tmpl_2",
-		title: "Kinesitherapie – Controle na operatie",
-		time: "15:30",
-		status: "Voltooid" as const,
-		icon: "clipboard-pulse-outline" as const,
-		createdBy: "demo",
-		expanded: true,
-		description: ["Opvolgafspraak bij UZ Brussel", "Kamer 402 - hoofdgebouw", "Vergeet je medische dossiers niet mee te nemen"],
-		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
-	},
-];
-
 export function useDailySummary() {
+	const { t } = useTranslation();
 	const { userData, user } = useSession();
 	const circleId = userData?.careCircleId;
 	const currentUserId = user?.uid;
@@ -42,6 +21,32 @@ export function useDailySummary() {
 	const [isTemplateMode, setIsTemplateMode] = useState(false);
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+	const TEMPLATE_TASKS = useMemo(
+		() => [
+			{
+				id: "tmpl_1",
+				title: t("dailySummary.templateTask1"),
+				time: "11:30",
+				status: "Nog te doen" as const,
+				icon: "food-fork-drink" as const,
+				createdBy: "demo",
+				description: [t("dailySummary.templateTask1Desc")],
+			},
+			{
+				id: "tmpl_2",
+				title: t("dailySummary.templateTask2"),
+				time: "15:30",
+				status: "Voltooid" as const,
+				icon: "clipboard-pulse-outline" as const,
+				createdBy: "demo",
+				expanded: true,
+				description: [t("dailySummary.templateTask2Desc1"), t("dailySummary.templateTask2Desc2"), t("dailySummary.templateTask2Desc3")],
+				assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
+			},
+		],
+		[t],
+	);
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -79,11 +84,11 @@ export function useDailySummary() {
 				if (!fetchedNote) {
 					setNote({
 						id: "empty_state",
-						title: "Schrijf je eerste herinnering!",
+						title: t("dailySummary.emptyNoteTitle"),
 						time: "--:--",
 						icon: "comment-plus-outline",
-						tag: "Tip van Lume",
-						content: "Er zijn vandaag nog geen observaties of notities gedeeld. Schrijf een kort berichtje over hoe de dag verloopt! Het geeft de hele zorgkring enorm veel rust. ♥",
+						tag: t("dailySummary.emptyNoteTag"),
+						content: t("dailySummary.emptyNoteContent"),
 					});
 				} else {
 					setNote({
@@ -91,19 +96,19 @@ export function useDailySummary() {
 						title: fetchedNote.title,
 						time: fetchedNote.time,
 						icon: fetchedNote.icon || "notebook-outline",
-						tag: fetchedNote.isImportant ? "Belangrijk" : "Notitie",
+						tag: fetchedNote.isImportant ? t("dailySummary.importantTag") : t("dailySummary.noteTag"),
 						content: fetchedNote.content,
 					});
 				}
 			} catch (error) {
-				console.error("Fout bij het inladen:", error);
+				console.error("Error loading:", error);
 			} finally {
 				setIsLoading(false);
 			}
 		}
 
 		loadFirebaseData();
-	}, [circleId, databaseDateQueryString, refreshTrigger]);
+	}, [circleId, databaseDateQueryString, refreshTrigger, TEMPLATE_TASKS, t]);
 
 	const displayName = userData?.name || user?.displayName?.split(" ")[0] || "Beatrice";
 	const formattedTime = currentTime.toLocaleTimeString("nl-BE", { hour: "2-digit", minute: "2-digit" });
@@ -134,7 +139,7 @@ export function useDailySummary() {
 			} catch (error) {
 				console.error(error);
 				setTasks((prevTasks) => prevTasks.map((t) => (t.id === taskId ? { ...t, status: currentStatus } : t)));
-				Alert.alert("Fout", "Kon de status niet aanpassen in de database.");
+				Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.statusFailed"));
 			}
 		}
 	};
@@ -151,7 +156,7 @@ export function useDailySummary() {
 			await deleteTaskFromDB(taskId, taskCreatorId, userRole, currentUserId);
 			setTasks((prevTasks) => prevTasks.filter((t) => t.id !== taskId));
 		} catch (error: any) {
-			Alert.alert("Oei, actie geweigerd", error.message || "Je hebt geen rechten om deze taak te verwijderen.");
+			Alert.alert(t("tasks.errors.deniedTitle"), error.message || t("tasks.errors.deleteDenied"));
 		}
 	};
 

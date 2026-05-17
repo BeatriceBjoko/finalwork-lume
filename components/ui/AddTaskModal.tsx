@@ -1,5 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { COLORS, FONTS } from "../../constants/theme";
 import { TASK_ICONS, useTaskForm } from "../../hooks/useTaskForm";
@@ -13,6 +14,7 @@ interface AddTaskModalProps {
 }
 
 export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: AddTaskModalProps) {
+	const { t } = useTranslation();
 	const { title, setTitle, startTime, setStartTime, endTime, setEndTime, selectedIcon, setSelectedIcon, descriptionText, setDescriptionText, members, selectedMember, setSelectedMember, isSaving, handleSaveTask } = useTaskForm(
 		currentDateStr,
 		onClose,
@@ -28,24 +30,24 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 
 				<View style={styles.modalContent}>
 					<View style={styles.header}>
-						<Text style={styles.title}>{isEditing ? "Taak bewerken" : "Nieuwe Taak"}</Text>
+						<Text style={styles.title}>{isEditing ? t("tasks.editTask") : t("tasks.newTask")}</Text>
 						<Pressable onPress={onClose} style={styles.closeBtn}>
 							<Ionicons name="close" size={24} color={COLORS.primary} />
 						</Pressable>
 					</View>
 
 					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollBody}>
-						<Text style={styles.label}>Titel van de taak</Text>
-						<TextInput style={styles.input} placeholder="bv. Ochtend vitals..." value={title} onChangeText={setTitle} placeholderTextColor="#9ca3af" />
+						<Text style={styles.label}>{t("tasks.taskTitle")}</Text>
+						<TextInput style={styles.input} placeholder={t("tasks.taskTitlePlaceholder")} value={title} onChangeText={setTitle} placeholderTextColor="#9ca3af" />
 
-						<Text style={styles.label}>Tijdsbestek</Text>
+						<Text style={styles.label}>{t("tasks.timeFrame")}</Text>
 						<View style={styles.timeRow}>
 							<TextInput style={[styles.input, styles.timeInput]} placeholder="09:00" value={startTime} onChangeText={setStartTime} keyboardType="numbers-and-punctuation" />
-							<Text style={styles.timeTot}>tot</Text>
+							<Text style={styles.timeTot}>{t("tasks.to")}</Text>
 							<TextInput style={[styles.input, styles.timeInput]} placeholder="10:00" value={endTime} onChangeText={setEndTime} keyboardType="numbers-and-punctuation" />
 						</View>
 
-						<Text style={styles.label}>Toewijzen aan</Text>
+						<Text style={styles.label}>{t("tasks.assignTo")}</Text>
 						<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.memberList}>
 							<Pressable onPress={() => setSelectedMember(null)} style={[styles.memberCircle, !selectedMember && styles.memberCircleSelected]}>
 								<MaterialCommunityIcons name="account-off-outline" size={24} color={!selectedMember ? COLORS.primary : "#9ca3af"} />
@@ -57,7 +59,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 							))}
 						</ScrollView>
 
-						<Text style={styles.label}>Kies een icoon</Text>
+						<Text style={styles.label}>{t("tasks.chooseIcon")}</Text>
 						<View style={styles.iconGrid}>
 							{TASK_ICONS.map((iconData) => {
 								const isSelected = selectedIcon === iconData.id;
@@ -69,10 +71,10 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 							})}
 						</View>
 
-						<Text style={styles.label}>Beschrijving (Nieuwe regel = nieuw puntje)</Text>
+						<Text style={styles.label}>{t("tasks.descriptionLabel")}</Text>
 						<TextInput
 							style={[styles.input, styles.textArea]}
-							placeholder="• Medicatie geven&#10;• Bloeddruk meten"
+							placeholder={t("tasks.descriptionPlaceholder")}
 							value={descriptionText}
 							onChangeText={setDescriptionText}
 							multiline
@@ -82,7 +84,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 						/>
 
 						<View style={styles.footer}>
-							<Button title={isSaving ? "Bezig met opslaan..." : isEditing ? "Wijzigingen opslaan" : "Taak Toevoegen"} onPress={handleSaveTask} variant="primary" disabled={isSaving} />
+							<Button title={isSaving ? t("tasks.saving") : isEditing ? t("tasks.saveChanges") : t("tasks.addTaskBtn")} onPress={handleSaveTask} variant="primary" disabled={isSaving} />
 						</View>
 					</ScrollView>
 				</View>
