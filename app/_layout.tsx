@@ -3,6 +3,7 @@ import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } f
 import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SessionProvider } from "../context";
 import "../locales/i18n";
 
@@ -26,8 +27,10 @@ export default function RootLayout() {
 	}
 
 	return (
-		<SessionProvider>
-			<Slot />
-		</SessionProvider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<SessionProvider>
+				<Slot />
+			</SessionProvider>
+		</GestureHandlerRootView>
 	);
 }

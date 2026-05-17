@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
 	},
 	addButtonText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.buttonText },
 
-	notesSection: { marginTop: 32, paddingHorizontal: 0, alignItems: "center" },
+	notesSection: { marginTop: 32, paddingHorizontal: 0, alignItems: "stretch" },
 	notesTitleRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 16, gap: 6 },
 	notesTitleText: { fontFamily: FONTS.heading, fontSize: 22, color: COLORS.primary },
 	notesHighlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 16 },
