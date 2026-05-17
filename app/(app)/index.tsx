@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -17,6 +18,7 @@ import { useDailySummary } from "../../hooks/useDailySummary";
 
 export default function DailySummaryHome() {
 	const { t } = useTranslation();
+	const router = useRouter();
 	const { user, userData } = useSession();
 
 	const [isAddTaskModalVisible, setAddTaskModalVisible] = useState(false);
@@ -146,7 +148,7 @@ export default function DailySummaryHome() {
 					{note && <NoteCard note={note} />}
 
 					<View style={styles.seeMoreWrapper}>
-						<Button title={t("dailySummary.seeMoreNotes")} onPress={() => {}} variant="primary" />
+						<Button title={t("dailySummary.seeMoreNotes")} onPress={() => router.push("/notes")} variant="primary" />
 					</View>
 				</View>
 			</ScrollView>
