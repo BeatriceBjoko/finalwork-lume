@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { NoteData } from "../components/ui/NoteCard";
 import { getDailyQuote } from "../constants/quotes";
@@ -9,25 +9,22 @@ import { deleteTaskFromDB, getTasksForDate, toggleTaskStatusInDB } from "../serv
 const TEMPLATE_TASKS = [
 	{
 		id: "tmpl_1",
-		title: "Ochtend vitals & medicatie",
-		time: "08:00",
-		status: "Voltooid" as const,
-		icon: "pill" as const,
+		title: "Voedzame lunch",
+		time: "11:30",
+		status: "Nog te doen" as const,
+		icon: "food-fork-drink" as const,
 		createdBy: "demo",
-		description: ["Bloeddruk en hartslag controleren", "Ochtendmedicatie geven na het ontbijt"],
-		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
+		description: ["Lichte lunch met zalm, groenten en rijst klaarmaken"],
 	},
-	{ id: "tmpl_2", title: "Tuintherapie", time: "09:00", status: "Nog te doen" as const, icon: "flower-outline" as const, createdBy: "demo", description: ["Rustige wandeling in de tuin", "Water meenemen"] },
-	{ id: "tmpl_3", title: "Voedzame lunch", time: "11:30", status: "Nog te doen" as const, icon: "food-fork-drink" as const, createdBy: "demo", description: ["Lichte lunch met zalm, groenten en rijst klaarmaken"] },
 	{
-		id: "tmpl_4",
+		id: "tmpl_2",
 		title: "Kinesitherapie – Controle na operatie",
 		time: "15:30",
 		status: "Voltooid" as const,
 		icon: "clipboard-pulse-outline" as const,
 		createdBy: "demo",
 		expanded: true,
-		description: ["Opvolgafspraak bij UZ Brussel"],
+		description: ["Opvolgafspraak bij UZ Brussel", "Kamer 402 - hoofdgebouw", "Vergeet je medische dossiers niet mee te nemen"],
 		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
 	},
 ];
@@ -100,8 +97,7 @@ export function useDailySummary() {
 				}
 			} catch (error) {
 				console.error("Fout bij het inladen:", error);
-			}
-			military: {
+			} finally {
 				setIsLoading(false);
 			}
 		}
@@ -116,30 +112,36 @@ export function useDailySummary() {
 	const capitalizedDayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
 	const dailyQuote = getDailyQuote(currentTime);
 
-	const totalToday = tasks.length;
-	const completed = tasks.filter((t) => t.status === "Voltooid").length;
-	const open = tasks.filter((t) => t.status !== "Voltooid").length;
+	const { totalToday, completed, open } = useMemo(() => {
+		const total = tasks.length;
+		const comp = tasks.filter((t) => t.status === "Voltooid").length;
+		const op = tasks.filter((t) => t.status !== "Voltooid").length;
+		return { totalToday: total, completed: comp, open: op };
+	}, [tasks]);
 
 	const toggleTaskExpanded = (id: string) => {
-		setTasks(tasks.map((t) => (t.id === id ? { ...t, expanded: !t.expanded } : t)));
+		setTasks((prevTasks) => prevTasks.map((t) => (t.id === id ? { ...t, expanded: !t.expanded } : t)));
 	};
 
 	const handleToggleTaskStatus = async (taskId: string, currentStatus: string) => {
-		if (isTemplateMode) {
-			setTasks(tasks.map((t) => (t.id === taskId ? { ...t, status: currentStatus === "Voltooid" ? "Nog te doen" : "Voltooid" } : t)));
-			return;
-		}
-		try {
-			await toggleTaskStatusInDB(taskId, currentStatus);
-			setTasks(tasks.map((t) => (t.id === taskId ? { ...t, status: currentStatus === "Voltooid" ? "Nog te doen" : "Voltooid" } : t)));
-		} catch (error) {
-			console.error(error);
+		const newStatus = currentStatus === "Voltooid" ? "Nog te doen" : "Voltooid";
+
+		setTasks((prevTasks) => prevTasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)));
+
+		if (!isTemplateMode) {
+			try {
+				await toggleTaskStatusInDB(taskId, currentStatus);
+			} catch (error) {
+				console.error(error);
+				setTasks((prevTasks) => prevTasks.map((t) => (t.id === taskId ? { ...t, status: currentStatus } : t)));
+				Alert.alert("Fout", "Kon de status niet aanpassen in de database.");
+			}
 		}
 	};
 
 	const handleTriggerDeleteTask = async (taskId: string, taskCreatorId: string) => {
 		if (isTemplateMode) {
-			setTasks(tasks.filter((t) => t.id !== taskId));
+			setTasks((prevTasks) => prevTasks.filter((t) => t.id !== taskId));
 			return;
 		}
 
@@ -147,8 +149,7 @@ export function useDailySummary() {
 
 		try {
 			await deleteTaskFromDB(taskId, taskCreatorId, userRole, currentUserId);
-
-			setTasks(tasks.filter((t) => t.id !== taskId));
+			setTasks((prevTasks) => prevTasks.filter((t) => t.id !== taskId));
 		} catch (error: any) {
 			Alert.alert("Oei, actie geweigerd", error.message || "Je hebt geen rechten om deze taak te verwijderen.");
 		}

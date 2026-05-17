@@ -22,8 +22,19 @@ interface CardConfig {
 
 function useCountUp(target: number, delay = 0) {
 	const [display, setDisplay] = useState(0);
+	const [isFirstRender, setIsFirstRender] = useState(true);
+
 	useEffect(() => {
-		if (target === 0) return;
+		if (!isFirstRender) {
+			setDisplay(target);
+			return;
+		}
+
+		if (target === 0) {
+			setDisplay(0);
+			return;
+		}
+
 		const timeout = setTimeout(() => {
 			let current = 0;
 			const increment = Math.ceil(target / 20);
@@ -31,6 +42,7 @@ function useCountUp(target: number, delay = 0) {
 				current += increment;
 				if (current >= target) {
 					setDisplay(target);
+					setIsFirstRender(false);
 					clearInterval(interval);
 				} else {
 					setDisplay(current);
@@ -39,7 +51,8 @@ function useCountUp(target: number, delay = 0) {
 			return () => clearInterval(interval);
 		}, delay);
 		return () => clearTimeout(timeout);
-	}, [target, delay]);
+	}, [target, delay, isFirstRender]);
+
 	return display;
 }
 
@@ -145,9 +158,9 @@ export function TaskSummaryCards({ totalToday, completed, open }: TaskSummaryCar
 		sublabel: `${totalToday} taken`,
 		value: totalToday,
 		icon: "calendar-month",
-		bg: "#E8F5DC",
-		iconBg: "rgba(42, 122, 58, 0.13)",
-		iconColor: "#2A7A3A",
+		bg: "#FEFBE0",
+		iconBg: "rgba(239, 252, 0, 0.40)",
+		iconColor: "#7A7000",
 	};
 
 	const smallCards: CardConfig[] = [
@@ -156,19 +169,18 @@ export function TaskSummaryCards({ totalToday, completed, open }: TaskSummaryCar
 			sublabel: `${completed} taken`,
 			value: completed,
 			icon: "check-circle-outline",
-			bg: "#FFE8C8",
-			iconBg: "rgba(210, 120, 20, 0.15)",
-			iconColor: "#C97B20",
+			bg: "#E8F5DC",
+			iconBg: "rgba(42, 122, 58, 0.13)",
+			iconColor: "#2A7A3A",
 		},
-
 		{
-			label: "Open",
+			label: "Nog te doen",
 			sublabel: `${open} taken`,
 			value: open,
 			icon: "clock-outline",
-			bg: "#FEFBE0",
-			iconBg: "rgba(239, 252, 0, 0.40)",
-			iconColor: "#7A7000",
+			bg: "#FFE8C8",
+			iconBg: "rgba(210, 120, 20, 0.15)",
+			iconColor: "#C97B20",
 		},
 	];
 
