@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import { NoteData } from "../components/ui/NoteCard";
 import { getDailyQuote } from "../constants/quotes";
 import { useSession } from "../context";
 import { getDailyNote } from "../services/firebase/notes.service";
-import { getTasksForDate, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
+import { deleteTaskFromDB, getTasksForDate, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
 
 const TEMPLATE_TASKS = [
 	{
@@ -12,18 +13,21 @@ const TEMPLATE_TASKS = [
 		time: "08:00",
 		status: "Voltooid" as const,
 		icon: "pill" as const,
-		description: ["Bloeddruk en hartslag controleren", "Ochtendmedicatie geven na het ontbijt", "Noteer als er iets ongewoon is"],
+		createdBy: "demo",
+		description: ["Bloeddruk en hartslag controleren", "Ochtendmedicatie geven na het ontbijt"],
 		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
 	},
-	{ id: "tmpl_2", title: "Tuintherapie", time: "09:00", status: "Nog te doen" as const, icon: "flower-outline" as const, description: ["Rustige wandeling in de tuin", "Let op vermoeidheid of duizeligheid", "Water meenemen"] },
-	{ id: "tmpl_3", title: "Voedzame lunch", time: "11:30", status: "Nog te doen" as const, icon: "food-fork-drink" as const, description: ["Lichte lunch met zalm, groenten en rijst klaarmaken", "Zorg voor een rustig eetmoment zonder haast"] },
+	{ id: "tmpl_2", title: "Tuintherapie", time: "09:00", status: "Nog te doen" as const, icon: "flower-outline" as const, createdBy: "demo", description: ["Rustige wandeling in de tuin", "Water meenemen"] },
+	{ id: "tmpl_3", title: "Voedzame lunch", time: "11:30", status: "Nog te doen" as const, icon: "food-fork-drink" as const, createdBy: "demo", description: ["Lichte lunch met zalm, groenten en rijst klaarmaken"] },
 	{
 		id: "tmpl_4",
 		title: "Kinesitherapie – Controle na operatie",
 		time: "15:30",
 		status: "Voltooid" as const,
 		icon: "clipboard-pulse-outline" as const,
-		description: ["Opvolgafspraak bij UZ Brussel", "Kamer 402 – hoofdgebouw", "Vergeet je medische dossiers niet mee te nemen"],
+		createdBy: "demo",
+		expanded: true,
+		description: ["Opvolgafspraak bij UZ Brussel"],
 		assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
 	},
 ];
@@ -31,12 +35,16 @@ const TEMPLATE_TASKS = [
 export function useDailySummary() {
 	const { userData, user } = useSession();
 	const circleId = userData?.careCircleId;
+	const currentUserId = user?.uid;
+	const userRole = userData?.role || "member";
 
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [tasks, setTasks] = useState<any[]>([]);
 	const [note, setNote] = useState<NoteData | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isTemplateMode, setIsTemplateMode] = useState(false);
+
+	const [refreshTrigger, setRefreshTrigger] = useState(0);
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -61,7 +69,6 @@ export function useDailySummary() {
 
 			try {
 				setIsLoading(true);
-
 				const [fetchedTasks, fetchedNote] = await Promise.all([getTasksForDate(circleId, databaseDateQueryString), getDailyNote(circleId, databaseDateQueryString)]);
 
 				if (fetchedTasks.length === 0) {
@@ -75,11 +82,11 @@ export function useDailySummary() {
 				if (!fetchedNote) {
 					setNote({
 						id: "empty_state",
-						title: "Schrijf je eerste herinnering! ✨",
+						title: "Schrijf je eerste herinnering!",
 						time: "--:--",
 						icon: "comment-plus-outline",
 						tag: "Tip van Lume",
-						content: "Er zijn vandaag nog geen observaties of notities gedeeld. Schrijf een kort berichtje over hoe de dag verloopt! Het geeft de hele zorgkring enorm veel rust en verbondenheid om te weten hoe het gaat. ♥",
+						content: "Er zijn vandaag nog geen observaties of notities gedeeld. Schrijf een kort berichtje over hoe de dag verloopt! Het geeft de hele zorgkring enorm veel rust. ♥",
 					});
 				} else {
 					setNote({
@@ -92,14 +99,15 @@ export function useDailySummary() {
 					});
 				}
 			} catch (error) {
-				console.error("Fout bij het inladen van de dagelijkse samenvatting:", error);
-			} finally {
+				console.error("Fout bij het inladen:", error);
+			}
+			military: {
 				setIsLoading(false);
 			}
 		}
 
 		loadFirebaseData();
-	}, [circleId, databaseDateQueryString]);
+	}, [circleId, databaseDateQueryString, refreshTrigger]);
 
 	const displayName = userData?.name || user?.displayName?.split(" ")[0] || "Beatrice";
 	const formattedTime = currentTime.toLocaleTimeString("nl-BE", { hour: "2-digit", minute: "2-digit" });
@@ -116,21 +124,38 @@ export function useDailySummary() {
 		setTasks(tasks.map((t) => (t.id === id ? { ...t, expanded: !t.expanded } : t)));
 	};
 
-	// Live status afvinken in de database
 	const handleToggleTaskStatus = async (taskId: string, currentStatus: string) => {
 		if (isTemplateMode) {
 			setTasks(tasks.map((t) => (t.id === taskId ? { ...t, status: currentStatus === "Voltooid" ? "Nog te doen" : "Voltooid" } : t)));
 			return;
 		}
-
 		try {
-			// gooit de verandering naar Firestore via de service
 			await toggleTaskStatusInDB(taskId, currentStatus);
-			// Update direct de lokale state zodat de summary cards LIVE mee veranderen!
 			setTasks(tasks.map((t) => (t.id === taskId ? { ...t, status: currentStatus === "Voltooid" ? "Nog te doen" : "Voltooid" } : t)));
 		} catch (error) {
-			console.error("Kon taak status niet aanpassen:", error);
+			console.error(error);
 		}
+	};
+
+	const handleTriggerDeleteTask = async (taskId: string, taskCreatorId: string) => {
+		if (isTemplateMode) {
+			setTasks(tasks.filter((t) => t.id !== taskId));
+			return;
+		}
+
+		if (!currentUserId) return;
+
+		try {
+			await deleteTaskFromDB(taskId, taskCreatorId, userRole, currentUserId);
+
+			setTasks(tasks.filter((t) => t.id !== taskId));
+		} catch (error: any) {
+			Alert.alert("Oei, actie geweigerd", error.message || "Je hebt geen rechten om deze taak te verwijderen.");
+		}
+	};
+
+	const triggerRefresh = () => {
+		setRefreshTrigger((prev) => prev + 1);
 	};
 
 	return {
@@ -145,8 +170,10 @@ export function useDailySummary() {
 		completed,
 		open,
 		isTemplateMode,
-		isLoading,
+		databaseDateQueryString,
 		toggleTaskExpanded,
 		handleToggleTaskStatus,
+		handleTriggerDeleteTask,
+		triggerRefresh,
 	};
 }

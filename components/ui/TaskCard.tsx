@@ -3,7 +3,7 @@ import { BackdropBlur, Canvas, Fill, Group, RoundedRect, Shadow, rect, rrect } f
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { COLORS } from "../../constants/theme";
 
@@ -20,6 +20,7 @@ export interface TaskData {
 		photo?: string;
 		initials: string;
 	};
+	createdBy?: string;
 }
 
 interface TaskCardProps {
@@ -27,6 +28,9 @@ interface TaskCardProps {
 	expanded: boolean;
 	onPress: () => void;
 	onToggleStatus?: () => void;
+	canManage?: boolean;
+	onEdit?: () => void;
+	onDelete?: () => void;
 	overlap?: boolean;
 	stackIndex?: number;
 }
@@ -34,7 +38,7 @@ interface TaskCardProps {
 const CARD_RADIUS = 10;
 const OVERLAP_OFFSET = 12;
 
-export function TaskCard({ task, expanded, onPress, onToggleStatus, overlap = false, stackIndex = 0 }: TaskCardProps) {
+export function TaskCard({ task, expanded, onPress, onToggleStatus, canManage = false, onEdit, onDelete, overlap = false, stackIndex = 0 }: TaskCardProps) {
 	const [cardWidth, setCardWidth] = useState(0);
 	const [cardHeight, setCardHeight] = useState(0);
 
@@ -51,12 +55,24 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, overlap = fa
 	const glowStart = isYellow ? "rgba(255, 230, 0, 0.42)" : "rgba(196, 176, 230, 0.31)";
 	const glowMid = isYellow ? "rgba(255, 230, 0, 0)" : "rgba(196, 176, 230, 0)";
 
-	// Description fade
 	const descOpacity = useSharedValue(expanded ? 1 : 0);
 	useEffect(() => {
 		descOpacity.value = withTiming(expanded ? 1 : 0, { duration: 220 });
 	}, [expanded]);
 	const descStyle = useAnimatedStyle(() => ({ opacity: descOpacity.value }));
+
+	const handleTrashClick = (e: any) => {
+		e.stopPropagation();
+		Alert.alert("Taak verwijderen", "Weet je zeker dat je deze taak wilt verwijderen?", [
+			{ text: "Annuleren", style: "cancel" },
+			{ text: "Verwijderen", style: "destructive", onPress: onDelete },
+		]);
+	};
+
+	const handleEditClick = (e: any) => {
+		e.stopPropagation();
+		if (onEdit) onEdit();
+	};
 
 	const PAD = 18;
 	const hasSize = cardWidth > 0 && cardHeight > 0;
@@ -65,18 +81,8 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, overlap = fa
 	return (
 		<Pressable onPress={onPress} style={[styles.pressable, overlap && { marginBottom: -OVERLAP_OFFSET }, { zIndex: stackIndex }]} onLayout={(e) => setCardWidth(e.nativeEvent.layout.width)}>
 			<View style={{ position: "relative", minHeight: 72 }} onLayout={(e) => setCardHeight(e.nativeEvent.layout.height)}>
-				{/* Skia canvas: drop shadow + glass + inner shadow + stroke */}
 				{hasSize && clipPath && (
-					<Canvas
-						style={{
-							position: "absolute",
-							top: -PAD,
-							left: -PAD,
-							width: cardWidth + PAD * 2,
-							height: cardHeight + PAD * 2,
-						}}
-						pointerEvents="none"
-					>
+					<Canvas style={{ position: "absolute", top: -PAD, left: -PAD, width: cardWidth + PAD * 2, height: cardHeight + PAD * 2 }} pointerEvents="none">
 						<Group transform={[{ translateX: PAD }, { translateY: PAD }]}>
 							<RoundedRect x={0} y={0} width={cardWidth} height={cardHeight} r={CARD_RADIUS} color="rgba(255,255,255,0.01)">
 								<Shadow dx={0} dy={4} blur={4} color={dropShadowColor} />
@@ -85,14 +91,12 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, overlap = fa
 							<Group clip={clipPath}>
 								<BackdropBlur blur={5} />
 								<Fill color="rgba(255, 255, 255, 0.10)" />
-
 								<Group blendMode="screen">
 									<RoundedRect x={0} y={0} width={cardWidth} height={cardHeight} r={CARD_RADIUS} color="rgba(255, 255, 255, 0.090)">
 										<Shadow dx={0} dy={-4} blur={55} color={innerShadowColor} inner />
 									</RoundedRect>
 								</Group>
 							</Group>
-
 							<RoundedRect x={0} y={0} width={cardWidth} height={cardHeight} r={CARD_RADIUS} color={strokeColor} style="stroke" strokeWidth={1.5} />
 						</Group>
 					</Canvas>
@@ -105,15 +109,7 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, overlap = fa
 						colors={[glowStart, glowMid, "transparent"]}
 						start={{ x: 0, y: 0 }}
 						end={{ x: 0, y: 1 }}
-						style={{
-							position: "absolute",
-							top: 0,
-							left: 0,
-							right: 0,
-							height: 70,
-							borderTopLeftRadius: CARD_RADIUS,
-							borderTopRightRadius: CARD_RADIUS,
-						}}
+						style={{ position: "absolute", top: 0, left: 0, right: 0, height: 70, borderTopLeftRadius: CARD_RADIUS, borderTopRightRadius: CARD_RADIUS }}
 					/>
 				</View>
 
@@ -146,7 +142,24 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, overlap = fa
 					)}
 
 					<View style={[styles.footer, expanded && styles.footerExpanded]}>
-						{expanded ? <Text style={styles.timeExpanded}>{task.time}</Text> : <View />}
+						{expanded ? (
+							<View style={styles.footerLeft}>
+								<Text style={styles.timeExpanded}>{task.time}</Text>
+								{canManage && (
+									<View style={styles.actionButtons}>
+										<Pressable onPress={handleEditClick} style={styles.actionBtn}>
+											<MaterialCommunityIcons name="pencil-outline" size={16} color="#475569" />
+										</Pressable>
+										<Pressable onPress={handleTrashClick} style={styles.actionBtn}>
+											<MaterialCommunityIcons name="trash-can-outline" size={16} color="#C94B47" />
+										</Pressable>
+									</View>
+								)}
+							</View>
+						) : (
+							<View />
+						)}
+
 						<View style={styles.footerRight}>
 							{expanded &&
 								task.assignee &&
@@ -179,117 +192,27 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, overlap = fa
 
 const styles = StyleSheet.create({
 	pressable: { marginBottom: 8 },
-
-	glassClip: {
-		borderRadius: CARD_RADIUS,
-		overflow: "hidden",
-	},
-
-	content: {
-		padding: 14,
-		paddingBottom: 18,
-	},
-
-	topRow: {
-		flexDirection: "row",
-		alignItems: "flex-start",
-		gap: 10,
-	},
-	iconCircle: {
-		width: 42,
-		height: 42,
-		borderRadius: 21,
-		justifyContent: "center",
-		alignItems: "center",
-		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 3 },
-		shadowOpacity: 0.18,
-		shadowRadius: 4,
-		elevation: 4,
-	},
-
+	glassClip: { borderRadius: CARD_RADIUS, overflow: "hidden" },
+	content: { padding: 14, paddingBottom: 18 },
+	topRow: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
+	iconCircle: { width: 42, height: 42, borderRadius: 21, justifyContent: "center", alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.18, shadowRadius: 4, elevation: 4 },
 	titleBlock: { flex: 1 },
-	title: {
-		fontFamily: "InterSemiBold",
-		fontSize: 16,
-		color: COLORS.primary,
-		marginBottom: 2,
-		lineHeight: 20,
-	},
-	timeCollapsed: {
-		fontFamily: "InterRegular",
-		fontSize: 14,
-		color: COLORS.primary,
-		opacity: 0.6,
-	},
-	timeExpanded: {
-		fontFamily: "InterRegular",
-		fontSize: 12,
-		color: "#475569",
-	},
-
-	chevronCircle: {
-		width: 28,
-		height: 28,
-		borderRadius: 14,
-		borderWidth: 1,
-		borderColor: "rgba(70, 74, 0, 0.35)",
-		justifyContent: "center",
-		alignItems: "center",
-		marginTop: 2,
-	},
-
-	descBlock: {
-		paddingLeft: 52,
-		paddingRight: 8,
-		marginTop: 10,
-	},
-	bullet: {
-		fontFamily: "InterRegular",
-		fontSize: 13,
-		color: COLORS.primary,
-		lineHeight: 21,
-		marginBottom: 2,
-	},
-
-	footer: {
-		flexDirection: "row",
-		justifyContent: "flex-end",
-		alignItems: "center",
-		marginTop: 10,
-	},
-	footerExpanded: {
-		justifyContent: "space-between",
-		marginTop: 14,
-	},
-
-	footerRight: {
-		flexDirection: "row",
-		alignItems: "center",
-		gap: 8,
-	},
-
-	assigneeRing: {
-		borderRadius: 20,
-		borderWidth: 2,
-		borderColor: COLORS.accent,
-		padding: 1,
-	},
-	assigneePhoto: {
-		width: 34,
-		height: 34,
-		borderRadius: 17,
-	},
-	initialsCircle: {
-		width: 34,
-		height: 34,
-		borderRadius: 17,
-		justifyContent: "center",
-		alignItems: "center",
-		backgroundColor: "rgba(239, 252, 0, 0.30)",
-	},
+	title: { fontFamily: "InterSemiBold", fontSize: 16, color: COLORS.primary, marginBottom: 2, lineHeight: 20 },
+	timeCollapsed: { fontFamily: "InterRegular", fontSize: 14, color: COLORS.primary, opacity: 0.6 },
+	timeExpanded: { fontFamily: "InterRegular", fontSize: 12, color: "#475569" },
+	chevronCircle: { width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: "rgba(70, 74, 0, 0.35)", justifyContent: "center", alignItems: "center", marginTop: 2 },
+	descBlock: { paddingLeft: 52, paddingRight: 8, marginTop: 10 },
+	bullet: { fontFamily: "InterRegular", fontSize: 13, color: COLORS.primary, lineHeight: 21, marginBottom: 2 },
+	footer: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 10 },
+	footerExpanded: { justifyContent: "space-between", marginTop: 14 },
+	footerLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
+	actionButtons: { flexDirection: "row", gap: 6 },
+	actionBtn: { padding: 4, backgroundColor: "rgba(255,255,255,0.4)", borderRadius: 6 },
+	footerRight: { flexDirection: "row", alignItems: "center", gap: 8 },
+	assigneeRing: { borderRadius: 20, borderWidth: 2, borderColor: COLORS.accent, padding: 1 },
+	assigneePhoto: { width: 34, height: 34, borderRadius: 17 },
+	initialsCircle: { width: 34, height: 34, borderRadius: 17, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(239, 252, 0, 0.30)" },
 	initials: { fontFamily: "InterBold", fontSize: 11, color: COLORS.primary },
-
 	badge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
 	badgeDone: { backgroundColor: "#d4eaaa5f" },
 	badgeOpen: { backgroundColor: "#f2e3c676" },

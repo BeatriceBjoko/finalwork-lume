@@ -1,17 +1,58 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { AddTaskModal } from "../../components/ui/AddTaskModal";
 import Button from "../../components/ui/Button";
 import { NoteCard } from "../../components/ui/NoteCard";
 import { QuoteCard } from "../../components/ui/QuoteCard";
 import { TaskCard } from "../../components/ui/TaskCard";
 import { TaskSummaryCards } from "../../components/ui/TaskSummaryCards";
+
 import { COLORS, FONTS } from "../../constants/theme";
+import { useSession } from "../../context";
 import { useDailySummary } from "../../hooks/useDailySummary";
 
 export default function DailySummaryHome() {
-	const { displayName, formattedTime, formattedDate, capitalizedDayName, dailyQuote, tasks, note, totalToday, completed, open, isTemplateMode, toggleTaskExpanded, handleToggleTaskStatus } = useDailySummary();
+	const { user, userData } = useSession();
+
+	const [isAddTaskModalVisible, setAddTaskModalVisible] = useState(false);
+	const [taskToEdit, setTaskToEdit] = useState<any>(null);
+
+	const {
+		displayName,
+		formattedTime,
+		formattedDate,
+		capitalizedDayName,
+		dailyQuote,
+		tasks,
+		note,
+		totalToday,
+		completed,
+		open,
+		isTemplateMode,
+		databaseDateQueryString,
+		toggleTaskExpanded,
+		handleToggleTaskStatus,
+		handleTriggerDeleteTask,
+		triggerRefresh,
+	} = useDailySummary();
+
+	const handleEditTask = (task: any) => {
+		setTaskToEdit(task);
+		setAddTaskModalVisible(true);
+	};
+
+	const handleDeleteTask = (taskId: string, taskCreatorId: string) => {
+		handleTriggerDeleteTask(taskId, taskCreatorId);
+	};
+
+	const handleCloseModal = () => {
+		setAddTaskModalVisible(false);
+		setTaskToEdit(null);
+		triggerRefresh();
+	};
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -58,6 +99,11 @@ export default function DailySummaryHome() {
 					{tasks.map((task, idx) => {
 						const taskTheme = idx % 2 === 0 ? "yellow" : "purple";
 
+						const currentUserId = user?.uid;
+						const isOwner = task.createdBy === currentUserId;
+						const isAdmin = userData?.role === "admin";
+						const canManageTask = isTemplateMode ? true : isAdmin || isOwner;
+
 						return (
 							<TaskCard
 								key={task.id}
@@ -65,6 +111,9 @@ export default function DailySummaryHome() {
 								expanded={task.expanded}
 								onPress={() => toggleTaskExpanded(task.id)}
 								onToggleStatus={() => handleToggleTaskStatus(task.id, task.status)}
+								canManage={canManageTask}
+								onEdit={() => handleEditTask(task)}
+								onDelete={() => handleDeleteTask(task.id, task.createdBy)}
 								overlap={!task.expanded && idx < tasks.length - 1}
 								stackIndex={idx}
 							/>
@@ -72,7 +121,13 @@ export default function DailySummaryHome() {
 					})}
 
 					<View style={styles.addWrapper}>
-						<Pressable style={styles.addButton}>
+						<Pressable
+							style={styles.addButton}
+							onPress={() => {
+								setTaskToEdit(null);
+								setAddTaskModalVisible(true);
+							}}
+						>
 							<Text style={styles.addButtonText}>Taak toevoegen</Text>
 						</Pressable>
 					</View>
@@ -93,6 +148,8 @@ export default function DailySummaryHome() {
 					</View>
 				</View>
 			</ScrollView>
+
+			{databaseDateQueryString && <AddTaskModal visible={isAddTaskModalVisible} onClose={handleCloseModal} currentDateStr={databaseDateQueryString} taskToEdit={taskToEdit} />}
 		</SafeAreaView>
 	);
 }
