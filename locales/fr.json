@@ -400,5 +400,25 @@
 			"yesterday": "Hier"
 		},
 		"templateBanner": "Ceci est un exemple du journal de bord. N'hésitez pas à le supprimer et à écrire votre propre note !"
+	},
+	"calendar": {
+		"titlePart1": "Mon",
+		"titlePart2": "agenda",
+		"today": "Aujourd'hui",
+		"tasksCount": "{{count}} tâches",
+		"empty": {
+			"title": "Aucune tâche ce jour-là",
+			"subtitle": "Appuyez sur + pour ajouter une tâche ou sélectionnez un autre jour."
+		},
+		"syncBtn": "Ajouter à l'agenda",
+		"synced": "Ajoutée",
+		"permission": {
+			"title": "Accès requis",
+			"message": "Nous avons besoin d'accéder à votre agenda pour y ajouter des tâches."
+		},
+		"errors": {
+			"noCalendar": "Aucun agenda modifiable trouvé sur votre appareil.",
+			"exportFailed": "Impossible d'ajouter la tâche à votre agenda."
+		}
 	}
 }

@@ -399,5 +399,25 @@
 			"yesterday": "Gisteren"
 		},
 		"templateBanner": "Dit is een voorbeeld van het logboek. Verwijder deze gerust en schrijf je eigen notitie!"
+	},
+	"calendar": {
+		"titlePart1": "Mijn",
+		"titlePart2": "agenda",
+		"today": "Vandaag",
+		"tasksCount": "{{count}} taken",
+		"empty": {
+			"title": "Geen taken op deze dag",
+			"subtitle": "Tik op + om een taak toe te voegen of selecteer een andere dag."
+		},
+		"syncBtn": "Voeg toe aan agenda",
+		"synced": "Toegevoegd",
+		"permission": {
+			"title": "Toegang nodig",
+			"message": "We hebben toegang tot je agenda nodig om taken toe te voegen."
+		},
+		"errors": {
+			"noCalendar": "Geen schrijfbare agenda gevonden op je toestel.",
+			"exportFailed": "Kon de taak niet toevoegen aan je agenda."
+		}
 	}
 }
