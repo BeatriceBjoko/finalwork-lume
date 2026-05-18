@@ -48,16 +48,16 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 
 	const handlePickImage = async () => {
 		if (images.length >= 3) {
-			Alert.alert("Maximum bereikt", "Je kunt maximaal 3 foto's per notitie toevoegen.");
+			Alert.alert(t("logbook.alerts.maxImages"), t("logbook.alerts.maxImagesMessage"));
 			return;
 		}
 
 		try {
 			const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 			if (!permissionResult.granted) {
-				Alert.alert("Toegang vereist", "We hebben toegang tot je foto's nodig. Wil je dit aanzetten in je instellingen?", [
-					{ text: "Annuleren", style: "cancel" },
-					{ text: "Instellingen", onPress: () => Linking.openSettings() },
+				Alert.alert(t("logbook.alerts.permissionTitle"), t("logbook.alerts.permissionMessage"), [
+					{ text: t("common.cancel"), style: "cancel" },
+					{ text: t("common.settings"), onPress: () => Linking.openSettings() },
 				]);
 				return;
 			}
@@ -73,7 +73,6 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 			}
 		} catch (error) {
 			console.error("Fout bij foto selecteren:", error);
-			Alert.alert("Fout", "Er ging iets mis bij het openen van de galerij.");
 		}
 	};
 
@@ -82,12 +81,9 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 	};
 
 	const handleSaveNote = async () => {
-		if (!circleId || !user?.uid) {
-			Alert.alert("Fout", "Je bent niet gekoppeld aan een zorgkring.");
-			return;
-		}
+		if (!circleId || !user?.uid) return;
 		if (!title.trim() || !content.trim()) {
-			Alert.alert("Verplicht", "Vul zowel een titel als een bericht in.");
+			Alert.alert(t("tasks.errors.errorTitle"), t("errors.missingFields"));
 			return;
 		}
 
@@ -98,7 +94,7 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 			const month = (now.getMonth() + 1).toString().padStart(2, "0");
 			const day = now.getDate().toString().padStart(2, "0");
 
-			const authorName = userData?.name || user?.displayName || "Lid";
+			const authorName = userData?.name || user?.displayName || (t("profile.roleMember") === "membre" ? "Membre" : "Lid");
 			const authorInitials = authorName.substring(0, 2).toUpperCase();
 			const authorPhoto = userData?.photoUrl || user?.photoURL || null;
 
@@ -129,7 +125,7 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 			onClose();
 		} catch (error) {
 			console.error(error);
-			Alert.alert("Fout", "Kon de notitie niet opslaan.");
+			Alert.alert(t("tasks.errors.errorTitle"), t("logbook.alerts.saveError"));
 		} finally {
 			setIsSaving(false);
 		}

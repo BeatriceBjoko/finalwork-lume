@@ -82,7 +82,9 @@ export default function DailySummaryHome() {
 					</View>
 					<View style={styles.timeBlock}>
 						<View style={styles.timeDivider} />
-						<Text style={styles.timeText}>{formattedTime} uur</Text>
+						<Text style={styles.timeText}>
+							{formattedTime} {t("dailySummary.hourSuffix")}
+						</Text>
 					</View>
 				</View>
 

@@ -2,7 +2,8 @@
 	"common": {
 		"cancel": "Annuleren",
 		"ok": "OK",
-		"loading": "Laden..."
+		"loading": "Laden...",
+		"settings": "Instellingen"
 	},
 	"login": {
 		"title": "LOG IN",
@@ -46,7 +47,7 @@
 			}
 		],
 		"termsContent": [
-			{ "type": "body", "text": "Door Lume te gebruiken, ga je akkoord met de volgende voorwaarden." },
+			{ "type": "body", "text": "By Lume te gebruiken, ga je akkoord met de volgende voorwaarden." },
 			{ "type": "subtitle", "text": "Gebruik van de app" },
 			{ "type": "body", "text": "Lume is bedoeld als hulpmiddel om zorgtaken te organiseren en te ondersteunen. De app vervangt geen professioneel medisch advies." },
 			{ "type": "subtitle", "text": "Verantwoordelijkheid" },
@@ -328,11 +329,69 @@
 		"emptyNoteContent": "Er zijn vandaag nog geen observaties of notities gedeeld. Schrijf een kort berichtje over hoe de dag verloopt! Het geeft de hele zorgkring enorm veel rust. ♥",
 		"noteTag": "Notitie",
 		"importantTag": "Belangrijk",
+		"hourSuffix": "uur",
 		"templateTask1": "Voedzame lunch",
 		"templateTask1Desc": "Lichte lunch met zalm, groenten en rijst klaarmaken",
 		"templateTask2": "Kinesitherapie – Controle na operatie",
 		"templateTask2Desc1": "Opvolgafspraak bij UZ Brussel",
 		"templateTask2Desc2": "Kamer 402 - hoofdgebouw",
 		"templateTask2Desc3": "Vergeet je medische dossiers niet mee te nemen"
+	},
+	"logbook": {
+		"categories": {
+			"medical": "Medisch",
+			"daily": "Dagelijks",
+			"important": "Belangrijk",
+			"feeling": "Gevoel",
+			"practical": "Praktisch",
+			"sleep": "Slaap",
+			"other": "Anders"
+		},
+		"modal": {
+			"newTitle": "Nieuwe Notitie",
+			"editTitle": "Notitie bewerken",
+			"category": "Categorie",
+			"title": "Titel",
+			"titlePlaceholder": "bv. Doktersbezoek, Gevallen...",
+			"important": "Belangrijk?",
+			"message": "Bericht",
+			"messagePlaceholder": "Schrijf hier je update voor de zorgkring...",
+			"addPhotos": "Foto's toevoegen ({{length}}/3)",
+			"saving": "Bezig met opslaan...",
+			"saveBtn": "Wijzigingen opslaan",
+			"shareBtn": "Notitie delen"
+		},
+		"alerts": {
+			"deleteTitle": "Notitie verwijderen?",
+			"deleteMessage": "Weet je zeker dat je deze notitie wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+			"maxImages": "Maximum bereikt",
+			"maxImagesMessage": "Je kunt maximaal 3 foto's per notitie toevoegen.",
+			"permissionTitle": "Toegang vereist",
+			"permissionMessage": "We hebben toegang tot je foto's nodig. Wil je dit aanzetten in je instellingen?",
+			"saveError": "Kon de notitie niet opslaan."
+		},
+		"empty": {
+			"search": "Geen notities gevonden voor \"{{query}}\".",
+			"date": "Er zijn geen notities geschreven op {{date}}.",
+			"default": "Er zijn nog geen notities."
+		},
+		"viewer": {
+			"photos": "Bekijk {{length}} foto's"
+		},
+		"options": {
+			"title": "Notitie Opties",
+			"message": "Wat wil je doen met deze notitie?"
+		},
+		"search": "Zoek in notities...",
+		"filters": {
+			"all": "Alles",
+			"important": "Belangrijk",
+			"date": "Datum"
+		},
+		"dateHeaders": {
+			"today": "Vandaag",
+			"yesterday": "Gisteren"
+		},
+		"templateBanner": "Dit is een voorbeeld van het logboek. Verwijder deze gerust en schrijf je eigen notitie!"
 	}
 }

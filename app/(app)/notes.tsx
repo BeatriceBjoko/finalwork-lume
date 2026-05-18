@@ -44,7 +44,8 @@ export default function NotesScreen() {
 	};
 
 	const displayData = useMemo(() => {
-		return feedData.filter((item) => {
+		const safeFeedData = feedData || [];
+		return safeFeedData.filter((item) => {
 			if (item.type === "header") return true;
 			if (!searchQuery) return true;
 			const searchLower = searchQuery.toLowerCase();
@@ -59,10 +60,9 @@ export default function NotesScreen() {
 			if (item.type === "header") {
 				if (searchQuery) return null;
 
-				const isFr = t("createCircle.relations.andere") === "Autre";
 				let headerTitle = item.titleKey;
-				if (item.titleKey === "today") headerTitle = isFr ? "Aujourd'hui" : "Vandaag";
-				if (item.titleKey === "yesterday") headerTitle = isFr ? "Hier" : "Gisteren";
+				if (item.titleKey === "today") headerTitle = t("logbook.dateHeaders.today");
+				if (item.titleKey === "yesterday") headerTitle = t("logbook.dateHeaders.yesterday");
 
 				return (
 					<View style={styles.dateHeaderWrap}>
@@ -101,7 +101,7 @@ export default function NotesScreen() {
 			<View style={styles.searchSection}>
 				<View style={styles.searchBox}>
 					<Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
-					<TextInput style={styles.searchInput} placeholder={t("tasks.taskTitlePlaceholder") || "Zoeken..."} placeholderTextColor="#9ca3af" value={searchQuery} onChangeText={setSearchQuery} />
+					<TextInput style={styles.searchInput} placeholder={t("logbook.search")} placeholderTextColor="#9ca3af" value={searchQuery} onChangeText={setSearchQuery} />
 				</View>
 
 				<View style={styles.filterRow}>
@@ -112,7 +112,7 @@ export default function NotesScreen() {
 						}}
 						style={[styles.filterChip, activeFilter === "Alles" && styles.filterChipActive]}
 					>
-						<Text style={[styles.filterChipText, activeFilter === "Alles" && styles.filterChipTextActive]}>{t("createCircle.relations.andere") === "Autre" ? "Tout" : "Alles"}</Text>
+						<Text style={[styles.filterChipText, activeFilter === "Alles" && styles.filterChipTextActive]}>{t("logbook.filters.all")}</Text>
 					</Pressable>
 
 					<Pressable
@@ -127,7 +127,7 @@ export default function NotesScreen() {
 
 					<Pressable onPress={() => setDatePickerVisible(true)} style={[styles.filterChip, activeFilter === "Datum" && styles.filterChipActive, styles.dateChip]}>
 						<Ionicons name="calendar-outline" size={14} color={activeFilter === "Datum" ? COLORS.primary : "rgba(35, 54, 0, 0.6)"} style={{ marginRight: 4 }} />
-						<Text style={[styles.filterChipText, activeFilter === "Datum" && styles.filterChipTextActive]}>{selectedDate && activeFilter === "Datum" ? selectedDate : t("createCircle.relations.andere") === "Autre" ? "Date" : "Datum"}</Text>
+						<Text style={[styles.filterChipText, activeFilter === "Datum" && styles.filterChipTextActive]}>{selectedDate && activeFilter === "Datum" ? selectedDate : t("logbook.filters.date")}</Text>
 					</Pressable>
 				</View>
 			</View>
@@ -135,14 +135,14 @@ export default function NotesScreen() {
 			{isTemplateMode && (
 				<View style={styles.templateBanner}>
 					<MaterialCommunityIcons name="information-outline" size={20} color="#354E00" style={{ marginRight: 10 }} />
-					<Text style={styles.templateText}>Dit is een voorbeeld van het logboek. Verwijder deze gerust en schrijf je eigen notitie!</Text>
+					<Text style={styles.templateText}>{t("logbook.templateBanner")}</Text>
 				</View>
 			)}
 
 			{isEmpty && !isLoading && (
 				<View style={styles.emptyState}>
 					<MaterialCommunityIcons name="text-box-search-outline" size={56} color="rgba(35,54,0,0.15)" />
-					<Text style={styles.emptyStateText}>{searchQuery ? `Geen notities gevonden voor "${searchQuery}".` : activeFilter === "Datum" ? "Geen notities geschreven op deze datum." : "Er zijn nog geen notities."}</Text>
+					<Text style={styles.emptyStateText}>{searchQuery ? t("logbook.empty.search", { query: searchQuery }) : activeFilter === "Datum" ? t("logbook.empty.date", { date: selectedDate }) : t("logbook.empty.default")}</Text>
 				</View>
 			)}
 

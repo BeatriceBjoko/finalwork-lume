@@ -2,7 +2,8 @@
 	"common": {
 		"cancel": "Annuler",
 		"ok": "OK",
-		"loading": "Chargement..."
+		"loading": "Chargement...",
+		"settings": "Paramètres"
 	},
 	"login": {
 		"title": "CONNEXION",
@@ -74,7 +75,7 @@
 	"onboarding": {
 		"step1": {
 			"title": "Prendre soin d'un \nproche est beau. \nMais parfois aussi difficile",
-			"description": "Rendez-vous, médicaments, tâches... \ntout le monde aide,mais la vue d'ensemble manque souvent."
+			"description": "Rendez-vous, médicaments, tâches... \ntout le monde aide, mais la vue d'ensemble manque souvent."
 		},
 		"step2": {
 			"title": "Prendre soin ENSEMBLE,\navec plus de tranquillité d'esprit",
@@ -241,6 +242,7 @@
 		"roleLabel": "Rôle (ex. Médecin traitant)",
 		"phoneLabel": "Numéro de téléphone",
 		"addressLabel": "Adresse",
+		"addressPlaceholder": "ex. Rue de la Loi 10, Bruxelles",
 		"cancelBtn": "Annuler",
 		"saveBtn": "Enregistrer",
 		"editAction": "Modifier",
@@ -328,11 +330,69 @@
 		"emptyNoteContent": "Aucune observation ou note n'a été partagée aujourd'hui. Écrivez un petit mot sur le déroulement de la journée ! Cela rassurera tout le cercle de soins. ♥",
 		"noteTag": "Note",
 		"importantTag": "Important",
+		"hourSuffix": "h",
 		"templateTask1": "Repas nutritif",
 		"templateTask1Desc": "Préparer un déjeuner léger avec du saumon, des légumes et du riz",
 		"templateTask2": "Kinésithérapie – Contrôle post-opératoire",
 		"templateTask2Desc1": "Rendez-vous de suivi à l'UZ Brussel",
 		"templateTask2Desc2": "Chambre 402 - bâtiment principal",
 		"templateTask2Desc3": "N'oubliez pas d'apporter vos dossiers médicaux"
+	},
+	"logbook": {
+		"categories": {
+			"medical": "Médical",
+			"daily": "Quotidien",
+			"important": "Important",
+			"feeling": "Humeur",
+			"practical": "Pratique",
+			"sleep": "Sommeil",
+			"other": "Autre"
+		},
+		"modal": {
+			"newTitle": "Nouvelle Note",
+			"editTitle": "Modifier la note",
+			"category": "Catégorie",
+			"title": "Titre",
+			"titlePlaceholder": "ex. Visite médicale, Chute...",
+			"important": "Important ?",
+			"message": "Message",
+			"messagePlaceholder": "Écrivez votre mise à jour pour le cercle de soins...",
+			"addPhotos": "Ajouter des photos ({{length}}/3)",
+			"saving": "Enregistrement...",
+			"saveBtn": "Enregistrer les modifications",
+			"shareBtn": "Partager la note"
+		},
+		"alerts": {
+			"deleteTitle": "Supprimer la note ?",
+			"deleteMessage": "Êtes-vous sûr de vouloir supprimer cette note ? Cette action est irréversible.",
+			"maxImages": "Maximum atteint",
+			"maxImagesMessage": "Vous pouvez ajouter un maximum de 3 photos par note.",
+			"permissionTitle": "Accès requis",
+			"permissionMessage": "Nous avons besoin d'accéder à vos photos. Voulez-vous activer cela dans vos paramètres ?",
+			"saveError": "Impossible d'enregistrer la note."
+		},
+		"empty": {
+			"search": "Aucune note trouvée pour \"{{query}}\".",
+			"date": "Aucune note n'a été écrite le {{date}}.",
+			"default": "Il n'y a pas encore de notes."
+		},
+		"viewer": {
+			"photos": "Voir {{length}} photos"
+		},
+		"options": {
+			"title": "Options de la note",
+			"message": "Que souhaitez-vous faire ?"
+		},
+		"search": "Rechercher dans les notes...",
+		"filters": {
+			"all": "Tout",
+			"important": "Important",
+			"date": "Date"
+		},
+		"dateHeaders": {
+			"today": "Aujourd'hui",
+			"yesterday": "Hier"
+		},
+		"templateBanner": "Ceci est un exemple du journal de bord. N'hésitez pas à le supprimer et à écrire votre propre note !"
 	}
 }

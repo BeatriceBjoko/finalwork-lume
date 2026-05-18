@@ -1,5 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { COLORS, FONTS } from "../../constants/theme";
 import { NOTE_CATEGORIES, useNoteForm } from "../../hooks/useNoteForm";
@@ -11,7 +12,18 @@ interface AddNoteModalProps {
 	noteToEdit?: any | null;
 }
 
+const CATEGORY_KEY_MAP: Record<string, string> = {
+	Medisch: "medical",
+	Dagelijks: "daily",
+	Belangrijk: "important",
+	Gevoel: "feeling",
+	Praktisch: "practical",
+	Slaap: "sleep",
+	Anders: "other",
+};
+
 export function AddNoteModal({ visible, onClose, noteToEdit }: AddNoteModalProps) {
+	const { t } = useTranslation();
 	const { title, setTitle, content, setContent, selectedCategory, setSelectedCategory, isImportant, setIsImportant, images, handlePickImage, handleRemoveImage, isSaving, handleSaveNote } = useNoteForm(visible, onClose, noteToEdit);
 
 	const isEditing = !!noteToEdit;
@@ -23,21 +35,23 @@ export function AddNoteModal({ visible, onClose, noteToEdit }: AddNoteModalProps
 
 				<View style={styles.modalContent}>
 					<View style={styles.header}>
-						<Text style={styles.title}>{isEditing ? "Notitie bewerken" : "Nieuwe Notitie"}</Text>
+						<Text style={styles.title}>{isEditing ? t("logbook.modal.editTitle") : t("logbook.modal.newTitle")}</Text>
 						<Pressable onPress={onClose} style={styles.closeBtn}>
 							<Ionicons name="close" size={24} color={COLORS.primary} />
 						</Pressable>
 					</View>
 
 					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollBody}>
-						<Text style={styles.label}>Categorie</Text>
+						<Text style={styles.label}>{t("logbook.modal.category")}</Text>
 						<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryList}>
 							{NOTE_CATEGORIES.map((cat) => {
 								const isSelected = selectedCategory.id === cat.id;
+								const displayCatName = t(`logbook.categories.${CATEGORY_KEY_MAP[cat.id] ?? "other"}`);
+
 								return (
 									<Pressable key={cat.id} onPress={() => setSelectedCategory(cat)} style={[styles.catChip, isSelected && styles.catChipSelected]}>
 										<MaterialCommunityIcons name={cat.icon as any} size={18} color={isSelected ? COLORS.primary : "#9ca3af"} />
-										<Text style={[styles.catText, isSelected && styles.catTextSelected]}>{cat.id}</Text>
+										<Text style={[styles.catText, isSelected && styles.catTextSelected]}>{displayCatName}</Text>
 									</Pressable>
 								);
 							})}
@@ -45,21 +59,21 @@ export function AddNoteModal({ visible, onClose, noteToEdit }: AddNoteModalProps
 
 						<View style={styles.titleRow}>
 							<View style={{ flex: 1 }}>
-								<Text style={styles.label}>Titel</Text>
-								<TextInput style={styles.input} placeholder="bv. Doktersbezoek, Gevallen..." value={title} onChangeText={setTitle} placeholderTextColor="#9ca3af" />
+								<Text style={styles.label}>{t("logbook.modal.title")}</Text>
+								<TextInput style={styles.input} placeholder={t("logbook.modal.titlePlaceholder")} value={title} onChangeText={setTitle} placeholderTextColor="#9ca3af" />
 							</View>
 							<View style={{ marginLeft: 16, alignItems: "center" }}>
-								<Text style={styles.label}>Belangrijk?</Text>
+								<Text style={styles.label}>{t("logbook.modal.important")}</Text>
 								<Pressable onPress={() => setIsImportant(!isImportant)} style={styles.heartBtn}>
 									<MaterialCommunityIcons name={isImportant ? "heart" : "heart-outline"} size={32} color={isImportant ? "#C94B47" : "rgba(35, 54, 0, 0.2)"} />
 								</Pressable>
 							</View>
 						</View>
 
-						<Text style={styles.label}>Bericht</Text>
-						<TextInput style={[styles.input, styles.textArea]} placeholder="Schrijf hier je update voor de zorgkring..." value={content} onChangeText={setContent} multiline numberOfLines={6} textAlignVertical="top" placeholderTextColor="#9ca3af" />
+						<Text style={styles.label}>{t("logbook.modal.message")}</Text>
+						<TextInput style={[styles.input, styles.textArea]} placeholder={t("logbook.modal.messagePlaceholder")} value={content} onChangeText={setContent} multiline numberOfLines={6} textAlignVertical="top" placeholderTextColor="#9ca3af" />
 
-						<Text style={styles.label}>Foto's toevoegen ({images.length}/3)</Text>
+						<Text style={styles.label}>{t("logbook.modal.addPhotos", { length: images.length })}</Text>
 						<View style={styles.imageSection}>
 							{images.map((imgUri, idx) => (
 								<View key={idx} style={styles.imagePreviewWrap}>
@@ -78,7 +92,7 @@ export function AddNoteModal({ visible, onClose, noteToEdit }: AddNoteModalProps
 						</View>
 
 						<View style={styles.footer}>
-							<Button title={isSaving ? "Bezig met opslaan..." : isEditing ? "Wijzigingen opslaan" : "Notitie delen"} onPress={handleSaveNote} variant="primary" disabled={isSaving} />
+							<Button title={isSaving ? t("logbook.modal.saving") : isEditing ? t("logbook.modal.saveBtn") : t("logbook.modal.shareBtn")} onPress={handleSaveNote} variant="primary" disabled={isSaving} />
 						</View>
 					</ScrollView>
 				</View>
@@ -109,5 +123,5 @@ const styles = StyleSheet.create({
 	previewImage: { width: "100%", height: "100%", borderRadius: 12 },
 	removeImgBtn: { position: "absolute", top: -6, right: -6, backgroundColor: "#C94B47", width: 22, height: 22, borderRadius: 11, justifyContent: "center", alignItems: "center", borderWidth: 2, borderColor: "#FFF" },
 	addImgBtn: { width: 80, height: 80, borderRadius: 12, borderWidth: 1.5, borderColor: "rgba(35, 54, 0, 0.2)", borderStyle: "dashed", justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb" },
-	footer: { marginTop: 32 },
+	footer: { marginTop: 30 },
 });

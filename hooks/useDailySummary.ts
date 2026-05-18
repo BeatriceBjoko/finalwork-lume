@@ -8,7 +8,7 @@ import { getDailyNote } from "../services/firebase/notes.service";
 import { deleteTaskFromDB, getTasksForDate, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
 
 export function useDailySummary() {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { userData, user } = useSession();
 	const circleId = userData?.careCircleId;
 	const currentUserId = user?.uid;
@@ -115,7 +115,7 @@ export function useDailySummary() {
 	const formattedDate = `${dayStr}.${monthStr}`;
 	const dayName = currentTime.toLocaleDateString("nl-BE", { weekday: "long" });
 	const capitalizedDayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-	const dailyQuote = getDailyQuote(currentTime);
+	const dailyQuote = getDailyQuote(currentTime, i18n.language);
 
 	const { totalToday, completed, open } = useMemo(() => {
 		const total = tasks.length;

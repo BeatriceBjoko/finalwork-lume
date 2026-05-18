@@ -1,6 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
@@ -30,6 +31,7 @@ interface NoteCardProps {
 }
 
 export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCardProps) {
+	const { t } = useTranslation();
 	const floatY = useSharedValue(0);
 	const translateX = useSharedValue(0);
 	const startX = useSharedValue(0);
@@ -69,12 +71,36 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 	}));
 
 	const handleOptionsClick = () => {
-		Alert.alert("Notitie Opties", "Wat wil je doen met deze notitie?", [
-			{ text: "Bewerken", onPress: onEdit },
-			{ text: "Verwijderen", onPress: () => setDeleteAlertVisible(true), style: "destructive" },
-			{ text: "Annuleren", style: "cancel" },
+		Alert.alert(t("logbook.options.title"), t("logbook.options.message"), [
+			{ text: t("importantContacts.editAction"), onPress: onEdit },
+			{ text: t("importantContacts.deleteAction"), onPress: () => setDeleteAlertVisible(true), style: "destructive" },
+			{ text: t("importantContacts.cancelBtn"), style: "cancel" },
 		]);
 	};
+
+	const translatedTag = useMemo(() => {
+		if (!note.tag) return t("dailySummary.noteTag");
+
+		const tagMap: Record<string, string> = {
+			medisch: "medical",
+			médical: "medical",
+			dagelijks: "daily",
+			quotidien: "daily",
+			belangrijk: "important",
+			important: "important",
+			gevoel: "feeling",
+			humeur: "feeling",
+			praktisch: "practical",
+			pratique: "practical",
+			slaap: "sleep",
+			sommeil: "sleep",
+			anders: "other",
+			autre: "other",
+		};
+
+		const jsonKey = tagMap[note.tag.toLowerCase()] || "other";
+		return t(`logbook.categories.${jsonKey}`);
+	}, [note.tag, t]);
 
 	return (
 		<View style={styles.scene}>
@@ -86,7 +112,7 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 					<Image source={{ uri: note.images![0] }} style={styles.underlayImage} />
 					<View style={styles.underlayOverlay}>
 						<MaterialCommunityIcons name="magnify-plus-outline" size={36} color="#FFF" />
-						<Text style={styles.underlayText}>Bekijk {note.images!.length} foto's</Text>
+						<Text style={styles.underlayText}>{t("logbook.viewer.photos", { length: note.images!.length })}</Text>
 					</View>
 				</Pressable>
 			)}
@@ -109,7 +135,7 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 							<View style={styles.tagWrap}>
 								<View style={styles.tag}>
 									<MaterialCommunityIcons name={note.icon ?? "notebook-outline"} size={13} color="#FFF" />
-									<Text style={styles.tagText}>{note.tag ?? "Notitie"}</Text>
+									<Text style={styles.tagText}>{translatedTag}</Text>
 								</View>
 							</View>
 
@@ -177,10 +203,10 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 
 			<CustomAlert
 				visible={isDeleteAlertVisible}
-				title="Notitie verwijderen?"
-				message="Weet je zeker dat je deze notitie wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
-				confirmText="Verwijderen"
-				cancelText="Annuleren"
+				title={t("logbook.alerts.deleteTitle")}
+				message={t("logbook.alerts.deleteMessage")}
+				confirmText={t("tasks.deleteConfirm")}
+				cancelText={t("tasks.deleteCancel")}
 				primaryLeft={true}
 				onConfirm={() => {
 					setDeleteAlertVisible(false);
@@ -193,7 +219,6 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 }
 
 const RADIUS = 24;
-
 const styles = StyleSheet.create({
 	scene: { marginTop: 16, marginBottom: 20, paddingTop: 18, paddingBottom: 14, paddingHorizontal: 8 },
 	stackCard: { position: "absolute", left: 8, right: 8, borderRadius: RADIUS, top: 0, bottom: 0 },
