@@ -1,9 +1,9 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AddNoteModal } from "../../../components/ui/AddNoteModal";
 import { NoteCard } from "../../../components/ui/NoteCard";
@@ -11,10 +11,16 @@ import { COLORS, FONTS, TYPOGRAPHY } from "../../../constants/theme";
 import { useSession } from "../../../context";
 import { useNotesFeed } from "../../../hooks/useNotesFeed";
 
+function getEmptyStateText(searchQuery: string, activeFilter: string, selectedDate: string | null, t: (key: string, opts?: any) => string): string {
+	if (searchQuery) return t("logbook.empty.search", { query: searchQuery });
+	if (activeFilter === "Datum") return t("logbook.empty.date", { date: selectedDate });
+	return t("logbook.empty.default");
+}
+
 export default function NotesScreen() {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const { user, userData } = useSession();
+	const insets = useSafeAreaInsets();
 
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isAddModalVisible, setAddModalVisible] = useState(false);
@@ -73,7 +79,7 @@ export default function NotesScreen() {
 
 			const isOwner = item.createdBy === user?.uid;
 			const isAdmin = userData?.role === "admin";
-			const canEdit = isTemplateMode ? true : isOwner || isAdmin;
+			const canEdit = isTemplateMode || isOwner || isAdmin;
 
 			return (
 				<NoteCard note={item} onToggleImportant={() => handleToggleImportant(item.id, item.isImportant)} onEdit={canEdit ? () => handleEditNote(item) : undefined} onDelete={canEdit ? () => handleDeleteNote(item.id, item.createdBy) : undefined} />
@@ -137,7 +143,7 @@ export default function NotesScreen() {
 			{isEmpty && !isLoading && (
 				<View style={styles.emptyState}>
 					<MaterialCommunityIcons name="text-box-search-outline" size={56} color="rgba(35,54,0,0.15)" />
-					<Text style={styles.emptyStateText}>{searchQuery ? t("logbook.empty.search", { query: searchQuery }) : activeFilter === "Datum" ? t("logbook.empty.date", { date: selectedDate }) : t("logbook.empty.default")}</Text>
+					<Text style={styles.emptyStateText}>{getEmptyStateText(searchQuery, activeFilter, selectedDate, t)}</Text>
 				</View>
 			)}
 
@@ -161,7 +167,7 @@ export default function NotesScreen() {
 			)}
 
 			<Pressable
-				style={styles.fab}
+				style={[styles.fab, { bottom: insets.bottom + 100 }]}
 				onPress={() => {
 					setNoteToEdit(null);
 					setAddModalVisible(true);
@@ -234,7 +240,6 @@ const styles = StyleSheet.create({
 	dateHeaderLine: { flex: 1, height: 1, backgroundColor: "rgba(35, 54, 0, 0.1)" },
 	fab: {
 		position: "absolute",
-		bottom: 110,
 		right: 24,
 		width: 60,
 		height: 60,
