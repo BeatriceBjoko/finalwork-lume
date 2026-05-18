@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
+import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -87,6 +88,7 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
 										});
 
 										if (!isFocused && !event.defaultPrevented) {
+											Haptics.selectionAsync();
 											navigation.navigate(route.name);
 										}
 									};

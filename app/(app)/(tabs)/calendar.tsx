@@ -3,7 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { COLORS, FONTS } from "../../../constants/theme";
+import { COLORS, FONTS, TYPOGRAPHY } from "../../../constants/theme";
 
 export default function CalendarScreen() {
 	const { t } = useTranslation();
@@ -33,14 +33,14 @@ const styles = StyleSheet.create({
 
 	header: { alignItems: "center", marginBottom: 32 },
 	titleRow: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
-	titleText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary },
+	titleText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
 	highlightWrapper: {
 		backgroundColor: COLORS.accent,
 		paddingHorizontal: 10,
 		paddingVertical: 2,
 		borderRadius: 18,
 	},
-	highlightText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary },
+	highlightText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
 	subtitle: {
 		fontFamily: FONTS.body,
 		fontSize: 14,

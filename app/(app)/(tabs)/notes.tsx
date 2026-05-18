@@ -7,7 +7,7 @@ import { ActivityIndicator, FlatList, Modal, Platform, Pressable, StyleSheet, Te
 
 import { AddNoteModal } from "../../../components/ui/AddNoteModal";
 import { NoteCard } from "../../../components/ui/NoteCard";
-import { COLORS, FONTS } from "../../../constants/theme";
+import { COLORS, FONTS, TYPOGRAPHY } from "../../../constants/theme";
 import { useSession } from "../../../context";
 import { useNotesFeed } from "../../../hooks/useNotesFeed";
 
@@ -197,9 +197,9 @@ const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: COLORS.background },
 	header: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingHorizontal: 24, paddingTop: 12, paddingBottom: 16 },
 	titleWrap: { flexDirection: "row", alignItems: "center", gap: 6 },
-	titleText: { fontFamily: FONTS.heading, fontSize: 24, color: COLORS.primary },
+	titleText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
 	highlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 16 },
-	highlightText: { fontFamily: FONTS.heading, fontSize: 24, color: COLORS.primary },
+	highlightText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
 	searchSection: { paddingHorizontal: 24, paddingBottom: 10 },
 	searchBox: {
 		flexDirection: "row",

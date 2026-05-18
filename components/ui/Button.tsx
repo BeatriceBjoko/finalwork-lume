@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import React from "react";
 import { Pressable, StyleProp, StyleSheet, Text, TextStyle, ViewStyle } from "react-native";
 import { COLORS, FONTS, SIZES } from "../../constants/theme";
@@ -14,8 +15,13 @@ interface ButtonProps {
 export default function Button({ title, onPress, style, textStyle, disabled, variant = "primary" }: ButtonProps) {
 	const isPrimary = variant === "primary";
 
+	const handlePress = () => {
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+		onPress();
+	};
+
 	return (
-		<Pressable style={({ pressed }) => [styles.buttonBase, isPrimary ? styles.buttonPrimary : styles.buttonSecondary, style, pressed && styles.buttonPressed, disabled && styles.buttonDisabled]} onPress={onPress} disabled={disabled}>
+		<Pressable style={({ pressed }) => [styles.buttonBase, isPrimary ? styles.buttonPrimary : styles.buttonSecondary, style, pressed && styles.buttonPressed, disabled && styles.buttonDisabled]} onPress={handlePress} disabled={disabled}>
 			<Text style={[styles.textBase, isPrimary ? styles.textPrimary : styles.textSecondary, textStyle]}>{title}</Text>
 		</Pressable>
 	);

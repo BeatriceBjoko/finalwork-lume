@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -17,9 +18,19 @@ export function TopBar() {
 		return name.substring(0, 2).toUpperCase();
 	};
 
+	const handleScanPress = () => {
+		Haptics.selectionAsync();
+		router.push("/scan");
+	};
+
+	const handleProfilePress = () => {
+		Haptics.selectionAsync();
+		router.push("/profile");
+	};
+
 	return (
 		<View style={styles.container}>
-			<Pressable style={styles.iconBtn} onPress={() => router.push("/scan")} hitSlop={6}>
+			<Pressable style={styles.iconBtn} onPress={handleScanPress} hitSlop={6}>
 				<MaterialCommunityIcons name="barcode-scan" size={22} color={COLORS.primary} />
 			</Pressable>
 
@@ -27,7 +38,7 @@ export function TopBar() {
 				<Text style={styles.logoText}>LUME</Text>
 			</View>
 
-			<Pressable style={styles.profileBtn} onPress={() => router.push("/profile")} hitSlop={6}>
+			<Pressable style={styles.profileBtn} onPress={handleProfilePress} hitSlop={6}>
 				{photoUrl ? (
 					<Image source={{ uri: photoUrl }} style={styles.profileImage} />
 				) : (
