@@ -38,6 +38,12 @@ export default function ProfileScreen() {
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
+			<View style={styles.backButtonContainer}>
+				<Pressable onPress={() => router.back()} style={styles.backButton} hitSlop={8}>
+					<Ionicons name="chevron-back" size={28} color={COLORS.primary} />
+				</Pressable>
+			</View>
+
 			<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 				<View style={styles.topSection}>
 					<View style={styles.titleRow}>
@@ -121,7 +127,18 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
 	safeArea: { flex: 1, backgroundColor: COLORS.background },
-	scrollContent: { paddingTop: 40, paddingBottom: 0 },
+	backButtonContainer: {
+		width: "100%",
+		paddingHorizontal: 16,
+		paddingTop: 10,
+		zIndex: 10,
+	},
+	backButton: {
+		padding: 8,
+		marginLeft: -8,
+		alignSelf: "flex-start",
+	},
+	scrollContent: { paddingTop: 16, paddingBottom: 0 },
 	topSection: { paddingHorizontal: 24, alignItems: "center", width: "100%" },
 	titleRow: { flexDirection: "row", alignItems: "center", marginBottom: 32 },
 	titleText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary, zIndex: 2 },

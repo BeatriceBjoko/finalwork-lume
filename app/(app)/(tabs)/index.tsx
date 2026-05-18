@@ -3,18 +3,17 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AddTaskModal } from "../../components/ui/AddTaskModal";
-import Button from "../../components/ui/Button";
-import { NoteCard } from "../../components/ui/NoteCard";
-import { QuoteCard } from "../../components/ui/QuoteCard";
-import { TaskCard } from "../../components/ui/TaskCard";
-import { TaskSummaryCards } from "../../components/ui/TaskSummaryCards";
+import { AddTaskModal } from "../../../components/ui/AddTaskModal";
+import Button from "../../../components/ui/Button";
+import { NoteCard } from "../../../components/ui/NoteCard";
+import { QuoteCard } from "../../../components/ui/QuoteCard";
+import { TaskCard } from "../../../components/ui/TaskCard";
+import { TaskSummaryCards } from "../../../components/ui/TaskSummaryCards";
 
-import { COLORS, FONTS } from "../../constants/theme";
-import { useSession } from "../../context";
-import { useDailySummary } from "../../hooks/useDailySummary";
+import { COLORS, FONTS } from "../../../constants/theme";
+import { useSession } from "../../../context";
+import { useDailySummary } from "../../../hooks/useDailySummary";
 
 export default function DailySummaryHome() {
 	const { t } = useTranslation();
@@ -59,7 +58,7 @@ export default function DailySummaryHome() {
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<View style={styles.container}>
 			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 				<View style={styles.header}>
 					<View style={styles.titleRow}>
@@ -156,13 +155,13 @@ export default function DailySummaryHome() {
 			</ScrollView>
 
 			{databaseDateQueryString && <AddTaskModal visible={isAddTaskModalVisible} onClose={handleCloseModal} currentDateStr={databaseDateQueryString} taskToEdit={taskToEdit} />}
-		</SafeAreaView>
+		</View>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: COLORS.background },
-	scroll: { paddingHorizontal: 24, paddingTop: 32, paddingBottom: 60 },
+	scroll: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 140 },
 
 	header: { alignItems: "center", marginBottom: 28 },
 	titleRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 },

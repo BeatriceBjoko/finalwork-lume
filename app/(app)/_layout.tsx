@@ -1,4 +1,4 @@
-import { Redirect, Slot } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { useSession } from "../../context";
 
@@ -13,16 +13,13 @@ export default function AppLayout() {
 		);
 	}
 
-	// 1. Niet ingelogd? -> Naar login scherm
 	if (!user) {
 		return <Redirect href="/sign-in" />;
 	}
 
-	// 2. Wel ingelogd, maar onboarding is false of bestaat nog niet? -> Naar onboarding
 	if (userData && !userData.onboardingCompleted) {
 		return <Redirect href="/onboarding" />;
 	}
 
-	//  Alles veilig en afgerond? -> Laat de (app) schermen zien
-	return <Slot />;
+	return <Stack screenOptions={{ headerShown: false }} />;
 }

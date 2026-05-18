@@ -4,13 +4,12 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AddNoteModal } from "../../components/ui/AddNoteModal";
-import { NoteCard } from "../../components/ui/NoteCard";
-import { COLORS, FONTS } from "../../constants/theme";
-import { useSession } from "../../context";
-import { useNotesFeed } from "../../hooks/useNotesFeed";
+import { AddNoteModal } from "../../../components/ui/AddNoteModal";
+import { NoteCard } from "../../../components/ui/NoteCard";
+import { COLORS, FONTS } from "../../../constants/theme";
+import { useSession } from "../../../context";
+import { useNotesFeed } from "../../../hooks/useNotesFeed";
 
 export default function NotesScreen() {
 	const { t } = useTranslation();
@@ -84,18 +83,14 @@ export default function NotesScreen() {
 	);
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<View style={styles.container}>
 			<View style={styles.header}>
-				<Pressable onPress={() => router.back()} style={styles.backBtn}>
-					<Ionicons name="chevron-back" size={28} color={COLORS.primary} />
-				</Pressable>
 				<View style={styles.titleWrap}>
 					<Text style={styles.titleText}>{t("dailySummary.my")}</Text>
 					<View style={styles.highlightWrapper}>
 						<Text style={styles.highlightText}>{t("dailySummary.notes")}</Text>
 					</View>
 				</View>
-				<View style={{ width: 40 }} />
 			</View>
 
 			<View style={styles.searchSection}>
@@ -194,14 +189,13 @@ export default function NotesScreen() {
 				</Modal>
 			)}
 			{isDatePickerVisible && Platform.OS === "android" && <DateTimePicker value={selectedDate ? new Date(selectedDate) : new Date()} mode="date" display="calendar" onChange={onDateChange} maximumDate={new Date()} />}
-		</SafeAreaView>
+		</View>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: COLORS.background },
-	header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 10, paddingBottom: 16 },
-	backBtn: { padding: 8, marginLeft: -8 },
+	header: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingHorizontal: 24, paddingTop: 12, paddingBottom: 16 },
 	titleWrap: { flexDirection: "row", alignItems: "center", gap: 6 },
 	titleText: { fontFamily: FONTS.heading, fontSize: 24, color: COLORS.primary },
 	highlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 16 },
@@ -234,17 +228,17 @@ const styles = StyleSheet.create({
 	templateText: { flex: 1, fontFamily: FONTS.body, fontSize: 13, color: "#354E00", lineHeight: 18 },
 	emptyState: { flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 40, marginTop: 40 },
 	emptyStateText: { marginTop: 16, fontFamily: "InterMedium", fontSize: 15, color: "rgba(35, 54, 0, 0.5)", textAlign: "center", lineHeight: 22 },
-	listContent: { paddingHorizontal: 24, paddingTop: 10, paddingBottom: 100 },
+	listContent: { paddingHorizontal: 24, paddingTop: 10, paddingBottom: 160 },
 	dateHeaderWrap: { flexDirection: "row", alignItems: "center", marginTop: 24, marginBottom: 8, gap: 12 },
 	dateHeaderImport: { fontFamily: "BricolageMedium", fontSize: 16, color: COLORS.primary, opacity: 0.8 },
 	dateHeaderLine: { flex: 1, height: 1, backgroundColor: "rgba(35, 54, 0, 0.1)" },
 	fab: {
 		position: "absolute",
-		bottom: 30,
+		bottom: 110,
 		right: 24,
-		width: 64,
-		height: 64,
-		borderRadius: 32,
+		width: 60,
+		height: 60,
+		borderRadius: 30,
 		backgroundColor: COLORS.accent,
 		justifyContent: "center",
 		alignItems: "center",

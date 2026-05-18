@@ -5,6 +5,12 @@
 		"loading": "Chargement...",
 		"settings": "Paramètres"
 	},
+	"nav": {
+		"home": "Accueil",
+		"calendar": "Agenda",
+		"notes": "Notes",
+		"wellbeing": "Bien-être"
+	},
 	"login": {
 		"title": "CONNEXION",
 		"subtitle": "Pour les aidants proches en Belgique",

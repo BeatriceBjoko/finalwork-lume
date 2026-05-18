@@ -5,6 +5,12 @@
 		"loading": "Laden...",
 		"settings": "Instellingen"
 	},
+	"nav": {
+		"home": "Home",
+		"calendar": "Agenda",
+		"notes": "Notities",
+		"wellbeing": "Welzijn"
+	},
 	"login": {
 		"title": "LOG IN",
 		"subtitle": "Voor mantelzorgers in België",
