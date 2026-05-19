@@ -16,7 +16,7 @@ export const TASK_ICONS = [
 	{ id: "car", label: "Vervoer" },
 ];
 
-export function useTaskForm(selectedDateStr: string, onTaskSaved: () => void, taskToEdit?: any) {
+export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSaved: () => void, taskToEdit?: any) {
 	const { t } = useTranslation();
 	const { user, userData } = useSession();
 	const circleId = userData?.careCircleId;
@@ -37,7 +37,11 @@ export function useTaskForm(selectedDateStr: string, onTaskSaved: () => void, ta
 		}
 	}, [circleId]);
 
+	// Reset / populate form fields whenever the modal opens, or whenever taskToEdit changes.
+	// `visible` is the key without it, the hook can't tell consecutive "new task" opens apart.
 	useEffect(() => {
+		if (!visible) return;
+
 		if (taskToEdit) {
 			setTitle(taskToEdit.title || "");
 
@@ -60,14 +64,15 @@ export function useTaskForm(selectedDateStr: string, onTaskSaved: () => void, ta
 			setDescriptionText("");
 			setSelectedMember(null);
 		}
-	}, [taskToEdit]);
+	}, [visible, taskToEdit]);
 
 	useEffect(() => {
+		if (!visible) return;
 		if (taskToEdit?.assignee && members.length > 0) {
 			const memberMatch = members.find((m) => m.name === taskToEdit.assignee.name);
 			if (memberMatch) setSelectedMember(memberMatch);
 		}
-	}, [taskToEdit, members]);
+	}, [visible, taskToEdit, members]);
 
 	const handleSaveTask = async () => {
 		if (!circleId || !user?.uid) {

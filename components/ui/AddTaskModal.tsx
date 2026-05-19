@@ -1,7 +1,9 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import React from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+
 import { COLORS, FONTS } from "../../constants/theme";
 import { TASK_ICONS, useTaskForm } from "../../hooks/useTaskForm";
 import Button from "./Button";
@@ -13,19 +15,49 @@ interface AddTaskModalProps {
 	taskToEdit?: any | null;
 }
 
+function parseTimeToDate(timeStr: string): Date {
+	const [h, m] = (timeStr ?? "09:00").split(":").map(Number);
+	const d = new Date();
+	d.setHours(Number.isFinite(h) ? h : 9, Number.isFinite(m) ? m : 0, 0, 0);
+	return d;
+}
+
+function formatTimeFromDate(d: Date): string {
+	const h = String(d.getHours()).padStart(2, "0");
+	const m = String(d.getMinutes()).padStart(2, "0");
+	return `${h}:${m}`;
+}
+
 export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: AddTaskModalProps) {
 	const { t } = useTranslation();
 	const { title, setTitle, startTime, setStartTime, endTime, setEndTime, selectedIcon, setSelectedIcon, descriptionText, setDescriptionText, members, selectedMember, setSelectedMember, isSaving, handleSaveTask } = useTaskForm(
+		visible,
 		currentDateStr,
 		onClose,
 		taskToEdit,
 	);
 
 	const isEditing = !!taskToEdit;
+	const [showStartPicker, setShowStartPicker] = useState(false);
+	const [showEndPicker, setShowEndPicker] = useState(false);
+
+	const handleStartChange = (event: any, date?: Date) => {
+		if (Platform.OS === "android") setShowStartPicker(false);
+		if (event.type === "set" && date) {
+			setStartTime(formatTimeFromDate(date));
+		}
+	};
+
+	const handleEndChange = (event: any, date?: Date) => {
+		if (Platform.OS === "android") setShowEndPicker(false);
+		if (event.type === "set" && date) {
+			setEndTime(formatTimeFromDate(date));
+		}
+	};
 
 	return (
 		<Modal visible={visible} transparent animationType="slide">
-			<View style={styles.overlay}>
+			<KeyboardAvoidingView style={styles.overlay} behavior={Platform.OS === "ios" ? "padding" : undefined}>
 				<Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
 
 				<View style={styles.modalContent}>
@@ -36,15 +68,21 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 						</Pressable>
 					</View>
 
-					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollBody}>
+					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollBody} keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive" automaticallyAdjustKeyboardInsets>
 						<Text style={styles.label}>{t("tasks.taskTitle")}</Text>
 						<TextInput style={styles.input} placeholder={t("tasks.taskTitlePlaceholder")} value={title} onChangeText={setTitle} placeholderTextColor="#9ca3af" />
 
 						<Text style={styles.label}>{t("tasks.timeFrame")}</Text>
 						<View style={styles.timeRow}>
-							<TextInput style={[styles.input, styles.timeInput]} placeholder="09:00" value={startTime} onChangeText={setStartTime} keyboardType="numbers-and-punctuation" />
+							<Pressable style={styles.timeButton} onPress={() => setShowStartPicker(true)}>
+								<MaterialCommunityIcons name="clock-outline" size={16} color="rgba(35, 54, 0, 0.5)" />
+								<Text style={styles.timeButtonText}>{startTime}</Text>
+							</Pressable>
 							<Text style={styles.timeTot}>{t("tasks.to")}</Text>
-							<TextInput style={[styles.input, styles.timeInput]} placeholder="10:00" value={endTime} onChangeText={setEndTime} keyboardType="numbers-and-punctuation" />
+							<Pressable style={styles.timeButton} onPress={() => setShowEndPicker(true)}>
+								<MaterialCommunityIcons name="clock-outline" size={16} color="rgba(35, 54, 0, 0.5)" />
+								<Text style={styles.timeButtonText}>{endTime}</Text>
+							</Pressable>
 						</View>
 
 						<Text style={styles.label}>{t("tasks.assignTo")}</Text>
@@ -88,14 +126,50 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 						</View>
 					</ScrollView>
 				</View>
-			</View>
+			</KeyboardAvoidingView>
+
+			{Platform.OS === "ios" && showStartPicker && (
+				<Modal transparent animationType="fade">
+					<Pressable style={styles.pickerOverlay} onPress={() => setShowStartPicker(false)}>
+						<Pressable style={styles.pickerCard}>
+							<Text style={styles.pickerTitle}>{t("tasks.startTime")}</Text>
+							<DateTimePicker value={parseTimeToDate(startTime)} mode="time" is24Hour display="spinner" onChange={handleStartChange} themeVariant="light" textColor={COLORS.primary} />
+							<Pressable onPress={() => setShowStartPicker(false)} style={styles.pickerDone}>
+								<Text style={styles.pickerDoneText}>{t("common.ok")}</Text>
+							</Pressable>
+						</Pressable>
+					</Pressable>
+				</Modal>
+			)}
+			{Platform.OS === "ios" && showEndPicker && (
+				<Modal transparent animationType="fade">
+					<Pressable style={styles.pickerOverlay} onPress={() => setShowEndPicker(false)}>
+						<Pressable style={styles.pickerCard}>
+							<Text style={styles.pickerTitle}>{t("tasks.endTime")}</Text>
+							<DateTimePicker value={parseTimeToDate(endTime)} mode="time" is24Hour display="spinner" onChange={handleEndChange} themeVariant="light" textColor={COLORS.primary} />
+							<Pressable onPress={() => setShowEndPicker(false)} style={styles.pickerDone}>
+								<Text style={styles.pickerDoneText}>{t("common.ok")}</Text>
+							</Pressable>
+						</Pressable>
+					</Pressable>
+				</Modal>
+			)}
+
+			{Platform.OS === "android" && showStartPicker && <DateTimePicker value={parseTimeToDate(startTime)} mode="time" is24Hour onChange={handleStartChange} />}
+			{Platform.OS === "android" && showEndPicker && <DateTimePicker value={parseTimeToDate(endTime)} mode="time" is24Hour onChange={handleEndChange} />}
 		</Modal>
 	);
 }
 
 const styles = StyleSheet.create({
 	overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "flex-end" },
-	modalContent: { backgroundColor: "#FFFFFF", borderTopLeftRadius: 24, borderTopRightRadius: 24, height: "85%", padding: 20 },
+	modalContent: {
+		backgroundColor: "#FFFFFF",
+		borderTopLeftRadius: 24,
+		borderTopRightRadius: 24,
+		maxHeight: "85%",
+		padding: 20,
+	},
 	header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
 	title: { fontFamily: FONTS.heading, fontSize: 20, color: COLORS.primary },
 	closeBtn: { padding: 4, backgroundColor: "rgba(0,0,0,0.05)", borderRadius: 20 },
@@ -103,7 +177,19 @@ const styles = StyleSheet.create({
 	label: { fontFamily: "InterSemiBold", fontSize: 14, color: COLORS.primary, marginBottom: 8, marginTop: 16 },
 	input: { borderWidth: 1, borderColor: "rgba(35, 54, 0, 0.15)", borderRadius: 12, padding: 14, fontFamily: "InterRegular", fontSize: 15, color: COLORS.primary },
 	timeRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-	timeInput: { flex: 1, textAlign: "center" },
+	timeButton: {
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: 8,
+		borderWidth: 1,
+		borderColor: "rgba(35, 54, 0, 0.15)",
+		borderRadius: 12,
+		paddingVertical: 14,
+		backgroundColor: "#FFF",
+	},
+	timeButtonText: { fontFamily: "InterSemiBold", fontSize: 16, color: COLORS.primary },
 	timeTot: { fontFamily: "InterMedium", color: "#6b7280" },
 	memberList: { gap: 12, paddingVertical: 4 },
 	memberCircle: { width: 52, height: 52, borderRadius: 26, backgroundColor: "#f9fafb", borderWidth: 1, borderColor: "rgba(35,54,0,0.1)", justifyContent: "center", alignItems: "center", overflow: "hidden" },
@@ -115,4 +201,23 @@ const styles = StyleSheet.create({
 	iconBoxSelected: { borderColor: COLORS.accent, backgroundColor: "rgba(239, 252, 0, 0.2)", borderWidth: 2 },
 	textArea: { minHeight: 100 },
 	footer: { marginTop: 30 },
+
+	pickerOverlay: { flex: 1, backgroundColor: "rgba(0, 0, 0, 0.4)", justifyContent: "center", alignItems: "center", paddingHorizontal: 24 },
+	pickerCard: {
+		width: "100%",
+		backgroundColor: "#FFFFFF",
+		borderRadius: 20,
+		paddingTop: 16,
+		paddingBottom: 12,
+		paddingHorizontal: 16,
+		alignItems: "center",
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 8 },
+		shadowOpacity: 0.2,
+		shadowRadius: 16,
+		elevation: 12,
+	},
+	pickerTitle: { fontFamily: FONTS.heading, fontSize: 16, color: COLORS.primary, marginBottom: 8 },
+	pickerDone: { marginTop: 8, backgroundColor: COLORS.buttonFill, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 10 },
+	pickerDoneText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.buttonText },
 });

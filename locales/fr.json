@@ -290,7 +290,8 @@
 	},
 	"tasks": {
 		"today": "Tâches d'aujourd'hui",
-		"tasksCount": "{{count}} tâches",
+		"tasksCount_one": "{{count}} tâche",
+		"tasksCount_other": "{{count}} tâches",
 		"completed": "Terminée",
 		"open": "À faire",
 		"deleteTitle": "Supprimer la tâche ?",
@@ -303,6 +304,8 @@
 		"taskTitlePlaceholder": "ex. Signes vitaux du matin...",
 		"timeFrame": "Période",
 		"to": "à",
+		"startTime": "Début",
+		"endTime": "Fin",
 		"assignTo": "Attribuer à",
 		"chooseIcon": "Choisissez une icône",
 		"descriptionLabel": "Description (Nouvelle ligne = nouveau point)",
@@ -405,13 +408,17 @@
 		"titlePart1": "Mon",
 		"titlePart2": "agenda",
 		"today": "Aujourd'hui",
-		"tasksCount": "{{count}} tâches",
+		"tasksCount_one": "{{count}} tâche",
+		"tasksCount_other": "{{count}} tâches",
 		"empty": {
 			"title": "Aucune tâche ce jour-là",
 			"subtitle": "Appuyez sur + pour ajouter une tâche ou sélectionnez un autre jour."
 		},
 		"syncBtn": "Ajouter à l'agenda",
 		"synced": "Ajoutée",
+		"syncedTitle": "Ajoutée à l'agenda",
+		"syncedMessage": "{{task}} a été ajoutée à votre agenda. Voulez-vous l'ouvrir ?",
+		"openCalendar": "Ouvrir l'agenda",
 		"permission": {
 			"title": "Accès requis",
 			"message": "Nous avons besoin d'accéder à votre agenda pour y ajouter des tâches."
