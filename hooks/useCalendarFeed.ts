@@ -49,6 +49,7 @@ export function useCalendarFeed() {
 
 	const [allTasks, setAllTasks] = useState<CalendarTask[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [syncStatus, setSyncStatus] = useState<CalendarSyncStatus>("idle");
 
 	const [syncResult, setSyncResult] = useState<SyncResultState>({
@@ -58,6 +59,7 @@ export function useCalendarFeed() {
 		eventStartMs: 0,
 	});
 
+	// Real-time listener
 	useEffect(() => {
 		if (!circleId) {
 			setAllTasks([]);
@@ -124,6 +126,13 @@ export function useCalendarFeed() {
 		const now = new Date();
 		return currentMonth.year === now.getFullYear() && currentMonth.month === now.getMonth();
 	}, [currentMonth.year, currentMonth.month]);
+
+	// Pull-to-refresh data is already real-time via onSnapshot, this just gives the  user a brief visual confirmation that their gesture was registered
+	const refresh = async () => {
+		setIsRefreshing(true);
+		await new Promise((resolve) => setTimeout(resolve, 600));
+		setIsRefreshing(false);
+	};
 
 	const exportToDeviceCalendar = async (task: CalendarTask) => {
 		console.log("[Calendar] exportToDeviceCalendar called for:", task.title);
@@ -235,6 +244,8 @@ export function useCalendarFeed() {
 		tasksForSelectedDate,
 		taskDaysInMonth,
 		isLoading,
+		isRefreshing,
+		refresh,
 		syncStatus,
 		syncResult,
 		exportToDeviceCalendar,

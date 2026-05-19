@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AddTaskModal } from "../../../components/ui/AddTaskModal";
@@ -34,6 +34,8 @@ export default function CalendarScreen() {
 		tasksForSelectedDate,
 		taskDaysInMonth,
 		isLoading,
+		isRefreshing,
+		refresh,
 		exportToDeviceCalendar,
 		handleToggleTaskStatus,
 		handleDeleteTask,
@@ -85,10 +87,14 @@ export default function CalendarScreen() {
 
 	return (
 		<View style={styles.container}>
-			<ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 160 }]} showsVerticalScrollIndicator={false}>
+			<ScrollView
+				contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 160 }]}
+				showsVerticalScrollIndicator={false}
+				refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} tintColor={COLORS.primary} colors={[COLORS.primary]} />}
+			>
 				<CalendarHero year={currentMonth.year} month={currentMonth.month} isCurrentMonth={isCurrentMonth} onPrev={goToPreviousMonth} onNext={goToNextMonth} onToday={goToToday} locale={locale} />
 
-				<CalendarMonth year={currentMonth.year} month={currentMonth.month} selectedDate={selectedDate} taskDaysInMonth={taskDaysInMonth} onSelectDate={setSelectedDate} locale={locale} />
+				<CalendarMonth year={currentMonth.year} month={currentMonth.month} selectedDate={selectedDate} taskDaysInMonth={taskDaysInMonth} onSelectDate={setSelectedDate} onPrev={goToPreviousMonth} onNext={goToNextMonth} locale={locale} />
 
 				<View style={styles.daySection}>
 					<View style={styles.dayHeaderRow}>

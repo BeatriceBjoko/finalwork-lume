@@ -88,11 +88,9 @@ export function DayAgenda({ tasks, onTaskPress, onTaskToggleStatus, onTaskSync, 
 								overlap={false}
 								stackIndex={idx}
 							/>
-
 							<Pressable
 								onPress={() => {
 									Haptics.selectionAsync();
-									console.log("[Calendar] Sync pressed for:", task.title);
 									onTaskSync(task);
 								}}
 								style={styles.syncBtn}
@@ -111,26 +109,12 @@ export function DayAgenda({ tasks, onTaskPress, onTaskToggleStatus, onTaskSync, 
 
 const styles = StyleSheet.create({
 	container: { paddingTop: 4 },
-	row: {
-		flexDirection: "row",
-		marginBottom: 14,
-	},
+	row: { flexDirection: "row", marginBottom: 14 },
 
-	timeCol: {
-		width: 46,
-		paddingTop: 14,
-	},
-	timeStart: {
-		fontFamily: "InterBold",
-		fontSize: 13,
-		color: COLORS.primary,
-	},
+	timeCol: { width: 46, paddingTop: 14 },
+	timeStart: { fontFamily: "InterBold", fontSize: 13, color: COLORS.primary },
 
-	timelineCol: {
-		width: 14,
-		alignItems: "center",
-		paddingTop: 18,
-	},
+	timelineCol: { width: 14, alignItems: "center", paddingTop: 18 },
 	dot: {
 		width: 10,
 		height: 10,
@@ -139,17 +123,9 @@ const styles = StyleSheet.create({
 		borderWidth: 2,
 		borderColor: COLORS.accent,
 	},
-	line: {
-		flex: 1,
-		width: 2,
-		backgroundColor: "rgba(35, 54, 0, 0.10)",
-		marginTop: 4,
-	},
+	line: { flex: 1, width: 2, backgroundColor: "rgba(35, 54, 0, 0.10)", marginTop: 4 },
 
-	cardArea: {
-		flex: 1,
-		paddingLeft: 8,
-	},
+	cardArea: { flex: 1, paddingLeft: 8 },
 	syncBtn: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -157,16 +133,12 @@ const styles = StyleSheet.create({
 		alignSelf: "flex-start",
 		backgroundColor: "rgba(239, 252, 0, 0.30)",
 		borderWidth: 1,
-		borderColor: "rgba(239, 252, 0, 0.55)",
+		borderColor: "rgba(239, 252, 0, 0.5)",
 		paddingHorizontal: 12,
 		paddingVertical: 6,
 		borderRadius: 12,
 		marginTop: 6,
 		marginLeft: 4,
 	},
-	syncText: {
-		fontFamily: "InterMedium",
-		fontSize: 12,
-		color: COLORS.primary,
-	},
+	syncText: { fontFamily: "InterMedium", fontSize: 12, color: COLORS.primary },
 });
