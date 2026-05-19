@@ -384,23 +384,11 @@
 			"date": "Er zijn geen notities geschreven op {{date}}.",
 			"default": "Er zijn nog geen notities."
 		},
-		"viewer": {
-			"photos": "Bekijk {{length}} foto's"
-		},
-		"options": {
-			"title": "Notitie Opties",
-			"message": "Wat wil je doen met deze notitie?"
-		},
+		"viewer": { "photos": "Bekijk {{length}} foto's" },
+		"options": { "title": "Notitie Opties", "message": "Wat wil je doen met deze notitie?" },
 		"search": "Zoek in notities...",
-		"filters": {
-			"all": "Alles",
-			"important": "Belangrijk",
-			"date": "Datum"
-		},
-		"dateHeaders": {
-			"today": "Vandaag",
-			"yesterday": "Gisteren"
-		},
+		"filters": { "all": "Alles", "important": "Belangrijk", "date": "Datum" },
+		"dateHeaders": { "today": "Vandaag", "yesterday": "Gisteren" },
 		"templateBanner": "Dit is een voorbeeld van het logboek. Verwijder deze gerust en schrijf je eigen notitie!"
 	},
 	"calendar": {
@@ -425,6 +413,65 @@
 		"errors": {
 			"noCalendar": "Geen schrijfbare agenda gevonden op je toestel.",
 			"exportFailed": "Kon de taak niet toevoegen aan je agenda."
+		}
+	},
+	"wellbeing": {
+		"title": "Mijn",
+		"titleAccent": "welzijn",
+		"subtitle": "Een rustig moment voor jezelf",
+		"recommended": "Voor jou aanbevolen",
+		"viewAll": "Zie alle",
+		"categories": {
+			"all": "Alles",
+			"breath": "Adem",
+			"relax": "Ontspan",
+			"sleep": "Slaap",
+			"energy": "Energie"
+		},
+		"sessions": {
+			"box": {
+				"title": "Focus & balans",
+				"shortDesc": "Gelijkmatige ritmiek voor mentale helderheid",
+				"longDesc": "De Box-ademhaling werd ontwikkeld voor Navy SEALs om rustig te blijven onder druk. De gelijkmatige ritmiek tussen inademen, vasthouden, uitademen en vasthouden brengt je geest tot rust en versterkt je vermogen om gefocust te blijven, zelfs in spannende momenten.",
+				"bestFor": "Focus · Stress · Helderheid",
+				"level": "Gemiddeld"
+			},
+			"relax": {
+				"title": "Diep ontspannen",
+				"shortDesc": "Een lange uitademing kalmeert je zenuwstelsel",
+				"longDesc": "Deze 4-7-8 techniek werd populair door Dr. Andrew Weil als een echt 'natuurlijk kalmeermiddel'. De lange uitademing activeert je parasympathisch zenuwstelsel — het deel dat verantwoordelijk is voor diepe ontspanning. Zeer effectief bij angst en om zacht in slaap te vallen.",
+				"bestFor": "Slapen · Angst · Diepe rust",
+				"level": "Gevorderd"
+			},
+			"simple": {
+				"title": "Snel resetten",
+				"shortDesc": "Zachte 4-6 ademhaling, zonder pauzes",
+				"longDesc": "De eenvoudigste oefening: alleen inademen en uitademen, zonder pauzes. De iets langere uitademing helpt je snel tot rust te komen zonder dat het inspannend voelt. Ideaal voor beginners of voor een korte pauze tussendoor.",
+				"bestFor": "Beginners · Dagelijks · Snelle rust",
+				"level": "Makkelijk"
+			}
+		},
+		"bestForLabel": "Goed voor",
+		"levelLabel": "Niveau",
+		"duration": "{{minutes}} min",
+		"tip": {
+			"title": "Tip van Lume",
+			"body": "Vergeet niet om zelf ook even op adem te komen. Een korte pauze van enkele minuten kan al een wereld van verschil maken."
+		},
+		"breathe": {
+			"title": "Adem mee",
+			"description": "Volg de vorm. Als hij opent, adem je in. Als hij sluit, adem je uit.",
+			"inhale": "Adem in",
+			"hold": "Houd vast",
+			"exhale": "Adem uit",
+			"round": "Ronde {{round}} / {{total}}",
+			"start": "Start",
+			"stop": "Stop",
+			"restart": "Opnieuw",
+			"complete": {
+				"title": "Goed gedaan",
+				"message": "Je hebt een ademoefening voltooid. Neem nog even de tijd om bij jezelf te blijven."
+			}
 		}
 	}
 }

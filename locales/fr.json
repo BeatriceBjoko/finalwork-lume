@@ -385,23 +385,11 @@
 			"date": "Aucune note n'a été écrite le {{date}}.",
 			"default": "Il n'y a pas encore de notes."
 		},
-		"viewer": {
-			"photos": "Voir {{length}} photos"
-		},
-		"options": {
-			"title": "Options de la note",
-			"message": "Que souhaitez-vous faire ?"
-		},
+		"viewer": { "photos": "Voir {{length}} photos" },
+		"options": { "title": "Options de la note", "message": "Que souhaitez-vous faire ?" },
 		"search": "Rechercher dans les notes...",
-		"filters": {
-			"all": "Tout",
-			"important": "Important",
-			"date": "Date"
-		},
-		"dateHeaders": {
-			"today": "Aujourd'hui",
-			"yesterday": "Hier"
-		},
+		"filters": { "all": "Tout", "important": "Important", "date": "Date" },
+		"dateHeaders": { "today": "Aujourd'hui", "yesterday": "Hier" },
 		"templateBanner": "Ceci est un exemple du journal de bord. N'hésitez pas à le supprimer et à écrire votre propre note !"
 	},
 	"calendar": {
@@ -426,6 +414,65 @@
 		"errors": {
 			"noCalendar": "Aucun agenda modifiable trouvé sur votre appareil.",
 			"exportFailed": "Impossible d'ajouter la tâche à votre agenda."
+		}
+	},
+	"wellbeing": {
+		"title": "Mon",
+		"titleAccent": "bien-être",
+		"subtitle": "Un moment calme rien que pour vous",
+		"recommended": "Recommandé pour vous",
+		"viewAll": "Tout voir",
+		"categories": {
+			"all": "Tout",
+			"breath": "Respiration",
+			"relax": "Détente",
+			"sleep": "Sommeil",
+			"energy": "Énergie"
+		},
+		"sessions": {
+			"box": {
+				"title": "Focus & équilibre",
+				"shortDesc": "Un rythme régulier pour la clarté mentale",
+				"longDesc": "La respiration Box a été développée pour les Navy SEALs afin de rester calme sous pression. Le rythme égal entre l'inspiration, la rétention, l'expiration et la rétention apaise l'esprit et renforce votre capacité à rester concentré, même dans les moments les plus exigeants.",
+				"bestFor": "Concentration · Stress · Clarté",
+				"level": "Intermédiaire"
+			},
+			"relax": {
+				"title": "Détente profonde",
+				"shortDesc": "Une longue expiration apaise vos nerfs",
+				"longDesc": "Cette technique 4-7-8 a été popularisée par le Dr Andrew Weil comme un véritable « tranquillisant naturel ». La longue expiration active le système nerveux parasympathique — celui qui orchestre la détente. Très efficace contre l'anxiété et pour glisser doucement dans le sommeil.",
+				"bestFor": "Sommeil · Anxiété · Repos profond",
+				"level": "Avancé"
+			},
+			"simple": {
+				"title": "Reset rapide",
+				"shortDesc": "Douce respiration 4-6 sans pauses",
+				"longDesc": "L'exercice le plus simple : inspirer puis expirer, sans aucune pause. L'expiration légèrement plus longue permet de se calmer rapidement sans effort. Parfait pour les débutants ou pour une petite pause apaisante au milieu de la journée.",
+				"bestFor": "Débutants · Quotidien · Repos rapide",
+				"level": "Facile"
+			}
+		},
+		"bestForLabel": "Idéal pour",
+		"levelLabel": "Niveau",
+		"duration": "{{minutes}} min",
+		"tip": {
+			"title": "Astuce de Lume",
+			"body": "N'oubliez pas de reprendre votre souffle aussi. Quelques minutes de pause peuvent vraiment tout changer."
+		},
+		"breathe": {
+			"title": "Respirez avec moi",
+			"description": "Suivez la forme. Quand elle s'ouvre, inspirez. Quand elle se referme, expirez.",
+			"inhale": "Inspirez",
+			"hold": "Retenez",
+			"exhale": "Expirez",
+			"round": "Cycle {{round}} / {{total}}",
+			"start": "Commencer",
+			"stop": "Arrêter",
+			"restart": "Recommencer",
+			"complete": {
+				"title": "Bravo",
+				"message": "Vous avez terminé un exercice de respiration. Prenez encore un instant pour rester avec vous-même."
+			}
 		}
 	}
 }
