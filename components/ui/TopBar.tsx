@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -6,6 +5,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { COLORS, FONTS } from "../../constants/theme";
 import { useSession } from "../../context";
+import { ScanIcon } from "./TabIcons";
 
 export function TopBar() {
 	const router = useRouter();
@@ -31,11 +31,11 @@ export function TopBar() {
 	return (
 		<View style={styles.container}>
 			<Pressable style={styles.iconBtn} onPress={handleScanPress} hitSlop={6}>
-				<MaterialCommunityIcons name="barcode-scan" size={22} color={COLORS.primary} />
+				<ScanIcon color={COLORS.primary} size={22} strokeWidth={2} />
 			</Pressable>
 
 			<View style={styles.logoWrap}>
-				<Text style={styles.logoText}>LUME</Text>
+				<Image source={require("../../assets/images/logo-lume.png")} style={styles.logoImage} resizeMode="contain" />
 			</View>
 
 			<Pressable style={styles.profileBtn} onPress={handleProfilePress} hitSlop={6}>
@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
 		height: 42,
 		borderRadius: 21,
 		backgroundColor: COLORS.white,
-		borderWidth: 1,
-		borderColor: "rgba(35, 54, 0, 0.12)",
+		borderWidth: 2,
+		borderColor: COLORS.accent,
 		justifyContent: "center",
 		alignItems: "center",
 		shadowColor: "#233600",
@@ -77,21 +77,12 @@ const styles = StyleSheet.create({
 		elevation: 2,
 	},
 	logoWrap: {
-		backgroundColor: COLORS.accent,
-		paddingHorizontal: 16,
-		paddingVertical: 5,
-		borderRadius: 18,
-		shadowColor: "#EFFC00",
-		shadowOffset: { width: 0, height: 3 },
-		shadowOpacity: 0.35,
-		shadowRadius: 8,
-		elevation: 4,
+		justifyContent: "center",
+		alignItems: "center",
 	},
-	logoText: {
-		fontFamily: FONTS.heading,
-		fontSize: 20,
-		color: COLORS.primary,
-		letterSpacing: 2,
+	logoImage: {
+		width: 132,
+		height: 42,
 	},
 	profileBtn: {
 		width: 42,

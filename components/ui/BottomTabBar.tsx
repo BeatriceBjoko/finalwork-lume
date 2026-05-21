@@ -1,4 +1,3 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
@@ -10,18 +9,18 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-na
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { COLORS } from "../../constants/theme";
+import { CalendarIcon, HomeIcon, NotesIcon, WellbeingIcon, type TabIconProps } from "./TabIcons";
 
 interface TabConfig {
-	icon: keyof typeof MaterialCommunityIcons.glyphMap;
-	activeIcon: keyof typeof MaterialCommunityIcons.glyphMap;
+	Icon: React.ComponentType<TabIconProps>;
 	labelKey: string;
 }
 
 const TAB_CONFIG: Record<string, TabConfig> = {
-	index: { icon: "home-outline", activeIcon: "home", labelKey: "nav.home" },
-	calendar: { icon: "calendar-blank-outline", activeIcon: "calendar-blank", labelKey: "nav.calendar" },
-	notes: { icon: "notebook-outline", activeIcon: "notebook", labelKey: "nav.notes" },
-	wellbeing: { icon: "heart-outline", activeIcon: "heart", labelKey: "nav.wellbeing" },
+	index: { Icon: HomeIcon, labelKey: "nav.home" },
+	calendar: { Icon: CalendarIcon, labelKey: "nav.calendar" },
+	notes: { Icon: NotesIcon, labelKey: "nav.notes" },
+	wellbeing: { Icon: WellbeingIcon, labelKey: "nav.wellbeing" },
 };
 
 const PILL_SIZE = 44;
@@ -78,6 +77,7 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
 									const config = TAB_CONFIG[route.name];
 									if (!config) return null;
 
+									const { Icon } = config;
 									const isFocused = state.index === index;
 
 									const onPress = () => {
@@ -96,7 +96,7 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
 									return (
 										<Pressable key={route.key} onPress={onPress} style={styles.tab} hitSlop={4}>
 											<View style={styles.iconWrap}>
-												<MaterialCommunityIcons name={isFocused ? config.activeIcon : config.icon} size={22} color={isFocused ? COLORS.iconColor : "#A8A39A"} />
+												<Icon color={isFocused ? COLORS.iconColor : "#A8A39A"} size={24} strokeWidth={isFocused ? 2.2 : 1.8} />
 											</View>
 											<Text style={[styles.label, isFocused && styles.labelActive]} numberOfLines={1}>
 												{t(config.labelKey)}
