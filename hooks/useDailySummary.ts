@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 import { NoteData } from "../components/ui/NoteCard";
 import { getDailyQuote } from "../constants/quotes";
 import { useSession } from "../context";
-import { getDailyNote } from "../services/firebase/notes.service";
+import { subscribeToDailyNote } from "../services/firebase/notes.service";
 import { deleteTaskFromDB, getTasksForDate, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
 
 export function useDailySummary() {
@@ -61,7 +61,7 @@ export function useDailySummary() {
 	const databaseDateQueryString = `${year}-${monthStr}-${dayStr}`;
 
 	useEffect(() => {
-		async function loadFirebaseData() {
+		async function loadTasks() {
 			if (!circleId) {
 				setTasks(TEMPLATE_TASKS.map((t, i) => ({ ...t, expanded: i === TEMPLATE_TASKS.length - 1 })));
 				setIsTemplateMode(true);
@@ -71,7 +71,7 @@ export function useDailySummary() {
 
 			try {
 				setIsLoading(true);
-				const [fetchedTasks, fetchedNote] = await Promise.all([getTasksForDate(circleId, databaseDateQueryString), getDailyNote(circleId, databaseDateQueryString)]);
+				const fetchedTasks = await getTasksForDate(circleId, databaseDateQueryString);
 
 				if (fetchedTasks.length === 0) {
 					setTasks(TEMPLATE_TASKS.map((t, i) => ({ ...t, expanded: i === TEMPLATE_TASKS.length - 1 })));
@@ -80,7 +80,27 @@ export function useDailySummary() {
 					setTasks(fetchedTasks.map((t, i) => ({ ...t, expanded: i === fetchedTasks.length - 1 })));
 					setIsTemplateMode(false);
 				}
+			} catch (error) {
+				console.error("Error loading tasks:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		}
 
+		loadTasks();
+	}, [circleId, databaseDateQueryString, refreshTrigger, TEMPLATE_TASKS]);
+
+	// Daily note: LIVE subscription (auto-updates on add/edit/delete)
+	useEffect(() => {
+		if (!circleId) {
+			setNote(null);
+			return;
+		}
+
+		const unsubscribe = subscribeToDailyNote(
+			circleId,
+			databaseDateQueryString,
+			(fetchedNote) => {
 				if (!fetchedNote) {
 					setNote({
 						id: "empty_state",
@@ -100,15 +120,12 @@ export function useDailySummary() {
 						content: fetchedNote.content,
 					});
 				}
-			} catch (error) {
-				console.error("Error loading:", error);
-			} finally {
-				setIsLoading(false);
-			}
-		}
+			},
+			(e) => console.error("Error live daily note:", e),
+		);
 
-		loadFirebaseData();
-	}, [circleId, databaseDateQueryString, refreshTrigger, TEMPLATE_TASKS, t]);
+		return () => unsubscribe();
+	}, [circleId, databaseDateQueryString, t]);
 
 	const displayName = userData?.name || user?.displayName?.split(" ")[0] || "Beatrice";
 	const formattedTime = currentTime.toLocaleTimeString("nl-BE", { hour: "2-digit", minute: "2-digit" });

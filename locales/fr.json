@@ -473,6 +473,29 @@
 				"title": "Bravo",
 				"message": "Vous avez terminé un exercice de respiration. Prenez encore un instant pour rester avec vous-même."
 			}
+		},
+		"energy": {
+			"status": {
+				"depleted": "Complètement épuisé(e)",
+				"low": "Batterie faible",
+				"ok": "Ça va",
+				"full": "Plein d'énergie"
+			},
+			"sliderHint": "Faites glisser pour ajuster votre niveau d'énergie",
+			"sos": {
+				"titleLow": "Activez l'aide du cercle !",
+				"titleDefault": "Partagez votre état",
+				"subLow": "Demandez discrètement de l'aide à votre cercle.",
+				"subDefault": "Informez votre cercle de vos besoins.",
+				"sentTitle": "Message envoyé",
+				"sent": "Votre cercle a été informé.",
+				"confirmTitle": "Demander de l'aide ?",
+				"confirmMessage": "Nous informons votre cercle que vous avez besoin d'un peu de répit.",
+				"confirm": "Oui, partager",
+				"fallbackName": "Un aidant",
+				"noteTitle": "{{name}} a besoin d'un peu de répit",
+				"noteBody": "Je me sens un peu épuisé(e). Quelqu'un peut-il reprendre une tâche aujourd'hui ?"
+			}
 		}
 	}
 }

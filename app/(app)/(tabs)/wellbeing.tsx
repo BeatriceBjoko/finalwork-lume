@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BreathingModal } from "../../../components/ui/BreathingModal";
 import { MiniShape } from "../../../components/ui/BreathingShapes";
+import { EnergyPanel } from "../../../components/ui/EnergyPanel";
 import { COLORS, FONTS } from "../../../constants/theme";
 import type { Session, SessionCategory } from "../../../hooks/useBreathing";
 
@@ -136,15 +137,7 @@ export default function WellbeingScreen() {
 					<EmptyCategoryState isFrench={i18n.language.startsWith("fr")} />
 				)}
 
-				<View style={styles.tipCardWrap}>
-					<BlurView intensity={20} tint="light" style={styles.tipCard}>
-						<View style={styles.tipBadge}>
-							<MaterialCommunityIcons name="lightbulb-on" size={14} color={COLORS.primary} />
-							<Text style={styles.tipBadgeText}>{t("wellbeing.tip.title")}</Text>
-						</View>
-						<Text style={styles.tipBody}>{t("wellbeing.tip.body")}</Text>
-					</BlurView>
-				</View>
+				<EnergyPanel />
 			</ScrollView>
 
 			<BreathingModal session={activeSession} onClose={closeSession} />
@@ -360,30 +353,4 @@ const styles = StyleSheet.create({
 		shadowRadius: 8,
 		elevation: 4,
 	},
-
-	tipCardWrap: {
-		borderRadius: 20,
-		overflow: "hidden",
-		borderWidth: 1.5,
-		borderColor: "rgba(239, 252, 0, 0.55)",
-		shadowColor: "#EFFC00",
-		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.2,
-		shadowRadius: 10,
-		elevation: 3,
-	},
-	tipCard: { padding: 18, backgroundColor: "rgba(255, 255, 255, 0.5)" },
-	tipBadge: {
-		flexDirection: "row",
-		alignItems: "center",
-		alignSelf: "flex-start",
-		backgroundColor: COLORS.accent,
-		paddingHorizontal: 10,
-		paddingVertical: 4,
-		borderRadius: 12,
-		gap: 5,
-		marginBottom: 10,
-	},
-	tipBadgeText: { fontFamily: "InterBold", fontSize: 11, color: COLORS.primary, letterSpacing: 0.5 },
-	tipBody: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.primary, lineHeight: 20 },
 });

@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, limit, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, limit, onSnapshot, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
 import { db } from "../../lib/firebase-config";
 import { uploadImageAsync } from "../../lib/firebase-service";
 
@@ -33,6 +33,25 @@ export async function getDailyNote(circleId: string, dateString: string): Promis
 	return notes[0];
 }
 
+export function subscribeToDailyNote(circleId: string, dateString: string, onChange: (note: any | null) => void, onError?: (e: Error) => void): () => void {
+	const notesRef = collection(db, "careCircleNotes");
+	const q = query(notesRef, where("careCircleId", "==", circleId), where("date", "==", dateString));
+	return onSnapshot(
+		q,
+		(snapshot) => {
+			if (snapshot.empty) {
+				onChange(null);
+				return;
+			}
+			const notes: any[] = [];
+			snapshot.forEach((d) => notes.push({ id: d.id, ...d.data() }));
+			const important = notes.find((n) => n.isImportant === true);
+			onChange(important ?? notes[0]);
+		},
+		(err) => onError?.(err as Error),
+	);
+}
+
 export async function getNotesByDate(circleId: string, dateString: string): Promise<any[]> {
 	const notesRef = collection(db, "careCircleNotes");
 	const q = query(notesRef, where("careCircleId", "==", circleId), where("date", "==", dateString), orderBy("createdAt", "desc"));
@@ -52,6 +71,19 @@ export async function getNotesFeed(circleId: string, lastVisibleDoc: any = null,
 	const notes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 	const lastVisible = snapshot.docs[snapshot.docs.length - 1];
 	return { notes, lastVisible };
+}
+
+/**
+  Live feed: streams the most recent `max` notes and calls `onChange` whenever
+ */
+export function subscribeToNotesFeed(circleId: string, max: number, onChange: (notes: any[]) => void, onError?: (e: Error) => void): () => void {
+	const notesRef = collection(db, "careCircleNotes");
+	const q = query(notesRef, where("careCircleId", "==", circleId), orderBy("createdAt", "desc"), limit(max));
+	return onSnapshot(
+		q,
+		(snapshot) => onChange(snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))),
+		(err) => onError?.(err as Error),
+	);
 }
 
 export async function addNoteToDB(circleId: string, noteData: NoteInputData, creatorId: string): Promise<string> {

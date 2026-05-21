@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { useSession } from "../context";
-import { deleteNoteFromDB, getNotesByDate, getNotesFeed, toggleImportantInDB } from "../services/firebase/notes.service";
+import { deleteNoteFromDB, getNotesByDate, subscribeToNotesFeed, toggleImportantInDB } from "../services/firebase/notes.service";
+
+const PAGE_SIZE = 10;
 
 const TEMPLATE_NOTES = [
 	{
@@ -36,7 +38,7 @@ export function useNotesFeed() {
 
 	const [notes, setNotes] = useState<any[]>([]);
 	const [feedData, setFeedData] = useState<any[]>([]);
-	const [lastVisible, setLastVisible] = useState<any>(null);
+	const [feedLimit, setFeedLimit] = useState(PAGE_SIZE);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
@@ -45,65 +47,55 @@ export function useNotesFeed() {
 	const [activeFilter, setActiveFilter] = useState("Alles");
 	const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-	const loadNotes = useCallback(
-		async (isRefresh = false) => {
-			if (!circleId) {
-				setNotes(TEMPLATE_NOTES);
-				setIsTemplateMode(true);
-				setIsLoading(false);
-				return;
-			}
+	useEffect(() => {
+		if (!circleId) {
+			setNotes(TEMPLATE_NOTES);
+			setIsTemplateMode(true);
+			setIsLoading(false);
+			return;
+		}
 
-			if (isRefresh) {
-				setIsRefreshing(true);
-				setLastVisible(null);
-				setHasMore(true);
-			} else {
-				setIsLoading(true);
-			}
-
-			try {
-				if (activeFilter === "Datum" && selectedDate) {
-					const data = await getNotesByDate(circleId, selectedDate);
+		if (activeFilter === "Datum" && selectedDate) {
+			setIsLoading(true);
+			getNotesByDate(circleId, selectedDate)
+				.then((data) => {
 					setNotes(data);
 					setHasMore(false);
 					setIsTemplateMode(false);
+				})
+				.catch((e) => console.error("Fout bij laden notities:", e))
+				.finally(() => {
+					setIsLoading(false);
+					setIsRefreshing(false);
+				});
+			return;
+		}
+
+		setIsLoading(true);
+		const unsubscribe = subscribeToNotesFeed(
+			circleId,
+			feedLimit,
+			(liveNotes) => {
+				setHasMore(liveNotes.length >= feedLimit);
+				if (liveNotes.length === 0) {
+					setNotes(TEMPLATE_NOTES);
+					setIsTemplateMode(true);
 				} else {
-					const currentLastVisible = isRefresh ? null : lastVisible;
-					const { notes: newNotes, lastVisible: newLastVisible } = await getNotesFeed(circleId, currentLastVisible, 10);
-
-					if (newNotes.length < 10) setHasMore(false);
-					setLastVisible(newLastVisible);
-
-					if (isRefresh && newNotes.length === 0) {
-						setNotes(TEMPLATE_NOTES);
-						setIsTemplateMode(true);
-					} else if (isRefresh) {
-						setNotes(newNotes);
-						setIsTemplateMode(false);
-					} else {
-						setNotes((prev) => {
-							const realPrev = prev.filter((n) => !n.id.startsWith("tmpl_"));
-							const existingIds = new Set(realPrev.map((n) => n.id));
-							const uniqueNewNotes = newNotes.filter((n) => !existingIds.has(n.id));
-							return [...realPrev, ...uniqueNewNotes];
-						});
-						setIsTemplateMode(false);
-					}
+					setNotes(liveNotes);
+					setIsTemplateMode(false);
 				}
-			} catch (error) {
-				console.error("Fout bij laden notities:", error);
-			} finally {
 				setIsLoading(false);
 				setIsRefreshing(false);
-			}
-		},
-		[circleId, lastVisible, activeFilter, selectedDate],
-	);
+			},
+			(e) => {
+				console.error("Fout bij live notities:", e);
+				setIsLoading(false);
+				setIsRefreshing(false);
+			},
+		);
 
-	useEffect(() => {
-		loadNotes(true);
-	}, [circleId, activeFilter, selectedDate]);
+		return () => unsubscribe();
+	}, [circleId, activeFilter, selectedDate, feedLimit]);
 
 	useEffect(() => {
 		let filtered = notes;
@@ -139,7 +131,7 @@ export function useNotesFeed() {
 		setNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, isImportant: !currentStatus } : n)));
 		try {
 			await toggleImportantInDB(noteId, currentStatus);
-		} catch (error) {
+		} catch {
 			setNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, isImportant: currentStatus } : n)));
 			Alert.alert("Fout", "Kon status niet aanpassen.");
 		}
@@ -150,14 +142,24 @@ export function useNotesFeed() {
 			setNotes((prev) => prev.filter((n) => n.id !== noteId));
 			return;
 		}
-
 		try {
 			await deleteNoteFromDB(noteId, creatorId, userData?.role || "member", user!.uid);
-			setNotes((prev) => prev.filter((n) => n.id !== noteId));
 		} catch (error: any) {
 			Alert.alert("Geweigerd", error.message);
 		}
 	};
+
+	const loadMore = useCallback(() => {
+		if (hasMore && !isLoading && activeFilter !== "Datum") {
+			setFeedLimit((prev) => prev + PAGE_SIZE);
+		}
+	}, [hasMore, isLoading, activeFilter]);
+
+	const refresh = useCallback(() => {
+		setIsRefreshing(true);
+		setFeedLimit(PAGE_SIZE);
+		setTimeout(() => setIsRefreshing(false), 500);
+	}, []);
 
 	return {
 		feedData,
@@ -169,8 +171,8 @@ export function useNotesFeed() {
 		selectedDate,
 		setSelectedDate,
 		isTemplateMode,
-		loadMore: () => hasMore && !isLoading && loadNotes(),
-		refresh: () => loadNotes(true),
+		loadMore,
+		refresh,
 		handleToggleImportant,
 		handleDeleteNote,
 	};

@@ -472,6 +472,29 @@
 				"title": "Goed gedaan",
 				"message": "Je hebt een ademoefening voltooid. Neem nog even de tijd om bij jezelf te blijven."
 			}
+		},
+		"energy": {
+			"status": {
+				"depleted": "Helemaal uitgeput",
+				"low": "Batterij is laag",
+				"ok": "Het gaat wel",
+				"full": "Vol energie"
+			},
+			"sliderHint": "Sleep de balk om je huidige energieniveau aan te passen",
+			"sos": {
+				"titleLow": "Activeer kring-hulp!",
+				"titleDefault": "Deel je status",
+				"subLow": "Vraag discreet aan je kring om een taak over te nemen.",
+				"subDefault": "Laat je kring weten hoe je je voelt.",
+				"sentTitle": "Bericht verzonden",
+				"sent": "Je kring is op de hoogte gebracht.",
+				"confirmTitle": "Hulp vragen?",
+				"confirmMessage": "We laten je zorgkring weten dat je wat ademruimte nodig hebt.",
+				"confirm": "Ja, deel het",
+				"fallbackName": "Een mantelzorger",
+				"noteTitle": "{{name}} heeft even ademruimte nodig",
+				"noteBody": "Ik voel me wat uitgeput. Kan iemand vandaag een taak overnemen?"
+			}
 		}
 	}
 }
