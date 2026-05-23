@@ -47,7 +47,8 @@
 				{
 					"calendarPermission": "Lume wil je zorgtaken aan je agenda toevoegen."
 				}
-			]
+			],
+			["expo-camera", { "cameraPermission": "Lume gebruikt de camera om medicatie te scannen." }]
 		],
 		"experiments": {
 			"typedRoutes": true,
