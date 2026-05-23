@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BreathingModal } from "../../../components/ui/BreathingModal";
 import { MiniShape } from "../../../components/ui/BreathingShapes";
 import { EnergyPanel } from "../../../components/ui/EnergyPanel";
-import { COLORS, FONTS } from "../../../constants/theme";
+import { COLORS, FONTS, TYPOGRAPHY } from "../../../constants/theme";
 import type { Session, SessionCategory } from "../../../hooks/useBreathing";
 
 const SESSIONS: Session[] = [
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
 
 	header: { alignItems: "center", marginBottom: 22 },
 	titleRow: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
-	titleText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary },
+	titleText: { ...TYPOGRAPHY.h1, color: COLORS.primary },
 	highlightWrapper: { backgroundColor: COLORS.accent, paddingHorizontal: 10, paddingVertical: 2, borderRadius: 20 },
 	highlightText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary },
 	subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.primary, opacity: 0.6, marginTop: 8, textAlign: "center" },
