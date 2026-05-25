@@ -323,6 +323,26 @@
 			"deniedTitle": "Oops, action refusée",
 			"errorTitle": "Erreur",
 			"required": "Obligatoire"
+		},
+		"medication": {
+			"toggle": "Tâche de médication",
+			"neutralLabel": "Titre neutre (visible par tous)",
+			"neutralPlaceholder": "Moment de médication",
+			"privateSection": "Privé — réservé aux membres autorisés",
+			"medName": "Nom du médicament",
+			"medNamePlaceholder": "ex. Metformine 500mg",
+			"dose": "Dose",
+			"dosePlaceholder": "ex. 1 comprimé",
+			"instructions": "Instructions",
+			"instructionsPlaceholder": "ex. Après le petit-déjeuner",
+			"times": "Horaires",
+			"addTime": "Horaire",
+			"visibility": "Qui peut voir les détails ?",
+			"vis_admin": "Moi uniquement",
+			"vis_selected": "Membres sélectionnés",
+			"vis_everyone": "Tout le monde",
+			"selectMembers": "Sélectionnez des membres",
+			"errors": { "noMedName": "Donnez un nom au médicament.", "noTimes": "Ajoutez au moins un horaire." }
 		}
 	},
 	"dailySummary": {

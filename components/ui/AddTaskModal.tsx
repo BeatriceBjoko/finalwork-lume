@@ -2,10 +2,11 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
 import { COLORS, FONTS } from "../../constants/theme";
 import { TASK_ICONS, useTaskForm } from "../../hooks/useTaskForm";
+import type { MedicationVisibility } from "../../services/firebase/medication.types";
 import Button from "./Button";
 
 interface AddTaskModalProps {
@@ -21,38 +22,73 @@ function parseTimeToDate(timeStr: string): Date {
 	d.setHours(Number.isFinite(h) ? h : 9, Number.isFinite(m) ? m : 0, 0, 0);
 	return d;
 }
-
 function formatTimeFromDate(d: Date): string {
 	const h = String(d.getHours()).padStart(2, "0");
 	const m = String(d.getMinutes()).padStart(2, "0");
 	return `${h}:${m}`;
 }
 
+const VIS_KEYS: MedicationVisibility[] = ["admin", "selected", "everyone"];
+
 export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: AddTaskModalProps) {
 	const { t } = useTranslation();
-	const { title, setTitle, startTime, setStartTime, endTime, setEndTime, selectedIcon, setSelectedIcon, descriptionText, setDescriptionText, members, selectedMember, setSelectedMember, isSaving, handleSaveTask } = useTaskForm(
-		visible,
-		currentDateStr,
-		onClose,
-		taskToEdit,
-	);
+	const form = useTaskForm(visible, currentDateStr, onClose, taskToEdit);
+	const {
+		title,
+		setTitle,
+		startTime,
+		setStartTime,
+		endTime,
+		setEndTime,
+		selectedIcon,
+		setSelectedIcon,
+		descriptionText,
+		setDescriptionText,
+		members,
+		selectedMember,
+		setSelectedMember,
+		isSaving,
+		handleSaveTask,
+		isAdmin,
+		isMedication,
+		setIsMedication,
+		medName,
+		setMedName,
+		dose,
+		setDose,
+		instructions,
+		setInstructions,
+		times,
+		addTime,
+		removeTime,
+		visibility,
+		setVisibility,
+		allowedMemberIds,
+		toggleAllowedMember,
+	} = form;
 
 	const isEditing = !!taskToEdit;
 	const [showStartPicker, setShowStartPicker] = useState(false);
 	const [showEndPicker, setShowEndPicker] = useState(false);
+	const [showAddTimePicker, setShowAddTimePicker] = useState(false);
+	const [pendingTime, setPendingTime] = useState("09:00");
 
 	const handleStartChange = (event: any, date?: Date) => {
 		if (Platform.OS === "android") setShowStartPicker(false);
-		if (event.type === "set" && date) {
-			setStartTime(formatTimeFromDate(date));
-		}
+		if (event.type === "set" && date) setStartTime(formatTimeFromDate(date));
 	};
-
 	const handleEndChange = (event: any, date?: Date) => {
 		if (Platform.OS === "android") setShowEndPicker(false);
-		if (event.type === "set" && date) {
-			setEndTime(formatTimeFromDate(date));
+		if (event.type === "set" && date) setEndTime(formatTimeFromDate(date));
+	};
+	const handleAddTimeChange = (event: any, date?: Date) => {
+		// Android: dialog fires once on confirm → add then close
+		if (Platform.OS === "android") {
+			setShowAddTimePicker(false);
+			if (event.type === "set" && date) addTime(formatTimeFromDate(date));
+			return;
 		}
+		if (date) setPendingTime(formatTimeFromDate(date));
 	};
 
 	return (
@@ -69,57 +105,148 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 					</View>
 
 					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollBody} keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive" automaticallyAdjustKeyboardInsets>
-						<Text style={styles.label}>{t("tasks.taskTitle")}</Text>
-						<TextInput style={styles.input} placeholder={t("tasks.taskTitlePlaceholder")} value={title} onChangeText={setTitle} placeholderTextColor="#9ca3af" />
+						{isAdmin && !isEditing && (
+							<View style={styles.medToggleRow}>
+								<View style={styles.medToggleText}>
+									<MaterialCommunityIcons name="shield-lock-outline" size={18} color={COLORS.primary} />
+									<Text style={styles.medToggleLabel}>{t("tasks.medication.toggle")}</Text>
+								</View>
+								<Switch value={isMedication} onValueChange={setIsMedication} trackColor={{ true: COLORS.accent, false: "#d1d5db" }} thumbColor="#fff" />
+							</View>
+						)}
 
-						<Text style={styles.label}>{t("tasks.timeFrame")}</Text>
-						<View style={styles.timeRow}>
-							<Pressable style={styles.timeButton} onPress={() => setShowStartPicker(true)}>
-								<MaterialCommunityIcons name="clock-outline" size={16} color="rgba(35, 54, 0, 0.5)" />
-								<Text style={styles.timeButtonText}>{startTime}</Text>
-							</Pressable>
-							<Text style={styles.timeTot}>{t("tasks.to")}</Text>
-							<Pressable style={styles.timeButton} onPress={() => setShowEndPicker(true)}>
-								<MaterialCommunityIcons name="clock-outline" size={16} color="rgba(35, 54, 0, 0.5)" />
-								<Text style={styles.timeButtonText}>{endTime}</Text>
-							</Pressable>
-						</View>
+						{isMedication ? (
+							<>
+								<Text style={styles.label}>{t("tasks.medication.neutralLabel")}</Text>
+								<TextInput style={styles.input} placeholder={t("tasks.medication.neutralPlaceholder")} value={title} onChangeText={setTitle} placeholderTextColor="#9ca3af" />
 
-						<Text style={styles.label}>{t("tasks.assignTo")}</Text>
-						<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.memberList}>
-							<Pressable onPress={() => setSelectedMember(null)} style={[styles.memberCircle, !selectedMember && styles.memberCircleSelected]}>
-								<MaterialCommunityIcons name="account-off-outline" size={24} color={!selectedMember ? COLORS.primary : "#9ca3af"} />
-							</Pressable>
-							{members.map((member) => (
-								<Pressable key={member.id} onPress={() => setSelectedMember(member)} style={[styles.memberCircle, selectedMember?.id === member.id && styles.memberCircleSelected]}>
-									{member.photoUrl ? <Image source={{ uri: member.photoUrl }} style={styles.memberPhoto} /> : <Text style={styles.memberInitials}>{member.name.substring(0, 2).toUpperCase()}</Text>}
-								</Pressable>
-							))}
-						</ScrollView>
+								<View style={styles.privateBox}>
+									<View style={styles.privateHeader}>
+										<MaterialCommunityIcons name="lock-outline" size={14} color={COLORS.primary} />
+										<Text style={styles.privateHeaderText}>{t("tasks.medication.privateSection")}</Text>
+									</View>
 
-						<Text style={styles.label}>{t("tasks.chooseIcon")}</Text>
-						<View style={styles.iconGrid}>
-							{TASK_ICONS.map((iconData) => {
-								const isSelected = selectedIcon === iconData.id;
-								return (
-									<Pressable key={iconData.id} onPress={() => setSelectedIcon(iconData.id)} style={[styles.iconBox, isSelected && styles.iconBoxSelected]}>
-										<MaterialCommunityIcons name={iconData.id as any} size={28} color={isSelected ? COLORS.primary : "#9ca3af"} />
+									<Text style={styles.label}>{t("tasks.medication.medName")}</Text>
+									<TextInput style={styles.input} placeholder={t("tasks.medication.medNamePlaceholder")} value={medName} onChangeText={setMedName} placeholderTextColor="#9ca3af" />
+
+									<Text style={styles.label}>{t("tasks.medication.dose")}</Text>
+									<TextInput style={styles.input} placeholder={t("tasks.medication.dosePlaceholder")} value={dose} onChangeText={setDose} placeholderTextColor="#9ca3af" />
+
+									<Text style={styles.label}>{t("tasks.medication.instructions")}</Text>
+									<TextInput style={styles.input} placeholder={t("tasks.medication.instructionsPlaceholder")} value={instructions} onChangeText={setInstructions} placeholderTextColor="#9ca3af" />
+								</View>
+
+								<Text style={styles.label}>{t("tasks.medication.times")}</Text>
+								<View style={styles.chipWrap}>
+									{times.map((tm) => (
+										<View key={tm} style={styles.timeChip}>
+											<Text style={styles.timeChipText}>{tm}</Text>
+											<Pressable onPress={() => removeTime(tm)} hitSlop={6}>
+												<Ionicons name="close" size={14} color={COLORS.primary} />
+											</Pressable>
+										</View>
+									))}
+									<Pressable
+										style={styles.addChip}
+										onPress={() => {
+											setPendingTime("09:00");
+											setShowAddTimePicker(true);
+										}}
+									>
+										<Ionicons name="add" size={16} color={COLORS.primary} />
+										<Text style={styles.addChipText}>{t("tasks.medication.addTime")}</Text>
 									</Pressable>
-								);
-							})}
-						</View>
+								</View>
 
-						<Text style={styles.label}>{t("tasks.descriptionLabel")}</Text>
-						<TextInput
-							style={[styles.input, styles.textArea]}
-							placeholder={t("tasks.descriptionPlaceholder")}
-							value={descriptionText}
-							onChangeText={setDescriptionText}
-							multiline
-							numberOfLines={4}
-							textAlignVertical="top"
-							placeholderTextColor="#9ca3af"
-						/>
+								<Text style={styles.label}>{t("tasks.medication.visibility")}</Text>
+								<View style={styles.visStack}>
+									{VIS_KEYS.map((key) => {
+										const on = visibility === key;
+										return (
+											<Pressable key={key} onPress={() => setVisibility(key)} style={[styles.visOption, on && styles.visOptionActive]}>
+												<View style={[styles.radio, on && styles.radioOn]}>{on && <View style={styles.radioDot} />}</View>
+												<Text style={[styles.visOptionText, on && styles.visOptionTextActive]}>{t(`tasks.medication.vis_${key}`)}</Text>
+											</Pressable>
+										);
+									})}
+								</View>
+
+								{visibility === "selected" && (
+									<>
+										<Text style={styles.label}>{t("tasks.medication.selectMembers")}</Text>
+										<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.memberList}>
+											{members.map((m) => {
+												const on = allowedMemberIds.includes(m.id);
+												return (
+													<Pressable key={m.id} onPress={() => toggleAllowedMember(m.id)} style={[styles.memberCircle, on && styles.memberCircleSelected]}>
+														{m.photoUrl ? <Image source={{ uri: m.photoUrl }} style={styles.memberPhoto} /> : <Text style={styles.memberInitials}>{m.name.substring(0, 2).toUpperCase()}</Text>}
+														{on && (
+															<View style={styles.memberCheck}>
+																<Ionicons name="checkmark" size={12} color={COLORS.primary} />
+															</View>
+														)}
+													</Pressable>
+												);
+											})}
+										</ScrollView>
+									</>
+								)}
+							</>
+						) : (
+							<>
+								<Text style={styles.label}>{t("tasks.taskTitle")}</Text>
+								<TextInput style={styles.input} placeholder={t("tasks.taskTitlePlaceholder")} value={title} onChangeText={setTitle} placeholderTextColor="#9ca3af" />
+
+								<Text style={styles.label}>{t("tasks.timeFrame")}</Text>
+								<View style={styles.timeRow}>
+									<Pressable style={styles.timeButton} onPress={() => setShowStartPicker(true)}>
+										<MaterialCommunityIcons name="clock-outline" size={16} color="rgba(35, 54, 0, 0.5)" />
+										<Text style={styles.timeButtonText}>{startTime}</Text>
+									</Pressable>
+									<Text style={styles.timeTot}>{t("tasks.to")}</Text>
+									<Pressable style={styles.timeButton} onPress={() => setShowEndPicker(true)}>
+										<MaterialCommunityIcons name="clock-outline" size={16} color="rgba(35, 54, 0, 0.5)" />
+										<Text style={styles.timeButtonText}>{endTime}</Text>
+									</Pressable>
+								</View>
+
+								<Text style={styles.label}>{t("tasks.assignTo")}</Text>
+								<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.memberList}>
+									<Pressable onPress={() => setSelectedMember(null)} style={[styles.memberCircle, !selectedMember && styles.memberCircleSelected]}>
+										<MaterialCommunityIcons name="account-off-outline" size={24} color={!selectedMember ? COLORS.primary : "#9ca3af"} />
+									</Pressable>
+									{members.map((member) => (
+										<Pressable key={member.id} onPress={() => setSelectedMember(member)} style={[styles.memberCircle, selectedMember?.id === member.id && styles.memberCircleSelected]}>
+											{member.photoUrl ? <Image source={{ uri: member.photoUrl }} style={styles.memberPhoto} /> : <Text style={styles.memberInitials}>{member.name.substring(0, 2).toUpperCase()}</Text>}
+										</Pressable>
+									))}
+								</ScrollView>
+
+								<Text style={styles.label}>{t("tasks.chooseIcon")}</Text>
+								<View style={styles.iconGrid}>
+									{TASK_ICONS.map((iconData) => {
+										const isSelected = selectedIcon === iconData.id;
+										return (
+											<Pressable key={iconData.id} onPress={() => setSelectedIcon(iconData.id)} style={[styles.iconBox, isSelected && styles.iconBoxSelected]}>
+												<MaterialCommunityIcons name={iconData.id as any} size={28} color={isSelected ? COLORS.primary : "#9ca3af"} />
+											</Pressable>
+										);
+									})}
+								</View>
+
+								<Text style={styles.label}>{t("tasks.descriptionLabel")}</Text>
+								<TextInput
+									style={[styles.input, styles.textArea]}
+									placeholder={t("tasks.descriptionPlaceholder")}
+									value={descriptionText}
+									onChangeText={setDescriptionText}
+									multiline
+									numberOfLines={4}
+									textAlignVertical="top"
+									placeholderTextColor="#9ca3af"
+								/>
+							</>
+						)}
 
 						<View style={styles.footer}>
 							<Button title={isSaving ? t("tasks.saving") : isEditing ? t("tasks.saveChanges") : t("tasks.addTaskBtn")} onPress={handleSaveTask} variant="primary" disabled={isSaving} />
@@ -154,53 +281,81 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 					</Pressable>
 				</Modal>
 			)}
+			{Platform.OS === "ios" && showAddTimePicker && (
+				<Modal transparent animationType="fade">
+					<Pressable style={styles.pickerOverlay} onPress={() => setShowAddTimePicker(false)}>
+						<Pressable style={styles.pickerCard}>
+							<Text style={styles.pickerTitle}>{t("tasks.medication.times")}</Text>
+							<DateTimePicker value={parseTimeToDate(pendingTime)} mode="time" is24Hour display="spinner" onChange={handleAddTimeChange} themeVariant="light" textColor={COLORS.primary} />
+							<Pressable
+								onPress={() => {
+									addTime(pendingTime);
+									setShowAddTimePicker(false);
+								}}
+								style={styles.pickerDone}
+							>
+								<Text style={styles.pickerDoneText}>{t("common.ok")}</Text>
+							</Pressable>
+						</Pressable>
+					</Pressable>
+				</Modal>
+			)}
 
 			{Platform.OS === "android" && showStartPicker && <DateTimePicker value={parseTimeToDate(startTime)} mode="time" is24Hour onChange={handleStartChange} />}
 			{Platform.OS === "android" && showEndPicker && <DateTimePicker value={parseTimeToDate(endTime)} mode="time" is24Hour onChange={handleEndChange} />}
+			{Platform.OS === "android" && showAddTimePicker && <DateTimePicker value={parseTimeToDate("09:00")} mode="time" is24Hour onChange={handleAddTimeChange} />}
 		</Modal>
 	);
 }
 
 const styles = StyleSheet.create({
 	overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "flex-end" },
-	modalContent: {
-		backgroundColor: "#FFFFFF",
-		borderTopLeftRadius: 24,
-		borderTopRightRadius: 24,
-		maxHeight: "85%",
-		padding: 20,
-	},
+	modalContent: { backgroundColor: "#FFFFFF", borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: "85%", padding: 20 },
 	header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
 	title: { fontFamily: FONTS.heading, fontSize: 20, color: COLORS.primary },
 	closeBtn: { padding: 4, backgroundColor: "rgba(0,0,0,0.05)", borderRadius: 20 },
 	scrollBody: { paddingBottom: 40 },
 	label: { fontFamily: "InterSemiBold", fontSize: 14, color: COLORS.primary, marginBottom: 8, marginTop: 16 },
 	input: { borderWidth: 1, borderColor: "rgba(35, 54, 0, 0.15)", borderRadius: 12, padding: 14, fontFamily: "InterRegular", fontSize: 15, color: COLORS.primary },
+	textArea: { minHeight: 100 },
+
 	timeRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-	timeButton: {
-		flex: 1,
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "center",
-		gap: 8,
-		borderWidth: 1,
-		borderColor: "rgba(35, 54, 0, 0.15)",
-		borderRadius: 12,
-		paddingVertical: 14,
-		backgroundColor: "#FFF",
-	},
+	timeButton: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderWidth: 1, borderColor: "rgba(35, 54, 0, 0.15)", borderRadius: 12, paddingVertical: 14, backgroundColor: "#FFF" },
 	timeButtonText: { fontFamily: "InterSemiBold", fontSize: 16, color: COLORS.primary },
 	timeTot: { fontFamily: "InterMedium", color: "#6b7280" },
+
 	memberList: { gap: 12, paddingVertical: 4 },
 	memberCircle: { width: 52, height: 52, borderRadius: 26, backgroundColor: "#f9fafb", borderWidth: 1, borderColor: "rgba(35,54,0,0.1)", justifyContent: "center", alignItems: "center", overflow: "hidden" },
 	memberCircleSelected: { borderColor: COLORS.accent, borderWidth: 2, backgroundColor: "rgba(239, 252, 0, 0.2)" },
 	memberPhoto: { width: "100%", height: "100%" },
 	memberInitials: { fontFamily: "InterSemiBold", fontSize: 16, color: COLORS.primary },
+	memberCheck: { position: "absolute", bottom: -2, right: -2, backgroundColor: COLORS.accent, borderRadius: 9, width: 18, height: 18, alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderColor: "#fff" },
+
 	iconGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
 	iconBox: { width: 60, height: 60, borderRadius: 16, borderWidth: 1, borderColor: "rgba(35, 54, 0, 0.1)", justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb" },
 	iconBoxSelected: { borderColor: COLORS.accent, backgroundColor: "rgba(239, 252, 0, 0.2)", borderWidth: 2 },
-	textArea: { minHeight: 100 },
 	footer: { marginTop: 30 },
+
+	medToggleRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: "rgba(53,78,0,0.06)", borderRadius: 14, padding: 14, marginBottom: 4 },
+	medToggleText: { flexDirection: "row", alignItems: "center", gap: 8 },
+	medToggleLabel: { fontFamily: "InterSemiBold", fontSize: 14, color: COLORS.primary },
+	privateBox: { borderWidth: 1, borderColor: "rgba(53,78,0,0.18)", borderRadius: 14, padding: 14, marginTop: 8, backgroundColor: "rgba(53,78,0,0.03)" },
+	privateHeader: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 },
+	privateHeaderText: { fontFamily: "InterSemiBold", fontSize: 12, color: COLORS.primary, letterSpacing: 0.3 },
+	chipWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+	timeChip: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(239, 252, 0, 0.25)", borderWidth: 1, borderColor: COLORS.accent, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8 },
+	timeChipText: { fontFamily: "InterSemiBold", fontSize: 14, color: COLORS.primary },
+	addChip: { flexDirection: "row", alignItems: "center", gap: 4, borderWidth: 1, borderColor: "rgba(35,54,0,0.2)", borderStyle: "dashed", borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8 },
+	addChipText: { fontFamily: "InterMedium", fontSize: 13, color: COLORS.primary },
+
+	visStack: { gap: 8 },
+	visOption: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 12, paddingHorizontal: 14, borderRadius: 12, borderWidth: 1, borderColor: "rgba(35,54,0,0.15)", backgroundColor: "#FFF" },
+	visOptionActive: { borderColor: COLORS.primary, backgroundColor: "rgba(53,78,0,0.06)" },
+	radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: "rgba(35,54,0,0.3)", alignItems: "center", justifyContent: "center" },
+	radioOn: { borderColor: COLORS.primary },
+	radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.primary },
+	visOptionText: { fontFamily: "InterMedium", fontSize: 14, color: COLORS.primary },
+	visOptionTextActive: { fontFamily: "InterSemiBold" },
 
 	pickerOverlay: { flex: 1, backgroundColor: "rgba(0, 0, 0, 0.4)", justifyContent: "center", alignItems: "center", paddingHorizontal: 24 },
 	pickerCard: {

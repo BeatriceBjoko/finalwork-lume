@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 import { useSession } from "../context";
 import { getCircleMembers } from "../lib/firebase-service";
+import { createMedicationTask } from "../services/firebase/medication.service";
+import { MEDICATION, type MedicationVisibility } from "../services/firebase/medication.types";
 import { addTaskToDB, TaskInputData, updateTaskInDB } from "../services/firebase/tasks.service";
 
 export const TASK_ICONS = [
@@ -31,31 +33,38 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 	const [selectedMember, setSelectedMember] = useState<any | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
 
+	const [isMedication, setIsMedication] = useState(false);
+	const [medName, setMedName] = useState("");
+	const [dose, setDose] = useState("");
+	const [instructions, setInstructions] = useState("");
+	const [times, setTimes] = useState<string[]>(["09:00"]);
+	const [visibility, setVisibility] = useState<MedicationVisibility>(MEDICATION.defaultVisibility);
+	const [allowedMemberIds, setAllowedMemberIds] = useState<string[]>([]);
+
+	const isAdmin = useMemo(() => members.some((m) => m.id === user?.uid && m.isAdmin), [members, user?.uid]);
+
 	useEffect(() => {
 		if (circleId) {
 			getCircleMembers(circleId).then(setMembers).catch(console.error);
 		}
 	}, [circleId]);
 
-	// Reset / populate form fields whenever the modal opens, or whenever taskToEdit changes.
-	// `visible` is the key without it, the hook can't tell consecutive "new task" opens apart.
 	useEffect(() => {
 		if (!visible) return;
 
 		if (taskToEdit) {
 			setTitle(taskToEdit.title || "");
-
 			if (taskToEdit.time && taskToEdit.time.includes(" - ")) {
-				const times = taskToEdit.time.split(" - ");
-				setStartTime(times[0]);
-				setEndTime(times[1]);
+				const tms = taskToEdit.time.split(" - ");
+				setStartTime(tms[0]);
+				setEndTime(tms[1]);
 			} else {
 				setStartTime(taskToEdit.time || "09:00");
 				setEndTime("10:00");
 			}
-
 			setSelectedIcon(taskToEdit.icon || TASK_ICONS[0].id);
 			setDescriptionText(taskToEdit.description ? taskToEdit.description.join("\n") : "");
+			setIsMedication(false);
 		} else {
 			setTitle("");
 			setStartTime("09:00");
@@ -63,6 +72,13 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 			setSelectedIcon(TASK_ICONS[0].id);
 			setDescriptionText("");
 			setSelectedMember(null);
+			setIsMedication(false);
+			setMedName("");
+			setDose("");
+			setInstructions("");
+			setTimes(["09:00"]);
+			setVisibility(MEDICATION.defaultVisibility);
+			setAllowedMemberIds([]);
 		}
 	}, [visible, taskToEdit]);
 
@@ -74,11 +90,54 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 		}
 	}, [visible, taskToEdit, members]);
 
+	const addTime = (time: string) => setTimes((prev) => Array.from(new Set([...prev, time])).sort());
+	const removeTime = (time: string) => setTimes((prev) => prev.filter((x) => x !== time));
+	const toggleAllowedMember = (id: string) => setAllowedMemberIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
 	const handleSaveTask = async () => {
 		if (!circleId || !user?.uid) {
 			Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.noCircle"));
 			return;
 		}
+
+		if (isMedication) {
+			if (!medName.trim()) {
+				Alert.alert(t("tasks.errors.required"), t("tasks.medication.errors.noMedName"));
+				return;
+			}
+			if (times.length === 0) {
+				Alert.alert(t("tasks.errors.required"), t("tasks.medication.errors.noTimes"));
+				return;
+			}
+			setIsSaving(true);
+			try {
+				await createMedicationTask({
+					circleId,
+					adminId: user.uid,
+					medName: medName.trim(),
+					dose: dose.trim(),
+					instructions: instructions.trim(),
+					gtin: null,
+					cnk: null,
+					activeIngredient: null,
+					atc: null,
+					faggRef: null,
+					date: selectedDateStr,
+					times,
+					visibility,
+					allowedUserIds: visibility === "selected" ? allowedMemberIds : [],
+					neutralTitle: title.trim() || MEDICATION.defaultNeutralTitle,
+				});
+				onTaskSaved();
+			} catch (error) {
+				console.error(error);
+				Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.saveFailed"));
+			} finally {
+				setIsSaving(false);
+			}
+			return;
+		}
+
 		if (!title.trim()) {
 			Alert.alert(t("tasks.errors.required"), t("tasks.errors.noTitle"));
 			return;
@@ -139,5 +198,21 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 		setSelectedMember,
 		isSaving,
 		handleSaveTask,
+		isAdmin,
+		isMedication,
+		setIsMedication,
+		medName,
+		setMedName,
+		dose,
+		setDose,
+		instructions,
+		setInstructions,
+		times,
+		addTime,
+		removeTime,
+		visibility,
+		setVisibility,
+		allowedMemberIds,
+		toggleAllowedMember,
 	};
 }

@@ -322,6 +322,26 @@
 			"deniedTitle": "Oei, actie geweigerd",
 			"errorTitle": "Fout",
 			"required": "Verplicht"
+		},
+		"medication": {
+			"toggle": "Medicatietaak",
+			"neutralLabel": "Neutrale titel (iedereen ziet dit)",
+			"neutralPlaceholder": "Medicatiemoment",
+			"privateSection": "Privé — alleen voor toegelaten leden",
+			"medName": "Naam medicatie",
+			"medNamePlaceholder": "bv. Metformine 500mg",
+			"dose": "Dosis",
+			"dosePlaceholder": "bv. 1 tablet",
+			"instructions": "Instructies",
+			"instructionsPlaceholder": "bv. Na het ontbijt",
+			"times": "Tijdstippen",
+			"addTime": "Tijdstip",
+			"visibility": "Wie mag de details zien?",
+			"vis_admin": "Alleen ik",
+			"vis_selected": "Geselecteerde leden",
+			"vis_everyone": "Iedereen",
+			"selectMembers": "Selecteer leden",
+			"errors": { "noMedName": "Geef de medicatie een naam.", "noTimes": "Voeg minstens één tijdstip toe." }
 		}
 	},
 	"dailySummary": {
