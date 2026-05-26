@@ -1,8 +1,8 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -18,33 +18,25 @@ const half = (hex: string) => `${hex}80`;
 
 const BRACKET = 62;
 const THICK = 5;
-const RADIUS = 14;
+const RADIUS = 18;
 const WINDOW_INSET = 16;
 
-const STYLE: Record<
-	ScanOutcome,
-	{ accent: string; title: string; heading: string; row1Icon: keyof typeof MaterialCommunityIcons.glyphMap; row2Icon: keyof typeof MaterialCommunityIcons.glyphMap; sub: string; row1Prefix: string; row2Prefix: string }
-> = {
-	correct: { accent: SCAN_YELLOW, title: "#3F6B00", heading: "Juiste medicatie", row1Icon: "pill", row2Icon: "calendar-check-outline", sub: "Toegediend op het juiste moment", row1Prefix: "", row2Prefix: "Gescand om " },
-	wrongMed: {
-		accent: "#D9534F",
-		title: "#D9534F",
-		heading: "Verkeerde medicatie",
-		row1Icon: "pill",
-		row2Icon: "alert-circle-outline",
-		sub: "Deze verpakking komt niet overeen met de geplande medicatie",
-		row1Prefix: "Gepland: ",
-		row2Prefix: "Gescand: ",
-	},
-	wrongTime: { accent: "#E0922B", title: "#B5701A", heading: "Niet het juiste moment", row1Icon: "pill", row2Icon: "clock-alert-outline", sub: "Deze medicatie staat op een ander moment gepland", row1Prefix: "Gepland: ", row2Prefix: "Gescand om " },
-	wrongDay: { accent: "#E0922B", title: "#B5701A", heading: "Niet het juiste moment", row1Icon: "pill", row2Icon: "calendar-alert", sub: "Deze medicatie staat op een ander moment gepland", row1Prefix: "Gepland: ", row2Prefix: "Gescand om " },
+const SCAN_BARCODE_TYPES = ["datamatrix", "qr", "ean13", "ean8", "upc_a", "upc_e", "code128", "code39", "code93", "codabar", "itf14", "pdf417", "aztec"] as const;
+
+const STYLE: Record<ScanOutcome, { accent: string; title: string; row1Icon: keyof typeof MaterialCommunityIcons.glyphMap; row2Icon: keyof typeof MaterialCommunityIcons.glyphMap }> = {
+	correct: { accent: SCAN_YELLOW, title: "#3F6B00", row1Icon: "pill", row2Icon: "calendar-check-outline" },
+	wrongMed: { accent: "#D9534F", title: "#D9534F", row1Icon: "pill", row2Icon: "alert-circle-outline" },
+	wrongTime: { accent: "#E0922B", title: "#B5701A", row1Icon: "pill", row2Icon: "clock-alert-outline" },
+	wrongDay: { accent: "#E0922B", title: "#B5701A", row1Icon: "pill", row2Icon: "calendar-alert" },
 };
 
 export default function ScanScreen() {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
+	const { taskId } = useLocalSearchParams<{ taskId?: string }>();
 	const [permission, requestPermission] = useCameraPermissions();
-	const { result, handleScan, reset, confirm } = useMedicationScan();
+	const { result, handleScan, reset, confirm } = useMedicationScan({ targetTaskId: taskId ?? null });
 	const [confirmVisible, setConfirmVisible] = useState(false);
 
 	if (!permission) return <View style={styles.permWrap} />;
@@ -52,13 +44,13 @@ export default function ScanScreen() {
 		return (
 			<View style={[styles.permWrap, { paddingTop: insets.top + 40 }]}>
 				<MaterialCommunityIcons name="camera-outline" size={48} color={COLORS.primary} />
-				<Text style={styles.permTitle}>Camera nodig</Text>
-				<Text style={styles.permText}>Lume heeft toegang tot je camera nodig om medicatie te scannen.</Text>
+				<Text style={styles.permTitle}>{t("scan.permTitle")}</Text>
+				<Text style={styles.permText}>{t("scan.permText")}</Text>
 				<Pressable style={styles.permBtn} onPress={requestPermission}>
-					<Text style={styles.permBtnText}>Camera toestaan</Text>
+					<Text style={styles.permBtnText}>{t("scan.permAllow")}</Text>
 				</Pressable>
 				<Pressable onPress={() => router.back()} hitSlop={8}>
-					<Text style={styles.permBack}>Terug</Text>
+					<Text style={styles.permBack}>{t("scan.permBack")}</Text>
 				</Pressable>
 			</View>
 		);
@@ -76,12 +68,7 @@ export default function ScanScreen() {
 
 	return (
 		<View style={styles.root}>
-			<CameraView
-				style={StyleSheet.absoluteFill}
-				facing="back"
-				onBarcodeScanned={result ? undefined : ({ data }) => handleScan(data)}
-				barcodeScannerSettings={{ barcodeTypes: ["datamatrix", "ean13", "ean8", "upc_a", "upc_e", "code128", "code39", "qr"] }}
-			/>
+			<CameraView style={StyleSheet.absoluteFill} facing="back" autofocus="on" onBarcodeScanned={result ? undefined : ({ data }) => handleScan(data)} barcodeScannerSettings={{ barcodeTypes: [...SCAN_BARCODE_TYPES] }} />
 			<View style={styles.scrim} pointerEvents="none" />
 
 			<Pressable onPress={() => router.back()} style={[styles.backBtn, { top: insets.top + 8 }]} hitSlop={8}>
@@ -92,12 +79,12 @@ export default function ScanScreen() {
 				<>
 					<View style={[styles.topOverlay, { top: insets.top + 56 }]} pointerEvents="none">
 						<View style={styles.titleRow}>
-							<Text style={styles.titleText}>Scan de </Text>
+							<Text style={styles.titleText}>{t("scan.title")}</Text>
 							<View style={styles.highlightWrapper}>
-								<Text style={styles.highlightText}>medicatie</Text>
+								<Text style={styles.highlightText}>{t("scan.titleHighlight")}</Text>
 							</View>
 						</View>
-						<Text style={styles.subtitle}>Richt de camera op de QR- of barcode</Text>
+						<Text style={styles.subtitle}>{t("scan.subtitle")}</Text>
 					</View>
 
 					<View style={styles.frameArea} pointerEvents="none">
@@ -121,12 +108,10 @@ function ScanFrame() {
 	return (
 		<View style={{ width: FRAME_WIDTH, height: FRAME_HEIGHT }}>
 			<View style={styles.scanWindow} />
-
 			<View style={[styles.corner, styles.cornerTL, styles.cornerGlow]} />
 			<View style={[styles.corner, styles.cornerTR, styles.cornerGlow]} />
 			<View style={[styles.corner, styles.cornerBR, styles.cornerGlow]} />
 			<View style={[styles.corner, styles.cornerBL, styles.cornerGlow]} />
-
 			<View style={[styles.corner, styles.cornerTL]} />
 			<View style={[styles.corner, styles.cornerTR]} />
 			<View style={[styles.corner, styles.cornerBR]} />
@@ -136,35 +121,41 @@ function ScanFrame() {
 }
 
 function MedScanResultCard({ result, onConfirm, onRescan, onOverride }: { result: MedScanResult; onConfirm: () => void; onRescan: () => void; onOverride: () => void }) {
+	const { t } = useTranslation();
 	const s = STYLE[result.outcome];
 	const isCorrect = result.outcome === "correct";
 
+	const heading = t(`scan.${result.outcome}.heading`);
+	const sub = t(`scan.${result.outcome}.sub`);
+	const row1Title = `${isCorrect ? "" : t("scan.plannedPrefix")}${result.plannedName}`;
+	const row2Title = isCorrect ? `${t("scan.scannedAtPrefix")}${result.scannedAt}` : result.outcome === "wrongMed" ? `${t("scan.scannedPrefix")}${result.scannedName}` : `${t("scan.scannedAtPrefix")}${result.scannedAt}`;
+
 	return (
 		<View style={[styles.card, { borderColor: half(s.accent), shadowColor: s.accent }]}>
-			<BlurView intensity={28} tint="dark" style={StyleSheet.absoluteFill} />
+			<View style={[StyleSheet.absoluteFill, styles.cardGlass]} pointerEvents="none" />
 			<View style={[StyleSheet.absoluteFill, { backgroundColor: BOX_FILL }]} pointerEvents="none" />
 
 			<View style={styles.cardContent}>
-				<Text style={[styles.cardTitle, { color: s.title }]}>{s.heading}</Text>
-				<Text style={styles.cardSub}>{s.sub}</Text>
+				<Text style={[styles.cardTitle, { color: s.title }]}>{heading}</Text>
+				<Text style={styles.cardSub}>{sub}</Text>
 
-				<InfoBox icon={s.row1Icon} title={`${s.row1Prefix}${result.plannedName}`} sub={result.plannedWhen} />
-				<InfoBox icon={s.row2Icon} title={isCorrect ? `${s.row2Prefix}${result.scannedAt}` : result.outcome === "wrongMed" ? `${s.row2Prefix}${result.scannedName}` : `${s.row2Prefix}${result.scannedAt}`} sub={result.row2Sub} />
+				<InfoBox icon={s.row1Icon} title={row1Title} sub={result.plannedWhen} />
+				<InfoBox icon={s.row2Icon} title={row2Title} sub={result.row2Sub} />
 
 				{isCorrect ? (
 					<Pressable style={styles.primaryBtn} onPress={onConfirm}>
-						<Text style={styles.primaryBtnText}>Bevestigen</Text>
+						<Text style={styles.primaryBtnText}>{t("scan.confirm")}</Text>
 					</Pressable>
 				) : (
 					<View style={styles.btnStack}>
 						<Pressable style={styles.primaryBtn} onPress={onRescan}>
-							<Text style={styles.primaryBtnText}>Opnieuw scannen</Text>
+							<Text style={styles.primaryBtnText}>{t("scan.rescan")}</Text>
 						</Pressable>
-						{result.taskId && (
+						{result.taskId ? (
 							<Pressable style={styles.outlineBtn} onPress={onOverride}>
-								<Text style={styles.outlineBtnText}>Toch bevestigen</Text>
+								<Text style={styles.outlineBtnText}>{t("scan.overrideBtn")}</Text>
 							</Pressable>
-						)}
+						) : null}
 					</View>
 				)}
 			</View>
@@ -188,19 +179,20 @@ function InfoBox({ icon, title, sub }: { icon: keyof typeof MaterialCommunityIco
 }
 
 function ConfirmModal({ visible, onCancel, onConfirm }: { visible: boolean; onCancel: () => void; onConfirm: () => void }) {
+	const { t } = useTranslation();
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
 			<View style={styles.modalScrim}>
 				<View style={styles.modalCard}>
-					<Text style={styles.modalTitle}>Weet je het zeker?</Text>
-					<Text style={styles.modalText}>Deze medicatie komt niet overeen met het schema. Andere leden van de zorgkring worden op de hoogte gebracht.</Text>
-					<Text style={styles.modalWarn}>Bevestig alleen als je zeker bent.</Text>
+					<Text style={styles.modalTitle}>{t("scan.modalTitle")}</Text>
+					<Text style={styles.modalText}>{t("scan.modalText")}</Text>
+					<Text style={styles.modalWarn}>{t("scan.modalWarn")}</Text>
 					<View style={styles.modalBtns}>
 						<Pressable style={styles.modalConfirm} onPress={onConfirm}>
-							<Text style={styles.modalConfirmText}>Toch bevestigen</Text>
+							<Text style={styles.modalConfirmText}>{t("scan.overrideBtn")}</Text>
 						</Pressable>
 						<Pressable style={styles.modalCancel} onPress={onCancel}>
-							<Text style={styles.modalCancelText}>Annuleren</Text>
+							<Text style={styles.modalCancelText}>{t("scan.permBack")}</Text>
 						</Pressable>
 					</View>
 				</View>
@@ -224,36 +216,16 @@ const styles = StyleSheet.create({
 	frameArea: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center" },
 	resultArea: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center", paddingHorizontal: 18 },
 
-	scanWindow: {
-		position: "absolute",
-		top: WINDOW_INSET,
-		left: WINDOW_INSET,
-		right: WINDOW_INSET,
-		bottom: WINDOW_INSET,
-		borderRadius: 30,
-		borderWidth: 1.25,
-		borderColor: "rgba(255,255,255,0.45)",
-		backgroundColor: "rgba(255,255,255,0.05)",
-	},
-	corner: {
-		position: "absolute",
-		width: BRACKET,
-		height: BRACKET,
-		borderColor: SCAN_YELLOW,
-	},
-	cornerGlow: {
-		shadowColor: SCAN_YELLOW,
-		shadowOffset: { width: 0, height: 0 },
-		shadowOpacity: 1,
-		shadowRadius: 14,
-		elevation: 16,
-	},
+	scanWindow: { position: "absolute", top: WINDOW_INSET, left: WINDOW_INSET, right: WINDOW_INSET, bottom: WINDOW_INSET, borderRadius: 30, borderWidth: 1.25, borderColor: "rgba(255,255,255,0.45)", backgroundColor: "rgba(255,255,255,0.05)" },
+	corner: { position: "absolute", width: BRACKET, height: BRACKET, borderColor: SCAN_YELLOW },
+	cornerGlow: { shadowColor: SCAN_YELLOW, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 14, elevation: 16 },
 	cornerTL: { top: 0, left: 0, borderTopWidth: THICK, borderLeftWidth: THICK, borderTopLeftRadius: RADIUS },
 	cornerTR: { top: 0, right: 0, borderTopWidth: THICK, borderRightWidth: THICK, borderTopRightRadius: RADIUS },
 	cornerBR: { bottom: 0, right: 0, borderBottomWidth: THICK, borderRightWidth: THICK, borderBottomRightRadius: RADIUS },
 	cornerBL: { bottom: 0, left: 0, borderBottomWidth: THICK, borderLeftWidth: THICK, borderBottomLeftRadius: RADIUS },
 
 	card: { width: "100%", maxWidth: 420, borderRadius: 28, borderWidth: 1.5, overflow: "hidden", shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.6, shadowRadius: 18, elevation: 10 },
+	cardGlass: { backgroundColor: "rgba(20,24,10,0.55)" },
 	cardContent: { padding: 20, gap: 11 },
 	cardTitle: { fontFamily: "BricolageBold", fontSize: 19, textAlign: "center" },
 	cardSub: { fontFamily: FONTS.body, fontSize: 13.5, color: "rgba(255,255,255,0.92)", textAlign: "center", lineHeight: 19, marginBottom: 4 },

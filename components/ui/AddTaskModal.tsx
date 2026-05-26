@@ -1,13 +1,16 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { Alert, Image, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
 import { COLORS, FONTS } from "../../constants/theme";
 import { TASK_ICONS, useTaskForm } from "../../hooks/useTaskForm";
+import { lookupFaggByCode } from "../../services/firebase/medication.service";
 import type { MedicationVisibility } from "../../services/firebase/medication.types";
 import Button from "./Button";
+import { ScanIcon } from "./TabIcons";
 
 interface AddTaskModalProps {
 	visible: boolean;
@@ -29,6 +32,7 @@ function formatTimeFromDate(d: Date): string {
 }
 
 const VIS_KEYS: MedicationVisibility[] = ["admin", "selected", "everyone"];
+const SCAN_BARCODE_TYPES = ["datamatrix", "qr", "ean13", "ean8", "upc_a", "upc_e", "code128", "code39", "code93", "codabar", "itf14", "pdf417", "aztec"] as const;
 
 export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: AddTaskModalProps) {
 	const { t } = useTranslation();
@@ -65,6 +69,11 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 		setVisibility,
 		allowedMemberIds,
 		toggleAllowedMember,
+		gtin,
+		scannedMedName,
+		applyScannedMedicine,
+		attachRawCode,
+		clearScannedMedicine,
 	} = form;
 
 	const isEditing = !!taskToEdit;
@@ -72,6 +81,43 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 	const [showEndPicker, setShowEndPicker] = useState(false);
 	const [showAddTimePicker, setShowAddTimePicker] = useState(false);
 	const [pendingTime, setPendingTime] = useState("09:00");
+
+	// scan-to-attach
+	const [scanOpen, setScanOpen] = useState(false);
+	const [scanLock, setScanLock] = useState(false);
+	const [camPermission, requestCamPermission] = useCameraPermissions();
+
+	const openAttachScan = async () => {
+		Keyboard.dismiss();
+		if (!camPermission?.granted) {
+			const res = await requestCamPermission();
+			if (!res.granted) {
+				Alert.alert(t("scan.attach.permTitle"), t("scan.attach.permText"));
+				return;
+			}
+		}
+		setScanLock(false);
+		setScanOpen(true);
+	};
+
+	const handleAttachScan = async (data: string) => {
+		if (scanLock) return;
+		setScanLock(true);
+		const code = data.match(/01(\d{14})/)?.[1] ?? data.replace(/\D/g, "");
+		setScanOpen(false);
+		if (!code) return;
+		try {
+			const fagg = await lookupFaggByCode(code);
+			if (fagg) {
+				applyScannedMedicine(fagg);
+			} else {
+				attachRawCode(code);
+				Alert.alert(t("scan.attach.notFoundTitle"), t("scan.attach.notFoundText"));
+			}
+		} catch (e) {
+			console.error("[attach-scan]", e);
+		}
+	};
 
 	const handleStartChange = (event: any, date?: Date) => {
 		if (Platform.OS === "android") setShowStartPicker(false);
@@ -82,7 +128,6 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 		if (event.type === "set" && date) setEndTime(formatTimeFromDate(date));
 	};
 	const handleAddTimeChange = (event: any, date?: Date) => {
-		// Android: dialog fires once on confirm → add then close
 		if (Platform.OS === "android") {
 			setShowAddTimePicker(false);
 			if (event.type === "set" && date) addTime(formatTimeFromDate(date));
@@ -108,7 +153,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 						{isAdmin && !isEditing && (
 							<View style={styles.medToggleRow}>
 								<View style={styles.medToggleText}>
-									<MaterialCommunityIcons name="shield-lock-outline" size={18} color={COLORS.primary} />
+									<MaterialCommunityIcons name="shield-lock-outline" size={18} color={COLORS.iconColor} />
 									<Text style={styles.medToggleLabel}>{t("tasks.medication.toggle")}</Text>
 								</View>
 								<Switch value={isMedication} onValueChange={setIsMedication} trackColor={{ true: COLORS.accent, false: "#d1d5db" }} thumbColor="#fff" />
@@ -125,6 +170,24 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 										<MaterialCommunityIcons name="lock-outline" size={14} color={COLORS.primary} />
 										<Text style={styles.privateHeaderText}>{t("tasks.medication.privateSection")}</Text>
 									</View>
+
+									{gtin ? (
+										<View style={styles.linkedChip}>
+											<MaterialCommunityIcons name="check-decagram" size={16} color="#3F6B00" />
+											<Text style={styles.linkedText} numberOfLines={1}>
+												{t("scan.attach.linked")}: {scannedMedName ?? gtin}
+											</Text>
+
+											<Pressable onPress={clearScannedMedicine} hitSlop={6}>
+												<Ionicons name="close" size={14} color={COLORS.primary} />
+											</Pressable>
+										</View>
+									) : (
+										<Pressable style={styles.scanAttachBtn} onPress={openAttachScan}>
+											<ScanIcon color={COLORS.buttonSecondaryText} size={18} strokeWidth={2} />
+											<Text style={styles.scanAttachText}>{t("scan.attach.btn")}</Text>
+										</Pressable>
+									)}
 
 									<Text style={styles.label}>{t("tasks.medication.medName")}</Text>
 									<TextInput style={styles.input} placeholder={t("tasks.medication.medNamePlaceholder")} value={medName} onChangeText={setMedName} placeholderTextColor="#9ca3af" />
@@ -304,6 +367,18 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 			{Platform.OS === "android" && showStartPicker && <DateTimePicker value={parseTimeToDate(startTime)} mode="time" is24Hour onChange={handleStartChange} />}
 			{Platform.OS === "android" && showEndPicker && <DateTimePicker value={parseTimeToDate(endTime)} mode="time" is24Hour onChange={handleEndChange} />}
 			{Platform.OS === "android" && showAddTimePicker && <DateTimePicker value={parseTimeToDate("09:00")} mode="time" is24Hour onChange={handleAddTimeChange} />}
+
+			{scanOpen && (
+				<View style={styles.scanOverlay}>
+					<CameraView style={StyleSheet.absoluteFill} facing="back" autofocus="on" onBarcodeScanned={({ data }) => handleAttachScan(data)} barcodeScannerSettings={{ barcodeTypes: [...SCAN_BARCODE_TYPES] }} />
+					<View style={styles.scanHintWrap} pointerEvents="none">
+						<Text style={styles.scanHint}>{t("scan.attach.hint")}</Text>
+					</View>
+					<Pressable onPress={() => setScanOpen(false)} style={styles.scanClose} hitSlop={8}>
+						<Ionicons name="close" size={26} color="#FFFFFF" />
+					</Pressable>
+				</View>
+			)}
 		</Modal>
 	);
 }
@@ -342,6 +417,23 @@ const styles = StyleSheet.create({
 	privateBox: { borderWidth: 1, borderColor: "rgba(53,78,0,0.18)", borderRadius: 14, padding: 14, marginTop: 8, backgroundColor: "rgba(53,78,0,0.03)" },
 	privateHeader: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 2 },
 	privateHeaderText: { fontFamily: "InterSemiBold", fontSize: 12, color: COLORS.primary, letterSpacing: 0.3 },
+
+	scanAttachBtn: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: 8,
+		marginTop: 12,
+		borderRadius: 12,
+		paddingVertical: 13,
+		backgroundColor: COLORS.transparent,
+		borderWidth: 1.5,
+		borderColor: COLORS.buttonSecondaryBorder,
+	},
+	scanAttachText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.buttonSecondaryText },
+	linkedChip: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 12, borderWidth: 1, borderColor: "rgba(63,107,0,0.35)", borderRadius: 12, paddingVertical: 10, paddingHorizontal: 12, backgroundColor: "rgba(194,206,58,0.18)" },
+	linkedText: { flex: 1, fontFamily: "InterSemiBold", fontSize: 13, color: "#3F6B00" },
+
 	chipWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
 	timeChip: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(239, 252, 0, 0.25)", borderWidth: 1, borderColor: COLORS.accent, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8 },
 	timeChipText: { fontFamily: "InterSemiBold", fontSize: 14, color: COLORS.primary },
@@ -350,10 +442,10 @@ const styles = StyleSheet.create({
 
 	visStack: { gap: 8 },
 	visOption: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 12, paddingHorizontal: 14, borderRadius: 12, borderWidth: 1, borderColor: "rgba(35,54,0,0.15)", backgroundColor: "#FFF" },
-	visOptionActive: { borderColor: COLORS.primary, backgroundColor: "rgba(53,78,0,0.06)" },
+	visOptionActive: { borderColor: COLORS.iconColor, backgroundColor: "rgba(53,78,0,0.08)" },
 	radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: "rgba(35,54,0,0.3)", alignItems: "center", justifyContent: "center" },
-	radioOn: { borderColor: COLORS.primary },
-	radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.primary },
+	radioOn: { borderColor: COLORS.iconColor },
+	radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.iconColor },
 	visOptionText: { fontFamily: "InterMedium", fontSize: 14, color: COLORS.primary },
 	visOptionTextActive: { fontFamily: "InterSemiBold" },
 
@@ -375,4 +467,9 @@ const styles = StyleSheet.create({
 	pickerTitle: { fontFamily: FONTS.heading, fontSize: 16, color: COLORS.primary, marginBottom: 8 },
 	pickerDone: { marginTop: 8, backgroundColor: COLORS.buttonFill, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 10 },
 	pickerDoneText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.buttonText },
+
+	scanOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "#000", zIndex: 50, elevation: 50 },
+	scanHintWrap: { position: "absolute", top: 130, left: 24, right: 24, alignItems: "center" },
+	scanHint: { fontFamily: "InterMedium", fontSize: 14, color: "#FFFFFF", textAlign: "center", backgroundColor: "rgba(0,0,0,0.45)", paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, overflow: "hidden" },
+	scanClose: { position: "absolute", top: 50, right: 20, width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(0,0,0,0.45)", alignItems: "center", justifyContent: "center" },
 });

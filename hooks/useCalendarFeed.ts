@@ -7,6 +7,7 @@ import { Alert, Linking, Platform } from "react-native";
 import { useSession } from "../context";
 import { db } from "../lib/firebase-config";
 import { deleteTaskFromDB, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
+import { enrichMedicationTask, useMedicationDetails } from "./useMedicationDetails";
 
 export interface CalendarTask {
 	id: string;
@@ -18,6 +19,10 @@ export interface CalendarTask {
 	description?: string[];
 	assignee?: { name: string; initials: string; photo: string | null };
 	createdBy: string;
+	isMedication?: boolean;
+	medicationId?: string | null;
+	neutralTitle?: string;
+	locked?: boolean;
 }
 
 export type CalendarSyncStatus = "idle" | "syncing" | "success" | "error";
@@ -59,7 +64,6 @@ export function useCalendarFeed() {
 		eventStartMs: 0,
 	});
 
-	// Real-time listener
 	useEffect(() => {
 		if (!circleId) {
 			setAllTasks([]);
@@ -89,6 +93,10 @@ export function useCalendarFeed() {
 		return () => unsub();
 	}, [circleId]);
 
+	const medicationIds = useMemo(() => allTasks.filter((task) => task.isMedication && task.medicationId).map((task) => task.medicationId as string), [allTasks]);
+	const medDetails = useMedicationDetails(medicationIds);
+	const enrichedTasks = useMemo<CalendarTask[]>(() => allTasks.map((task) => enrichMedicationTask(task, medDetails)), [allTasks, medDetails]);
+
 	const taskDaysInMonth = useMemo(() => {
 		const prefix = `${currentMonth.year}-${String(currentMonth.month + 1).padStart(2, "0")}`;
 		const set = new Set<string>();
@@ -98,7 +106,7 @@ export function useCalendarFeed() {
 		return set;
 	}, [allTasks, currentMonth.year, currentMonth.month]);
 
-	const tasksForSelectedDate = useMemo(() => allTasks.filter((t) => t.date === selectedDate).sort((a, b) => (a.time ?? "").localeCompare(b.time ?? "")), [allTasks, selectedDate]);
+	const tasksForSelectedDate = useMemo(() => enrichedTasks.filter((t) => t.date === selectedDate).sort((a, b) => (a.time ?? "").localeCompare(b.time ?? "")), [enrichedTasks, selectedDate]);
 
 	const goToPreviousMonth = () => {
 		setCurrentMonth((prev) => {
@@ -127,7 +135,6 @@ export function useCalendarFeed() {
 		return currentMonth.year === now.getFullYear() && currentMonth.month === now.getMonth();
 	}, [currentMonth.year, currentMonth.month]);
 
-	// Pull-to-refresh data is already real-time via onSnapshot, this just gives the  user a brief visual confirmation that their gesture was registered
 	const refresh = async () => {
 		setIsRefreshing(true);
 		await new Promise((resolve) => setTimeout(resolve, 600));
@@ -135,12 +142,9 @@ export function useCalendarFeed() {
 	};
 
 	const exportToDeviceCalendar = async (task: CalendarTask) => {
-		console.log("[Calendar] exportToDeviceCalendar called for:", task.title);
 		setSyncStatus("syncing");
 		try {
 			const { status } = await Calendar.requestCalendarPermissionsAsync();
-			console.log("[Calendar] Permission status:", status);
-
 			if (status !== "granted") {
 				setSyncStatus("error");
 				Alert.alert(t("calendar.permission.title"), t("calendar.permission.message"));
@@ -150,8 +154,6 @@ export function useCalendarFeed() {
 
 			const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
 			const writable = calendars.filter((c) => c.allowsModifications);
-			console.log("[Calendar] Writable calendars found:", writable.length);
-
 			const defaultCal = writable.find((c) => (c as any).isPrimary) ?? writable[0];
 			if (!defaultCal) {
 				setSyncStatus("error");
@@ -176,15 +178,9 @@ export function useCalendarFeed() {
 				timeZone: "Europe/Brussels",
 				alarms: [{ relativeOffset: -15 }],
 			});
-			console.log("[Calendar] Event created with ID:", eventId);
 
 			setSyncStatus("success");
-			setSyncResult({
-				visible: true,
-				eventId,
-				taskTitle: task.title,
-				eventStartMs: startDate.getTime(),
-			});
+			setSyncResult({ visible: true, eventId, taskTitle: task.title, eventStartMs: startDate.getTime() });
 			setTimeout(() => setSyncStatus("idle"), 2500);
 		} catch (err: any) {
 			console.error("[Calendar] Error:", err);
@@ -212,9 +208,7 @@ export function useCalendarFeed() {
 		}
 	};
 
-	const dismissSyncResult = () => {
-		setSyncResult((prev) => ({ ...prev, visible: false }));
-	};
+	const dismissSyncResult = () => setSyncResult((prev) => ({ ...prev, visible: false }));
 
 	const handleToggleTaskStatus = async (taskId: string, currentStatus: string) => {
 		try {

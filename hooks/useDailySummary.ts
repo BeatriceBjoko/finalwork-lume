@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 import { NoteData } from "../components/ui/NoteCard";
 import { getDailyQuote } from "../constants/quotes";
 import { useSession } from "../context";
+import { db } from "../lib/firebase-config";
 import { subscribeToDailyNote } from "../services/firebase/notes.service";
-import { deleteTaskFromDB, getTasksForDate, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
+import { deleteTaskFromDB, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
+import { enrichMedicationTask, useMedicationDetails } from "./useMedicationDetails";
 
 export function useDailySummary() {
 	const { t, i18n } = useTranslation();
@@ -15,12 +18,12 @@ export function useDailySummary() {
 	const userRole = userData?.role || "member";
 
 	const [currentTime, setCurrentTime] = useState(new Date());
-	const [tasks, setTasks] = useState<any[]>([]);
+	const [liveTasks, setLiveTasks] = useState<any[]>([]);
+	const [templateTasks, setTemplateTasks] = useState<any[]>([]);
+	const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 	const [note, setNote] = useState<NoteData | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
 	const [isTemplateMode, setIsTemplateMode] = useState(false);
-
-	const [refreshTrigger, setRefreshTrigger] = useState(0);
+	const seededDateRef = useRef<string>("");
 
 	const TEMPLATE_TASKS = useMemo(
 		() => [
@@ -49,9 +52,7 @@ export function useDailySummary() {
 	);
 
 	useEffect(() => {
-		const timer = setInterval(() => {
-			setCurrentTime(new Date());
-		}, 60000);
+		const timer = setInterval(() => setCurrentTime(new Date()), 60000);
 		return () => clearInterval(timer);
 	}, []);
 
@@ -60,43 +61,54 @@ export function useDailySummary() {
 	const dayStr = currentTime.getDate().toString().padStart(2, "0");
 	const databaseDateQueryString = `${year}-${monthStr}-${dayStr}`;
 
+	// LIVE tasks for today (auto-updates from any screen)
 	useEffect(() => {
-		async function loadTasks() {
-			if (!circleId) {
-				setTasks(TEMPLATE_TASKS.map((t, i) => ({ ...t, expanded: i === TEMPLATE_TASKS.length - 1 })));
-				setIsTemplateMode(true);
-				setIsLoading(false);
-				return;
-			}
-
-			try {
-				setIsLoading(true);
-				const fetchedTasks = await getTasksForDate(circleId, databaseDateQueryString);
-
-				if (fetchedTasks.length === 0) {
-					setTasks(TEMPLATE_TASKS.map((t, i) => ({ ...t, expanded: i === TEMPLATE_TASKS.length - 1 })));
-					setIsTemplateMode(true);
-				} else {
-					setTasks(fetchedTasks.map((t, i) => ({ ...t, expanded: i === fetchedTasks.length - 1 })));
-					setIsTemplateMode(false);
-				}
-			} catch (error) {
-				console.error("Error loading tasks:", error);
-			} finally {
-				setIsLoading(false);
-			}
+		if (!circleId) {
+			setLiveTasks([]);
+			setIsTemplateMode(true);
+			return;
 		}
+		const q = query(collection(db, "careCircleTasks"), where("careCircleId", "==", circleId), where("date", "==", databaseDateQueryString));
+		const unsub = onSnapshot(
+			q,
+			(snap) => {
+				const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+				setLiveTasks(items);
+				setIsTemplateMode(items.length === 0);
+			},
+			(e) => console.error("Daily tasks feed error:", e),
+		);
+		return () => unsub();
+	}, [circleId, databaseDateQueryString]);
 
-		loadTasks();
-	}, [circleId, databaseDateQueryString, refreshTrigger, TEMPLATE_TASKS]);
+	useEffect(() => {
+		if (isTemplateMode) {
+			setTemplateTasks(TEMPLATE_TASKS.map((tk, i) => ({ ...tk, expanded: i === TEMPLATE_TASKS.length - 1 })));
+		}
+	}, [isTemplateMode, TEMPLATE_TASKS]);
 
-	// Daily note: LIVE subscription (auto-updates on add/edit/delete)
+	useEffect(() => {
+		if (isTemplateMode || liveTasks.length === 0) return;
+		if (seededDateRef.current === databaseDateQueryString) return;
+		const sorted = [...liveTasks].sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
+		seededDateRef.current = databaseDateQueryString;
+		setExpandedIds(new Set([sorted[sorted.length - 1].id]));
+	}, [isTemplateMode, liveTasks, databaseDateQueryString]);
+
+	const medicationIds = useMemo(() => liveTasks.filter((tk) => tk.isMedication && tk.medicationId).map((tk) => tk.medicationId as string), [liveTasks]);
+	const medDetails = useMedicationDetails(medicationIds);
+
+	const tasks = useMemo(() => {
+		if (isTemplateMode) return templateTasks;
+		const sorted = [...liveTasks].sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
+		return sorted.map((tk) => ({ ...enrichMedicationTask(tk, medDetails), expanded: expandedIds.has(tk.id) }));
+	}, [isTemplateMode, templateTasks, liveTasks, medDetails, expandedIds]);
+
 	useEffect(() => {
 		if (!circleId) {
 			setNote(null);
 			return;
 		}
-
 		const unsubscribe = subscribeToDailyNote(
 			circleId,
 			databaseDateQueryString,
@@ -123,7 +135,6 @@ export function useDailySummary() {
 			},
 			(e) => console.error("Error live daily note:", e),
 		);
-
 		return () => unsubscribe();
 	}, [circleId, databaseDateQueryString, t]);
 
@@ -136,50 +147,51 @@ export function useDailySummary() {
 
 	const { totalToday, completed, open } = useMemo(() => {
 		const total = tasks.length;
-		const comp = tasks.filter((t) => t.status === "Voltooid").length;
-		const op = tasks.filter((t) => t.status !== "Voltooid").length;
-		return { totalToday: total, completed: comp, open: op };
+		const comp = tasks.filter((tk) => tk.status === "Voltooid").length;
+		return { totalToday: total, completed: comp, open: total - comp };
 	}, [tasks]);
 
 	const toggleTaskExpanded = (id: string) => {
-		setTasks((prevTasks) => prevTasks.map((t) => (t.id === id ? { ...t, expanded: !t.expanded } : t)));
+		if (isTemplateMode) {
+			setTemplateTasks((prev) => prev.map((tk) => (tk.id === id ? { ...tk, expanded: !tk.expanded } : tk)));
+			return;
+		}
+		setExpandedIds((prev) => {
+			const next = new Set(prev);
+			if (next.has(id)) next.delete(id);
+			else next.add(id);
+			return next;
+		});
 	};
 
 	const handleToggleTaskStatus = async (taskId: string, currentStatus: string) => {
-		const newStatus = currentStatus === "Voltooid" ? "Nog te doen" : "Voltooid";
-
-		setTasks((prevTasks) => prevTasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)));
-
-		if (!isTemplateMode) {
-			try {
-				await toggleTaskStatusInDB(taskId, currentStatus);
-			} catch (error) {
-				console.error(error);
-				setTasks((prevTasks) => prevTasks.map((t) => (t.id === taskId ? { ...t, status: currentStatus } : t)));
-				Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.statusFailed"));
-			}
+		if (isTemplateMode) {
+			const newStatus = currentStatus === "Voltooid" ? "Nog te doen" : "Voltooid";
+			setTemplateTasks((prev) => prev.map((tk) => (tk.id === taskId ? { ...tk, status: newStatus } : tk)));
+			return;
+		}
+		try {
+			await toggleTaskStatusInDB(taskId, currentStatus);
+		} catch (error) {
+			console.error(error);
+			Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.statusFailed"));
 		}
 	};
 
 	const handleTriggerDeleteTask = async (taskId: string, taskCreatorId: string) => {
 		if (isTemplateMode) {
-			setTasks((prevTasks) => prevTasks.filter((t) => t.id !== taskId));
+			setTemplateTasks((prev) => prev.filter((tk) => tk.id !== taskId));
 			return;
 		}
-
 		if (!currentUserId) return;
-
 		try {
 			await deleteTaskFromDB(taskId, taskCreatorId, userRole, currentUserId);
-			setTasks((prevTasks) => prevTasks.filter((t) => t.id !== taskId));
 		} catch (error: any) {
 			Alert.alert(t("tasks.errors.deniedTitle"), error.message || t("tasks.errors.deleteDenied"));
 		}
 	};
 
-	const triggerRefresh = () => {
-		setRefreshTrigger((prev) => prev + 1);
-	};
+	const triggerRefresh = () => {};
 
 	return {
 		displayName,

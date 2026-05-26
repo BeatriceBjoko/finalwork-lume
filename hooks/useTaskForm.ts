@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 import { useSession } from "../context";
 import { getCircleMembers } from "../lib/firebase-service";
 import { createMedicationTask } from "../services/firebase/medication.service";
-import { MEDICATION, type MedicationVisibility } from "../services/firebase/medication.types";
+import { MEDICATION, type FaggMedicine, type MedicationVisibility } from "../services/firebase/medication.types";
 import { addTaskToDB, TaskInputData, updateTaskInDB } from "../services/firebase/tasks.service";
 
 export const TASK_ICONS = [
@@ -41,6 +41,14 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 	const [visibility, setVisibility] = useState<MedicationVisibility>(MEDICATION.defaultVisibility);
 	const [allowedMemberIds, setAllowedMemberIds] = useState<string[]>([]);
 
+	// scan-to-attach: codes captured from the box (enables exact GTIN matching)
+	const [gtin, setGtin] = useState<string | null>(null);
+	const [cnk, setCnk] = useState<string | null>(null);
+	const [activeIngredient, setActiveIngredient] = useState<string | null>(null);
+	const [atc, setAtc] = useState<string | null>(null);
+	const [faggRef, setFaggRef] = useState<string | null>(null);
+	const [scannedMedName, setScannedMedName] = useState<string | null>(null);
+
 	const isAdmin = useMemo(() => members.some((m) => m.id === user?.uid && m.isAdmin), [members, user?.uid]);
 
 	useEffect(() => {
@@ -48,6 +56,15 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 			getCircleMembers(circleId).then(setMembers).catch(console.error);
 		}
 	}, [circleId]);
+
+	const clearScannedMedicine = () => {
+		setGtin(null);
+		setCnk(null);
+		setActiveIngredient(null);
+		setAtc(null);
+		setFaggRef(null);
+		setScannedMedName(null);
+	};
 
 	useEffect(() => {
 		if (!visible) return;
@@ -65,6 +82,7 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 			setSelectedIcon(taskToEdit.icon || TASK_ICONS[0].id);
 			setDescriptionText(taskToEdit.description ? taskToEdit.description.join("\n") : "");
 			setIsMedication(false);
+			clearScannedMedicine();
 		} else {
 			setTitle("");
 			setStartTime("09:00");
@@ -79,6 +97,7 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 			setTimes(["09:00"]);
 			setVisibility(MEDICATION.defaultVisibility);
 			setAllowedMemberIds([]);
+			clearScannedMedicine();
 		}
 	}, [visible, taskToEdit]);
 
@@ -93,6 +112,24 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 	const addTime = (time: string) => setTimes((prev) => Array.from(new Set([...prev, time])).sort());
 	const removeTime = (time: string) => setTimes((prev) => prev.filter((x) => x !== time));
 	const toggleAllowedMember = (id: string) => setAllowedMemberIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+	// fill the form from a scanned FAGG medicine
+	const applyScannedMedicine = (f: FaggMedicine) => {
+		setMedName((prev) => (prev.trim() ? prev : f.name));
+		setGtin(f.gtin ?? null);
+		setCnk(f.cnk ?? null);
+		setActiveIngredient(f.activeIngredient ?? null);
+		setAtc(f.atc ?? null);
+		setFaggRef(f.gtin ?? null);
+		setScannedMedName(f.name);
+	};
+
+	// box scanned but not found in FAGG, still store the raw code for exact matching
+	const attachRawCode = (code: string) => {
+		setGtin(code);
+		setFaggRef(null);
+		setScannedMedName(null);
+	};
 
 	const handleSaveTask = async () => {
 		if (!circleId || !user?.uid) {
@@ -117,11 +154,11 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 					medName: medName.trim(),
 					dose: dose.trim(),
 					instructions: instructions.trim(),
-					gtin: null,
-					cnk: null,
-					activeIngredient: null,
-					atc: null,
-					faggRef: null,
+					gtin,
+					cnk,
+					activeIngredient,
+					atc,
+					faggRef,
 					date: selectedDateStr,
 					times,
 					visibility,
@@ -214,5 +251,11 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 		setVisibility,
 		allowedMemberIds,
 		toggleAllowedMember,
+		// scan-to-attach
+		gtin,
+		scannedMedName,
+		applyScannedMedicine,
+		attachRawCode,
+		clearScannedMedicine,
 	};
 }

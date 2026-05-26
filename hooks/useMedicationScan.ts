@@ -1,5 +1,6 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
 import { db } from "../lib/firebase-config";
 import { getMedicationDetails, logMedicationConfirmation, lookupFaggByCode } from "../services/firebase/medication.service";
@@ -16,6 +17,10 @@ export interface MedScanResult {
 	row2Sub: string;
 	scannedGtin: string | null;
 	allowedUserIds: string[];
+}
+
+interface UseMedicationScanOptions {
+	targetTaskId?: string | null;
 }
 
 const todayStr = () => {
@@ -60,7 +65,9 @@ function medicineMatches(planned: MedicationDetails, scannedName: string, scanne
 	return hay.includes(token);
 }
 
-export function useMedicationScan() {
+export function useMedicationScan(options?: UseMedicationScanOptions) {
+	const { t } = useTranslation();
+	const targetTaskId = options?.targetTaskId ?? null;
 	const { user, userData } = useSession();
 	const circleId = userData?.careCircleId;
 
@@ -76,9 +83,10 @@ export function useMedicationScan() {
 			try {
 				const code = extractCode(rawCode);
 				const scanned = await lookupFaggByCode(code);
-				const scannedName = scanned?.name ?? "Onbekende verpakking";
+				const scannedName = scanned?.name ?? t("scan.unknownPackage");
 				const scannedAt = hhmmNow();
 				const today = todayStr();
+				const nowM = minutesNow();
 
 				const snap = await getDocs(query(collection(db, "careCircleTasks"), where("careCircleId", "==", circleId), where("isMedication", "==", true)));
 				const slots = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
@@ -88,22 +96,56 @@ export function useMedicationScan() {
 				const entries = await Promise.all(medIds.map(async (id) => [id, await getMedicationDetails(id)] as const));
 				const detailsMap = new Map(entries.filter(([, d]) => d).map(([id, d]) => [id, d as MedicationDetails]));
 
+				if (targetTaskId) {
+					const target = slots.find((s) => s.id === targetTaskId);
+					if (target) {
+						const d = detailsMap.get(target.medicationId) ?? null;
+						const expectedName = d?.medName ?? "—";
+						const plannedWhen = fmtWhen(target.date, target.time);
+						const allowed = d?.allowedUserIds ?? [];
+						const base = { medicationId: target.medicationId, taskId: target.id, plannedName: expectedName, plannedWhen, scannedName, scannedAt, scannedGtin: code, allowedUserIds: allowed };
+
+						const matches = d ? medicineMatches(d, scannedName, scanned?.activeIngredient ?? null, scanned?.gtin ?? null) : false;
+						if (!matches) {
+							setResult({ ...base, outcome: "wrongMed", row2Sub: t("scan.wrongMed.row2Sub") });
+							return;
+						}
+						if (target.date !== today) {
+							setResult({ ...base, outcome: "wrongDay", row2Sub: t("scan.wrongDay.row2Sub") });
+							return;
+						}
+						const diff = Math.abs(toMinutes(target.time) - nowM);
+						if (diff > MEDICATION.timeWindowHours * 60) {
+							const early = toMinutes(target.time) > nowM;
+							setResult({ ...base, outcome: "wrongTime", row2Sub: early ? t("scan.wrongTime.early") : t("scan.wrongTime.late") });
+							return;
+						}
+						const sameMed = slots.filter((s) => s.medicationId === target.medicationId && s.date === today);
+						const total = sameMed.length;
+						const done = sameMed.filter((s) => s.status === "Voltooid").length;
+						const newDone = target.status === "Voltooid" ? done : done + 1;
+						setResult({ ...base, outcome: "correct", row2Sub: t("scan.progress", { done: newDone, total }) });
+						return;
+					}
+				}
+
 				const matchMedIds = medIds.filter((id) => {
 					const d = detailsMap.get(id);
 					return d && medicineMatches(d, scannedName, scanned?.activeIngredient ?? null, scanned?.gtin ?? null);
 				});
 
-				// wrong medicine: scanned box isn't the scheduled one
 				if (matchMedIds.length === 0) {
-					const todayMedIds = Array.from(new Set(slots.filter((s) => s.date === today).map((s) => s.medicationId)));
 					let plannedName = "—";
 					let plannedWhen = "";
 					let allowed: string[] = [];
 					let refSlot: any = null;
+					const todayMedIds = Array.from(new Set(slots.filter((s) => s.date === today).map((s) => s.medicationId)));
 					if (todayMedIds.length === 1) {
-						const d = detailsMap.get(todayMedIds[0]);
-						refSlot = slots.find((s) => s.date === today && s.medicationId === todayMedIds[0]);
-						if (d && refSlot) {
+						refSlot = slots.find((s) => s.date === today && s.medicationId === todayMedIds[0]) ?? null;
+					}
+					if (refSlot) {
+						const d = detailsMap.get(refSlot.medicationId);
+						if (d) {
 							plannedName = d.medName;
 							plannedWhen = fmtWhen(refSlot.date, refSlot.time);
 							allowed = d.allowedUserIds;
@@ -117,7 +159,7 @@ export function useMedicationScan() {
 						plannedWhen,
 						scannedName,
 						scannedAt,
-						row2Sub: "Controleer of je de juiste medicatie gebruikt",
+						row2Sub: t("scan.wrongMed.row2Sub"),
 						scannedGtin: code,
 						allowedUserIds: allowed,
 					});
@@ -127,7 +169,6 @@ export function useMedicationScan() {
 				const candidates = slots.filter((s) => matchMedIds.includes(s.medicationId));
 				const todaySlots = candidates.filter((s) => s.date === today);
 
-				// wrong day: medicine scheduled, but not today
 				if (todaySlots.length === 0) {
 					const s = candidates[0];
 					const d = detailsMap.get(s.medicationId)!;
@@ -139,14 +180,13 @@ export function useMedicationScan() {
 						plannedWhen: fmtWhen(s.date, s.time),
 						scannedName,
 						scannedAt,
-						row2Sub: "Deze medicatie is voor een andere dag gepland",
+						row2Sub: t("scan.wrongDay.row2Sub"),
 						scannedGtin: code,
 						allowedUserIds: d.allowedUserIds,
 					});
 					return;
 				}
 
-				const nowM = minutesNow();
 				todaySlots.sort((a, b) => Math.abs(toMinutes(a.time) - nowM) - Math.abs(toMinutes(b.time) - nowM));
 				const slot = todaySlots.find((s) => s.status !== "Voltooid") ?? todaySlots[0];
 				const d = detailsMap.get(slot.medicationId)!;
@@ -154,7 +194,6 @@ export function useMedicationScan() {
 				const done = todaySlots.filter((s) => s.status === "Voltooid").length;
 				const diff = Math.abs(toMinutes(slot.time) - nowM);
 
-				// wrong time: right medicine + day, outside the ±window
 				if (diff > MEDICATION.timeWindowHours * 60) {
 					const early = toMinutes(slot.time) > nowM;
 					setResult({
@@ -165,7 +204,7 @@ export function useMedicationScan() {
 						plannedWhen: fmtWhen(slot.date, slot.time),
 						scannedName,
 						scannedAt,
-						row2Sub: early ? "Te vroeg voor dit medicatiemoment" : "Te laat voor dit medicatiemoment",
+						row2Sub: early ? t("scan.wrongTime.early") : t("scan.wrongTime.late"),
 						scannedGtin: code,
 						allowedUserIds: d.allowedUserIds,
 					});
@@ -181,7 +220,7 @@ export function useMedicationScan() {
 					plannedWhen: fmtWhen(slot.date, slot.time),
 					scannedName,
 					scannedAt,
-					row2Sub: `${newDone} van ${total} voltooid vandaag`,
+					row2Sub: t("scan.progress", { done: newDone, total }),
 					scannedGtin: code,
 					allowedUserIds: d.allowedUserIds,
 				});
@@ -191,7 +230,7 @@ export function useMedicationScan() {
 				setBusy(false);
 			}
 		},
-		[circleId, user],
+		[circleId, user, targetTaskId, t],
 	);
 
 	const reset = useCallback(() => {

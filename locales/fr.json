@@ -517,5 +517,39 @@
 				"noteBody": "Je me sens un peu épuisé(e). Quelqu'un peut-il reprendre une tâche aujourd'hui ?"
 			}
 		}
+	},
+	"scan": {
+		"title": "Scannez le ",
+		"titleHighlight": "médicament",
+		"subtitle": "Dirigez la caméra vers le code QR ou le code-barres",
+		"permTitle": "Caméra requise",
+		"permText": "Lume a besoin d'accéder à votre caméra pour scanner les médicaments.",
+		"permAllow": "Autoriser la caméra",
+		"permBack": "Retour",
+		"unknownPackage": "Emballage inconnu",
+		"confirm": "Confirmer",
+		"rescan": "Scanner à nouveau",
+		"overrideBtn": "Confirmer quand même",
+		"scannedAtPrefix": "Scanné à ",
+		"plannedPrefix": "Prévu : ",
+		"scannedPrefix": "Scanné : ",
+		"progress": "{{done}} sur {{total}} effectué(s) aujourd'hui",
+		"scanMedBtn": "Scanner le médicament",
+		"modalTitle": "Êtes-vous sûr ?",
+		"modalText": "Ce médicament ne correspond pas au planning. Les autres membres du cercle de soins en seront informés.",
+		"modalWarn": "Confirmez uniquement si vous êtes certain.",
+		"correct": { "heading": "Bon médicament", "sub": "Administré au bon moment" },
+		"wrongMed": { "heading": "Mauvais médicament", "sub": "Cet emballage ne correspond pas au médicament prévu", "row2Sub": "Vérifiez que vous utilisez le bon médicament" },
+		"wrongTime": { "heading": "Pas le bon moment", "sub": "Ce médicament est prévu à un autre moment", "early": "Trop tôt pour ce moment de prise", "late": "Trop tard pour ce moment de prise" },
+		"wrongDay": { "heading": "Pas le bon moment", "sub": "Ce médicament est prévu à un autre moment", "row2Sub": "Ce médicament est prévu pour un autre jour" },
+		"attach": {
+			"btn": "Scanner l'emballage",
+			"linked": "Lié",
+			"hint": "Dirigez la caméra vers le code-barres ou le datamatrix de l'emballage",
+			"permTitle": "Caméra requise",
+			"permText": "Autorisez Lume à accéder à la caméra pour scanner l'emballage.",
+			"notFoundTitle": "Introuvable",
+			"notFoundText": "Cet emballage n'est pas dans la base de données, mais le code a été enregistré pour de futurs scans."
+		}
 	}
 }

@@ -516,5 +516,39 @@
 				"noteBody": "Ik voel me wat uitgeput. Kan iemand vandaag een taak overnemen?"
 			}
 		}
+	},
+	"scan": {
+		"title": "Scan de ",
+		"titleHighlight": "medicatie",
+		"subtitle": "Richt de camera op de QR- of barcode",
+		"permTitle": "Camera nodig",
+		"permText": "Lume heeft toegang tot je camera nodig om medicatie te scannen.",
+		"permAllow": "Camera toestaan",
+		"permBack": "Terug",
+		"unknownPackage": "Onbekende verpakking",
+		"confirm": "Bevestigen",
+		"rescan": "Opnieuw scannen",
+		"overrideBtn": "Toch bevestigen",
+		"scannedAtPrefix": "Gescand om ",
+		"plannedPrefix": "Gepland: ",
+		"scannedPrefix": "Gescand: ",
+		"progress": "{{done}} van {{total}} voltooid vandaag",
+		"scanMedBtn": "Scan medicatie",
+		"modalTitle": "Weet je het zeker?",
+		"modalText": "Deze medicatie komt niet overeen met het schema. Andere leden van de zorgkring worden op de hoogte gebracht.",
+		"modalWarn": "Bevestig alleen als je zeker bent.",
+		"correct": { "heading": "Juiste medicatie", "sub": "Toegediend op het juiste moment" },
+		"wrongMed": { "heading": "Verkeerde medicatie", "sub": "Deze verpakking komt niet overeen met de geplande medicatie", "row2Sub": "Controleer of je de juiste medicatie gebruikt" },
+		"wrongTime": { "heading": "Niet het juiste moment", "sub": "Deze medicatie staat op een ander moment gepland", "early": "Te vroeg voor dit medicatiemoment", "late": "Te laat voor dit medicatiemoment" },
+		"wrongDay": { "heading": "Niet het juiste moment", "sub": "Deze medicatie staat op een ander moment gepland", "row2Sub": "Deze medicatie is voor een andere dag gepland" },
+		"attach": {
+			"btn": "Scan verpakking",
+			"linked": "Gekoppeld",
+			"hint": "Richt de camera op de streepjescode of datamatrix van de verpakking",
+			"permTitle": "Camera nodig",
+			"permText": "Geef Lume toegang tot de camera om de verpakking te scannen.",
+			"notFoundTitle": "Niet gevonden",
+			"notFoundText": "Deze verpakking staat niet in de databank, maar de code is wel opgeslagen voor latere scans."
+		}
 	}
 }

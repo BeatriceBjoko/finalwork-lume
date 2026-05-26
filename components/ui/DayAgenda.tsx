@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -7,6 +8,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../constants/theme";
 import { useSession } from "../../context";
 import { CalendarTask } from "../../hooks/useCalendarFeed";
+import { ScanIcon } from "./TabIcons";
 import { TaskCard, TaskData } from "./TaskCard";
 
 interface DayAgendaProps {
@@ -44,6 +46,7 @@ function buildTaskCardData(task: CalendarTask, theme: "yellow" | "purple"): Task
 
 export function DayAgenda({ tasks, onTaskPress, onTaskToggleStatus, onTaskSync, onTaskDelete }: DayAgendaProps) {
 	const { t } = useTranslation();
+	const router = useRouter();
 	const { user, userData } = useSession();
 	const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
 
@@ -61,6 +64,7 @@ export function DayAgenda({ tasks, onTaskPress, onTaskToggleStatus, onTaskSync, 
 				const isExpanded = expandedTaskId === task.id;
 				const isLast = idx === tasks.length - 1;
 				const startTime = getStartTime(task.time);
+				const canScan = !!task.isMedication && !task.locked && task.status !== "Voltooid";
 
 				return (
 					<View key={task.id} style={styles.row}>
@@ -88,17 +92,34 @@ export function DayAgenda({ tasks, onTaskPress, onTaskToggleStatus, onTaskSync, 
 								overlap={false}
 								stackIndex={idx}
 							/>
-							<Pressable
-								onPress={() => {
-									Haptics.selectionAsync();
-									onTaskSync(task);
-								}}
-								style={styles.syncBtn}
-								hitSlop={10}
-							>
-								<MaterialCommunityIcons name="calendar-export" size={14} color={COLORS.primary} />
-								<Text style={styles.syncText}>{t("calendar.syncBtn")}</Text>
-							</Pressable>
+
+							<View style={styles.actionRow}>
+								{canScan && (
+									<Pressable
+										onPress={() => {
+											Haptics.selectionAsync();
+											router.push({ pathname: "/scan", params: { taskId: task.id } });
+										}}
+										style={styles.scanBtn}
+										hitSlop={10}
+									>
+										<ScanIcon color={COLORS.buttonSecondaryText} size={15} strokeWidth={2} />
+										<Text style={styles.scanText}>{t("scan.scanMedBtn")}</Text>
+									</Pressable>
+								)}
+
+								<Pressable
+									onPress={() => {
+										Haptics.selectionAsync();
+										onTaskSync(task);
+									}}
+									style={styles.syncBtn}
+									hitSlop={10}
+								>
+									<MaterialCommunityIcons name="calendar-export" size={14} color={COLORS.primary} />
+									<Text style={styles.syncText}>{t("calendar.syncBtn")}</Text>
+								</Pressable>
+							</View>
 						</View>
 					</View>
 				);
@@ -115,17 +136,24 @@ const styles = StyleSheet.create({
 	timeStart: { fontFamily: "InterBold", fontSize: 13, color: COLORS.primary },
 
 	timelineCol: { width: 14, alignItems: "center", paddingTop: 18 },
-	dot: {
-		width: 10,
-		height: 10,
-		borderRadius: 5,
-		backgroundColor: "#354E00",
-		borderWidth: 2,
-		borderColor: COLORS.accent,
-	},
+	dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: "#354E00", borderWidth: 2, borderColor: COLORS.accent },
 	line: { flex: 1, width: 2, backgroundColor: "rgba(35, 54, 0, 0.10)", marginTop: 4 },
 
 	cardArea: { flex: 1, paddingLeft: 8 },
+	actionRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 6, marginLeft: 4 },
+	scanBtn: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 6,
+		alignSelf: "flex-start",
+		backgroundColor: COLORS.transparent,
+		borderWidth: 1.5,
+		borderColor: COLORS.buttonSecondaryBorder,
+		paddingHorizontal: 14,
+		paddingVertical: 7,
+		borderRadius: 12,
+	},
+	scanText: { fontFamily: "InterSemiBold", fontSize: 12, color: COLORS.buttonSecondaryText },
 	syncBtn: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -137,8 +165,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 12,
 		paddingVertical: 6,
 		borderRadius: 12,
-		marginTop: 6,
-		marginLeft: 4,
 	},
 	syncText: { fontFamily: "InterMedium", fontSize: 12, color: COLORS.primary },
 });
