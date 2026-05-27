@@ -3,9 +3,10 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import CustomAlert from "../../components/ui/CustomAlert";
 import { COLORS, FONTS } from "../../constants/theme";
 import { type MedScanResult, useMedicationScan } from "../../hooks/useMedicationScan";
 import type { ScanOutcome } from "../../services/firebase/medication.types";
@@ -70,11 +71,9 @@ export default function ScanScreen() {
 		<View style={styles.root}>
 			<CameraView style={StyleSheet.absoluteFill} facing="back" autofocus="on" onBarcodeScanned={result ? undefined : ({ data }) => handleScan(data)} barcodeScannerSettings={{ barcodeTypes: [...SCAN_BARCODE_TYPES] }} />
 			<View style={styles.scrim} pointerEvents="none" />
-
 			<Pressable onPress={() => router.back()} style={[styles.backBtn, { top: insets.top + 8 }]} hitSlop={8}>
 				<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
 			</Pressable>
-
 			{!result && (
 				<>
 					<View style={[styles.topOverlay, { top: insets.top + 56 }]} pointerEvents="none">
@@ -92,14 +91,22 @@ export default function ScanScreen() {
 					</View>
 				</>
 			)}
-
 			{result && (
 				<View style={styles.resultArea}>
 					<MedScanResultCard result={result} onConfirm={handleConfirm} onRescan={reset} onOverride={() => setConfirmVisible(true)} />
 				</View>
 			)}
-
-			<ConfirmModal visible={confirmVisible} onCancel={() => setConfirmVisible(false)} onConfirm={handleOverride} />
+			<CustomAlert
+				visible={confirmVisible}
+				title={t("scan.modalTitle")}
+				message={`${t("scan.modalText")}\n\n${t("scan.modalWarn")}`}
+				confirmText={t("scan.overrideBtn")}
+				cancelText={t("scan.cancel")}
+				onConfirm={handleOverride}
+				onCancel={() => setConfirmVisible(false)}
+				primaryLeft
+				messageStyle={{ color: "#B25A1A" }}
+			/>
 		</View>
 	);
 }
@@ -178,29 +185,6 @@ function InfoBox({ icon, title, sub }: { icon: keyof typeof MaterialCommunityIco
 	);
 }
 
-function ConfirmModal({ visible, onCancel, onConfirm }: { visible: boolean; onCancel: () => void; onConfirm: () => void }) {
-	const { t } = useTranslation();
-	return (
-		<Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
-			<View style={styles.modalScrim}>
-				<View style={styles.modalCard}>
-					<Text style={styles.modalTitle}>{t("scan.modalTitle")}</Text>
-					<Text style={styles.modalText}>{t("scan.modalText")}</Text>
-					<Text style={styles.modalWarn}>{t("scan.modalWarn")}</Text>
-					<View style={styles.modalBtns}>
-						<Pressable style={styles.modalConfirm} onPress={onConfirm}>
-							<Text style={styles.modalConfirmText}>{t("scan.overrideBtn")}</Text>
-						</Pressable>
-						<Pressable style={styles.modalCancel} onPress={onCancel}>
-							<Text style={styles.modalCancelText}>{t("scan.permBack")}</Text>
-						</Pressable>
-					</View>
-				</View>
-			</View>
-		</Modal>
-	);
-}
-
 const styles = StyleSheet.create({
 	root: { flex: 1, backgroundColor: "#000" },
 	scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.22)" },
@@ -252,17 +236,6 @@ const styles = StyleSheet.create({
 	primaryBtnText: { fontFamily: FONTS.button, fontSize: 16, color: COLORS.buttonText },
 	outlineBtn: { backgroundColor: "#FFFFFF", borderRadius: 16, paddingVertical: 15, alignItems: "center" },
 	outlineBtnText: { fontFamily: FONTS.button, fontSize: 16, color: COLORS.primary },
-
-	modalScrim: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", alignItems: "center", justifyContent: "center", paddingHorizontal: 32 },
-	modalCard: { width: "100%", backgroundColor: "#FFFFFF", borderRadius: 24, padding: 22, alignItems: "center", gap: 8 },
-	modalTitle: { fontFamily: "BricolageBold", fontSize: 18, color: COLORS.primary },
-	modalText: { fontFamily: FONTS.body, fontSize: 13.5, color: "rgba(35,54,0,0.7)", textAlign: "center", lineHeight: 20 },
-	modalWarn: { fontFamily: "InterSemiBold", fontSize: 13, color: "#D9534F", textAlign: "center", marginTop: 2 },
-	modalBtns: { flexDirection: "row", gap: 10, marginTop: 14, width: "100%" },
-	modalConfirm: { flex: 1, backgroundColor: COLORS.buttonFill, borderRadius: 14, paddingVertical: 13, alignItems: "center" },
-	modalConfirmText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.buttonText },
-	modalCancel: { flex: 1, backgroundColor: "#FFFFFF", borderRadius: 14, paddingVertical: 13, alignItems: "center", borderWidth: 1, borderColor: "rgba(35,54,0,0.15)" },
-	modalCancelText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.primary },
 
 	permWrap: { flex: 1, backgroundColor: COLORS.background, alignItems: "center", justifyContent: "center", paddingHorizontal: 36, gap: 12 },
 	permTitle: { fontFamily: FONTS.heading, fontSize: 20, color: COLORS.primary, marginTop: 8 },

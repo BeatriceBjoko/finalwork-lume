@@ -22,6 +22,8 @@ export default function CustomAlert({ visible, title, message, confirmText, canc
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel || onConfirm}>
 			<Pressable style={styles.modalOverlay} onPress={onCancel || onConfirm}>
+				<BlurView intensity={22} tint="dark" style={StyleSheet.absoluteFill} pointerEvents="none" />
+
 				<Pressable style={styles.alertWrapper} onPress={(e) => e.stopPropagation()}>
 					<BlurView intensity={8} tint="light" style={StyleSheet.absoluteFill} />
 
@@ -54,7 +56,7 @@ export default function CustomAlert({ visible, title, message, confirmText, canc
 const styles = StyleSheet.create({
 	modalOverlay: {
 		flex: 1,
-		backgroundColor: "rgba(0,0,0,0.18)",
+		backgroundColor: "rgba(0,0,0,0.12)",
 		justifyContent: "center",
 		alignItems: "center",
 		padding: 24,

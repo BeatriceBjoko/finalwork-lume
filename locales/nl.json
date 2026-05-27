@@ -549,6 +549,7 @@
 			"permText": "Geef Lume toegang tot de camera om de verpakking te scannen.",
 			"notFoundTitle": "Niet gevonden",
 			"notFoundText": "Deze verpakking staat niet in de databank, maar de code is wel opgeslagen voor latere scans."
-		}
+		},
+		"cancel": "Annuleren"
 	}
 }

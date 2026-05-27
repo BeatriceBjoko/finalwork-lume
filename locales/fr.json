@@ -550,6 +550,7 @@
 			"permText": "Autorisez Lume à accéder à la caméra pour scanner l'emballage.",
 			"notFoundTitle": "Introuvable",
 			"notFoundText": "Cet emballage n'est pas dans la base de données, mais le code a été enregistré pour de futurs scans."
-		}
+		},
+		"cancel": "Annuler"
 	}
 }

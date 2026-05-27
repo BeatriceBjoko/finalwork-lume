@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "478985312684",
+    "project_id": "finalwork-lume",
+    "storage_bucket": "finalwork-lume.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478985312684:android:f4c8f9071a8490222e8209",
+        "android_client_info": {
+          "package_name": "com.beatricebj.finalworklume"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpb-6tDaOKR5ETjXop_nzZtC4IM2GqkFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,12 @@
 import { Redirect, Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { useSession } from "../../context";
+import { usePushNotifications } from "../../hooks/usePushNotifications";
 
 export default function AppLayout() {
 	const { user, userData, isLoading } = useSession();
+
+	usePushNotifications(); // registers the device once the user is signed in
 
 	if (isLoading) {
 		return (
