@@ -112,7 +112,7 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 					<Image source={{ uri: note.images![0] }} style={styles.underlayImage} />
 					<View style={styles.underlayOverlay}>
 						<MaterialCommunityIcons name="magnify-plus-outline" size={36} color="#FFF" />
-						<Text style={styles.underlayText}>{t("logbook.viewer.photos", { length: note.images!.length })}</Text>
+						<Text style={styles.underlayText}>{t("logbook.viewer.photos", { count: note.images!.length })}</Text>
 					</View>
 				</Pressable>
 			)}

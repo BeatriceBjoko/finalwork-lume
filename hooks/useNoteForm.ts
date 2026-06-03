@@ -8,7 +8,6 @@ import { addNoteToDB, NoteInputData, updateNoteInDB } from "../services/firebase
 export const NOTE_CATEGORIES = [
 	{ id: "Medisch", icon: "hospital-building" },
 	{ id: "Dagelijks", icon: "weather-sunny" },
-	{ id: "Belangrijk", icon: "alert-circle-outline" },
 	{ id: "Gevoel", icon: "emoticon-happy-outline" },
 	{ id: "Praktisch", icon: "cart-outline" },
 	{ id: "Slaap", icon: "bed-empty" },
@@ -33,7 +32,7 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 				setTitle(noteToEdit.title || "");
 				setContent(noteToEdit.content || "");
 				setIsImportant(noteToEdit.isImportant || false);
-				const cat = NOTE_CATEGORIES.find((c) => c.id === noteToEdit.tag) || NOTE_CATEGORIES[6];
+				const cat = NOTE_CATEGORIES.find((c) => c.id === noteToEdit.tag) || NOTE_CATEGORIES[5];
 				setSelectedCategory(cat);
 				setImages(noteToEdit.images || []);
 			} else {

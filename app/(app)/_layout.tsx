@@ -20,7 +20,7 @@ export default function AppLayout() {
 		return <Redirect href="/sign-in" />;
 	}
 
-	if (userData && !userData.onboardingCompleted) {
+	if (userData && !userData.careCircleId) {
 		return <Redirect href="/onboarding" />;
 	}
 

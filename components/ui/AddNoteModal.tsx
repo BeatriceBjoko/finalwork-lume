@@ -15,7 +15,6 @@ interface AddNoteModalProps {
 const CATEGORY_KEY_MAP: Record<string, string> = {
 	Medisch: "medical",
 	Dagelijks: "daily",
-	Belangrijk: "important",
 	Gevoel: "feeling",
 	Praktisch: "practical",
 	Slaap: "sleep",

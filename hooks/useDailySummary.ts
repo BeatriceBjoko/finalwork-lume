@@ -139,9 +139,10 @@ export function useDailySummary() {
 	}, [circleId, databaseDateQueryString, t]);
 
 	const displayName = userData?.name || user?.displayName?.split(" ")[0] || "Beatrice";
-	const formattedTime = currentTime.toLocaleTimeString("nl-BE", { hour: "2-digit", minute: "2-digit" });
+	const locale = i18n.language.startsWith("fr") ? "fr-FR" : "nl-BE";
+	const formattedTime = currentTime.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
 	const formattedDate = `${dayStr}.${monthStr}`;
-	const dayName = currentTime.toLocaleDateString("nl-BE", { weekday: "long" });
+	const dayName = currentTime.toLocaleDateString(locale, { weekday: "long" });
 	const capitalizedDayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
 	const dailyQuote = getDailyQuote(currentTime, i18n.language);
 

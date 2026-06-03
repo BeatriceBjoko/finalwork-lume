@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Pencil } from "lucide-react-native";
 import { AddNoteModal } from "../../../components/ui/AddNoteModal";
 import { NoteCard } from "../../../components/ui/NoteCard";
 import { COLORS, FONTS, TYPOGRAPHY } from "../../../constants/theme";
@@ -173,7 +174,7 @@ export default function NotesScreen() {
 					setAddModalVisible(true);
 				}}
 			>
-				<MaterialCommunityIcons name="pencil-plus-outline" size={28} color={COLORS.primary} />
+				<Pencil size={32} strokeWidth={1} color={COLORS.primary} />
 			</Pressable>
 
 			<AddNoteModal

@@ -405,7 +405,10 @@
 			"date": "Aucune note n'a été écrite le {{date}}.",
 			"default": "Il n'y a pas encore de notes."
 		},
-		"viewer": { "photos": "Voir {{length}} photos" },
+		"viewer": {
+			"photos_one": "Voir la photo",
+			"photos_other": "Voir les photos"
+		},
 		"options": { "title": "Options de la note", "message": "Que souhaitez-vous faire ?" },
 		"search": "Rechercher dans les notes...",
 		"filters": { "all": "Tout", "important": "Important", "date": "Date" },

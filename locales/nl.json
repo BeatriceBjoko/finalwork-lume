@@ -404,7 +404,10 @@
 			"date": "Er zijn geen notities geschreven op {{date}}.",
 			"default": "Er zijn nog geen notities."
 		},
-		"viewer": { "photos": "Bekijk {{length}} foto's" },
+		"viewer": {
+			"photos_one": "Bekijk de foto",
+			"photos_other": "Bekijk de foto's"
+		},
 		"options": { "title": "Notitie Opties", "message": "Wat wil je doen met deze notitie?" },
 		"search": "Zoek in notities...",
 		"filters": { "all": "Alles", "important": "Belangrijk", "date": "Datum" },
