@@ -47,6 +47,8 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 	const SWIPE_LIMIT = -220;
 
 	const panGesture = Gesture.Pan()
+		.activeOffsetX([-15, 15])
+		.failOffsetY([-10, 10])
 		.onStart(() => {
 			startX.value = translateX.value;
 		})

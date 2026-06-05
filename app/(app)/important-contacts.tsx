@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
@@ -8,6 +8,7 @@ import Button from "../../components/ui/Button";
 import ContactCard from "../../components/ui/ContactCard";
 import ContactFormModal from "../../components/ui/ContactFormModal";
 import CustomAlert from "../../components/ui/CustomAlert";
+import { FONTS } from "../../constants/theme";
 import { useImportantContacts } from "../../hooks/useImportantContacts";
 
 export default function ImportantContactsScreen() {
@@ -58,7 +59,7 @@ export default function ImportantContactsScreen() {
 				<ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} onScrollBeginDrag={() => setFocusedCardId(null)}>
 					{isTemplateMode && (
 						<View style={styles.templateBanner}>
-							<Ionicons name="information-circle" size={24} color="#354E00" style={{ marginRight: 12 }} />
+							<MaterialCommunityIcons name="information-outline" size={20} color="#354E00" style={{ marginRight: 10 }} />
 							<Text style={styles.templateText}>{tContacts("templateMessage")}</Text>
 						</View>
 					)}
@@ -114,13 +115,13 @@ const styles = StyleSheet.create({
 
 	templateBanner: {
 		flexDirection: "row",
-		backgroundColor: "rgba(239, 252, 0, 0.3)",
-		padding: 16,
-		borderRadius: 16,
-		marginBottom: 24,
+		backgroundColor: "rgba(233, 248, 0, 0.15)",
+		padding: 14,
+		borderRadius: 14,
+		marginBottom: 20,
 		alignItems: "center",
 		borderWidth: 1,
-		borderColor: "rgba(35, 54, 0, 0.1)",
+		borderColor: "rgba(154, 217, 0, 0.2)",
 	},
-	templateText: { flex: 1, fontFamily: "InterMedium", fontSize: 14, color: "#354E00", lineHeight: 20 },
+	templateText: { flex: 1, fontFamily: FONTS.body, fontSize: 13, color: "#354E00", lineHeight: 18 },
 });

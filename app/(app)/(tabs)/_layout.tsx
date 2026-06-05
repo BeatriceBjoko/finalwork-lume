@@ -16,7 +16,7 @@ export default function TabsLayout() {
 					screenOptions={{
 						headerShown: false,
 						sceneStyle: { backgroundColor: COLORS.background },
-						animation: "fade",
+						animation: "none",
 					}}
 					tabBar={(props) => <BottomTabBar {...props} />}
 				>
