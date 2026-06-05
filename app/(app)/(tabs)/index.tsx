@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { AddTaskModal } from "../../../components/ui/AddTaskModal";
 import Button from "../../../components/ui/Button";
@@ -40,6 +40,7 @@ export default function DailySummaryHome() {
 		handleToggleTaskStatus,
 		handleTriggerDeleteTask,
 		triggerRefresh,
+		isRefreshing,
 	} = useDailySummary();
 
 	const handleEditTask = (task: any) => {
@@ -59,7 +60,7 @@ export default function DailySummaryHome() {
 
 	return (
 		<View style={styles.container}>
-			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+			<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={triggerRefresh} tintColor={COLORS.primary} colors={[COLORS.primary]} />}>
 				<View style={styles.header}>
 					<View style={styles.titleRow}>
 						<Text style={styles.titleText}>{t("dailySummary.titlePart1")}</Text>

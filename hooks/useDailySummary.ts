@@ -23,6 +23,7 @@ export function useDailySummary() {
 	const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 	const [note, setNote] = useState<NoteData | null>(null);
 	const [isTemplateMode, setIsTemplateMode] = useState(false);
+	const [isRefreshing, setIsRefreshing] = useState(false);
 	const seededDateRef = useRef<string>("");
 
 	const TEMPLATE_TASKS = useMemo(
@@ -192,7 +193,11 @@ export function useDailySummary() {
 		}
 	};
 
-	const triggerRefresh = () => {};
+	const triggerRefresh = async () => {
+		setIsRefreshing(true);
+		await new Promise((resolve) => setTimeout(resolve, 600));
+		setIsRefreshing(false);
+	};
 
 	return {
 		displayName,
@@ -211,5 +216,6 @@ export function useDailySummary() {
 		handleToggleTaskStatus,
 		handleTriggerDeleteTask,
 		triggerRefresh,
+		isRefreshing,
 	};
 }

@@ -13,7 +13,7 @@ const deviceLanguage = getLocales()[0]?.languageCode ?? "nl";
 const supportedLanguages = ["nl", "fr"];
 
 // 3. Als de gsm in het 'fr' of 'nl' staat, gebruik dat.
-// Staat de gsm in het Engels of Arabisch? Val dan terug op 'nl'.
+// Staat de gsm in het Engels of andere taal? Val dan terug op 'nl'.
 const initialLanguage = supportedLanguages.includes(deviceLanguage) ? deviceLanguage : "nl";
 
 i18n.use(initReactI18next).init({

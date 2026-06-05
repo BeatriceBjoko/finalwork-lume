@@ -2,6 +2,7 @@ import { BricolageGrotesque_500Medium, BricolageGrotesque_700Bold } from "@expo-
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from "@expo-google-fonts/inter";
 import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SessionProvider } from "../context";
@@ -29,6 +30,7 @@ export default function RootLayout() {
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SessionProvider>
+				<StatusBar style="dark" />
 				<Slot />
 			</SessionProvider>
 		</GestureHandlerRootView>

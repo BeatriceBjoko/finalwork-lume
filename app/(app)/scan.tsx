@@ -1,6 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -69,6 +70,7 @@ export default function ScanScreen() {
 
 	return (
 		<View style={styles.root}>
+			<StatusBar style="light" />
 			<CameraView style={StyleSheet.absoluteFill} facing="back" autofocus="on" onBarcodeScanned={result ? undefined : ({ data }) => handleScan(data)} barcodeScannerSettings={{ barcodeTypes: [...SCAN_BARCODE_TYPES] }} />
 			<View style={styles.scrim} pointerEvents="none" />
 			<Pressable onPress={() => router.back()} style={[styles.backBtn, { top: insets.top + 8 }]} hitSlop={8}>
