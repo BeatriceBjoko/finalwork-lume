@@ -11,10 +11,8 @@ const { width } = Dimensions.get("window");
 
 const ONBOARDING_PAGES = [{ id: "1" }, { id: "2" }, { id: "3" }];
 
-let savedStepIndex = 0;
-
 export default function Onboarding() {
-	const [currentIndex, setCurrentIndex] = useState(savedStepIndex);
+	const [currentIndex, setCurrentIndex] = useState(0);
 	const flatListRef = useRef<FlatList>(null);
 
 	const handleNext = () => {
@@ -35,7 +33,6 @@ export default function Onboarding() {
 		if (viewableItems.length > 0) {
 			const newIndex = viewableItems[0].index ?? 0;
 			setCurrentIndex(newIndex);
-			savedStepIndex = newIndex;
 		}
 	}).current;
 
@@ -65,7 +62,7 @@ export default function Onboarding() {
 				viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
 				keyExtractor={(item) => item.id}
 				bounces={false}
-				initialScrollIndex={savedStepIndex} // Start de lijst op de opgeslagen index
+				initialScrollIndex={0}
 				getItemLayout={getItemLayout}
 			/>
 
