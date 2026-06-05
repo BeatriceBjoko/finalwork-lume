@@ -1,7 +1,7 @@
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { StyleSheet, ViewProps } from "react-native";
+import { Platform, StyleSheet, ViewProps } from "react-native";
 import { COLORS, SIZES } from "../../constants/theme";
 
 interface GlassCardProps extends ViewProps {
@@ -10,7 +10,7 @@ interface GlassCardProps extends ViewProps {
 
 export default function GlassCard({ children, style, ...props }: GlassCardProps) {
 	return (
-		<BlurView intensity={60} tint="light" style={[styles.cardWrapper, style]} {...props}>
+		<BlurView intensity={Platform.OS === "android" ? 20 : 60} tint="light" experimentalBlurMethod="dimezisBlurView" style={[styles.cardWrapper, style]} {...props}>
 			<LinearGradient colors={[COLORS.glassGradientStart, COLORS.glassGradientEnd]} style={styles.gradientCard}>
 				<LinearGradient colors={[COLORS.innerGlowStart, COLORS.innerGlowEnd]} style={styles.innerGlow} pointerEvents="none" />
 

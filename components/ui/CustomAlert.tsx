@@ -1,6 +1,6 @@
 import { BlurView } from "expo-blur";
 import React from "react";
-import { Modal, Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from "react-native";
+import { Modal, Platform, Pressable, StyleProp, StyleSheet, Text, TextStyle, View } from "react-native";
 
 import { COLORS, FONTS } from "../../constants/theme";
 import Button from "./Button";
@@ -22,13 +22,10 @@ export default function CustomAlert({ visible, title, message, confirmText, canc
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel || onConfirm}>
 			<Pressable style={styles.modalOverlay} onPress={onCancel || onConfirm}>
-				<BlurView intensity={22} tint="dark" style={StyleSheet.absoluteFill} pointerEvents="none" />
-
+				<BlurView intensity={Platform.OS === "android" ? 60 : 22} tint="dark" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} pointerEvents="none" />
 				<Pressable style={styles.alertWrapper} onPress={(e) => e.stopPropagation()}>
-					<BlurView intensity={8} tint="light" style={StyleSheet.absoluteFill} />
-
-					<View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(255, 255, 255, 0.45)" }]} />
-
+					<BlurView intensity={Platform.OS === "android" ? 90 : 8} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
+					<View style={[StyleSheet.absoluteFill, { backgroundColor: Platform.OS === "android" ? "rgba(255, 255, 255, 0.92)" : "rgba(255, 255, 255, 0.45)" }]} />
 					<View style={styles.textContainer}>
 						<Text style={styles.title}>{title}</Text>
 						<Text style={[styles.message, messageStyle]}>{message}</Text>

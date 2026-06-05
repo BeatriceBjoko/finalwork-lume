@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, Platform, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, TYPOGRAPHY } from "../../constants/theme";
 
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		paddingHorizontal: 16,
 		paddingTop: 30,
-		paddingBottom: 70,
+		paddingBottom: Platform.OS === "android" ? 10 : 70,
 		justifyContent: "space-between",
 	},
 

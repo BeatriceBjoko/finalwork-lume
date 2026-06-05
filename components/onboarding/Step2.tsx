@@ -2,18 +2,16 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FONTS, TYPOGRAPHY } from "../../constants/theme";
+import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
 
 const { width, height } = Dimensions.get("window");
 
 const GlowingCard = ({ text, style, zIndex }: { text: string; style?: object; zIndex?: number }) => {
 	return (
 		<View style={[{ zIndex }, style]}>
-			<View style={styles.shadowOuter}>
-				<View style={styles.shadowInner}>
-					<View style={styles.glassContainer}>
-						<Text style={styles.cardText}>{text}</Text>
-					</View>
+			<View style={styles.cardDropShadow}>
+				<View style={styles.cardGlassContainer}>
+					<Text style={styles.cardText}>{text}</Text>
 				</View>
 			</View>
 		</View>
@@ -111,34 +109,27 @@ const styles = StyleSheet.create({
 	contentContainer: {
 		flex: 1,
 		alignItems: "center",
-		justifyContent: "center",
+		paddingTop: 24,
 	},
-
 	cardsWrapper: {
 		width: "100%",
 		marginBottom: 20,
 	},
-	shadowOuter: {
-		shadowColor: "#EFFC00",
+
+	cardDropShadow: {
+		shadowColor: COLORS.accent,
 		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.25,
-		shadowRadius: 25,
-		elevation: 8,
+		shadowRadius: 4,
+		shadowOpacity: 0.3,
+		elevation: 5,
 	},
-	shadowInner: {
-		shadowColor: "#EFFC00",
-		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.5,
-		shadowRadius: 5,
-		elevation: 4,
-	},
-	glassContainer: {
-		backgroundColor: "rgba(255, 255, 255, 0.95)",
-		borderRadius: 15,
-		borderWidth: 1,
-		borderColor: "rgba(53, 78, 0, 0.2)",
+	cardGlassContainer: {
+		backgroundColor: "rgba(255, 255, 255, 0.45)",
+		borderRadius: 16,
 		paddingHorizontal: 20,
-		paddingVertical: 16,
+		paddingVertical: 18,
+		borderWidth: 2,
+		borderColor: "rgba(239, 252, 0, 0.5)",
 	},
 	cardText: {
 		fontFamily: FONTS.body,
@@ -174,7 +165,7 @@ const styles = StyleSheet.create({
 
 	yellowLine: {
 		position: "absolute",
-		backgroundColor: "rgba(239, 252, 0, 0.8)",
+		backgroundColor: COLORS.accent,
 		zIndex: -1,
 	},
 	lineTopHorizontal: {
