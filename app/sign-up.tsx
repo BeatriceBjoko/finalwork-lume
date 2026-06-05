@@ -1,7 +1,8 @@
+import { Image } from "expo-image";
 import { Link, router } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ImageBackground, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 import Button from "../components/ui/Button";
 import Checkbox from "../components/ui/Checkbox";
@@ -29,50 +30,49 @@ export default function SignUp() {
 
 	return (
 		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-			<ImageBackground source={require("../assets/images/signup-bg.jpg")} style={styles.background} resizeMode="cover">
-				<View style={styles.spacer} />
+			<Image source={require("../assets/images/signup-bg.jpg")} style={StyleSheet.absoluteFill} contentFit="cover" transition={250} cachePolicy="memory-disk" priority="high" />
 
-				<GlassCard>
-					<View style={styles.header}>
-						<Text style={styles.title}>{t("signup.title")}</Text>
-						<Text style={styles.subtitle}>{t("signup.subtitle")}</Text>
+			<View style={styles.spacer} />
+
+			<GlassCard>
+				<View style={styles.header}>
+					<Text style={styles.title}>{t("signup.title")}</Text>
+					<Text style={styles.subtitle}>{t("signup.subtitle")}</Text>
+				</View>
+
+				{errorMessage !== "" && (
+					<View style={styles.errorContainer}>
+						<Text style={styles.errorText}>{errorMessage}</Text>
 					</View>
+				)}
 
-					{errorMessage !== "" && (
-						<View style={styles.errorContainer}>
-							<Text style={styles.errorText}>{errorMessage}</Text>
-						</View>
-					)}
+				<Input label={t("signup.namePlaceholder")} placeholder="Beatrice Bjoko" value={name} onChangeText={setName} autoCapitalize="words" />
 
-					<Input label={t("signup.namePlaceholder")} placeholder="Beatrice Bjoko" value={name} onChangeText={setName} autoCapitalize="words" />
+				<Input label={t("signup.email")} placeholder="beatricebjoko@gmail.be" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
 
-					<Input label={t("signup.email")} placeholder="beatricebjoko@gmail.be" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+				<Input label={t("signup.password")} placeholder="**********" value={password} onChangeText={setPassword} secureTextEntry />
 
-					<Input label={t("signup.password")} placeholder="**********" value={password} onChangeText={setPassword} secureTextEntry />
+				<Checkbox checked={termsAccepted} onChange={setTermsAccepted} label={TermsLabel} />
 
-					<Checkbox checked={termsAccepted} onChange={setTermsAccepted} label={TermsLabel} />
+				<Text style={styles.securityNote}>{t("signup.securityNote")}</Text>
 
-					<Text style={styles.securityNote}>{t("signup.securityNote")}</Text>
+				<Button title={isSubmitting ? t("signup.buttonLoading") : t("signup.button")} onPress={handleSignUpPress} disabled={isSubmitting || !termsAccepted} style={{ marginTop: 8 }} />
 
-					<Button title={isSubmitting ? t("signup.buttonLoading") : t("signup.button")} onPress={handleSignUpPress} disabled={isSubmitting || !termsAccepted} style={{ marginTop: 8 }} />
-
-					<View style={styles.footer}>
-						<Text style={styles.footerText}>{t("signup.alreadyAccount")}</Text>
-						<Link href="/sign-in" asChild>
-							<Pressable>
-								<Text style={styles.footerLink}>{t("signup.loginLink")}</Text>
-							</Pressable>
-						</Link>
-					</View>
-				</GlassCard>
-			</ImageBackground>
+				<View style={styles.footer}>
+					<Text style={styles.footerText}>{t("signup.alreadyAccount")}</Text>
+					<Link href="/sign-in" asChild>
+						<Pressable>
+							<Text style={styles.footerLink}>{t("signup.loginLink")}</Text>
+						</Pressable>
+					</Link>
+				</View>
+			</GlassCard>
 		</KeyboardAvoidingView>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1 },
-	background: { flex: 1, width: "100%", height: "100%" },
+	container: { flex: 1, backgroundColor: COLORS.primary },
 	spacer: { flex: 1 },
 	header: { alignItems: "center", marginBottom: 32, zIndex: 1 },
 	title: {

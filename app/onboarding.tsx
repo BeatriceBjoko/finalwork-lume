@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Dimensions, FlatList, Pressable, StyleSheet, View, ViewToken } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,7 +13,10 @@ const { width } = Dimensions.get("window");
 const ONBOARDING_PAGES = [{ id: "1" }, { id: "2" }, { id: "3" }];
 
 export default function Onboarding() {
-	const [currentIndex, setCurrentIndex] = useState(0);
+	const { step } = useLocalSearchParams<{ step?: string }>();
+	const initialIndex = step ? Math.min(Math.max(parseInt(step, 10) || 0, 0), ONBOARDING_PAGES.length - 1) : 0;
+
+	const [currentIndex, setCurrentIndex] = useState(initialIndex);
 	const flatListRef = useRef<FlatList>(null);
 
 	const handleNext = () => {
@@ -62,7 +66,7 @@ export default function Onboarding() {
 				viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
 				keyExtractor={(item) => item.id}
 				bounces={false}
-				initialScrollIndex={0}
+				initialScrollIndex={initialIndex}
 				getItemLayout={getItemLayout}
 			/>
 

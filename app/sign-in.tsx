@@ -1,7 +1,8 @@
+import { Image } from "expo-image";
 import { Link } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ImageBackground, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../components/ui/Button";
@@ -22,50 +23,49 @@ export default function SignIn() {
 
 	return (
 		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-			<ImageBackground source={require("../assets/images/login-bg.jpg")} style={styles.background} resizeMode="cover">
-				<SafeAreaView style={styles.languageContainer}>
-					<Pressable onPress={toggleLanguage} style={styles.languageButton}>
-						<Text style={styles.languageText}>{i18n.language === "nl" ? "FR" : "NL"}</Text>
-					</Pressable>
-				</SafeAreaView>
+			<Image source={require("../assets/images/login-bg.jpg")} style={StyleSheet.absoluteFill} contentFit="cover" transition={250} cachePolicy="memory-disk" priority="high" />
 
-				<View style={styles.spacer} />
+			<SafeAreaView style={styles.languageContainer}>
+				<Pressable onPress={toggleLanguage} style={styles.languageButton}>
+					<Text style={styles.languageText}>{i18n.language === "nl" ? "FR" : "NL"}</Text>
+				</Pressable>
+			</SafeAreaView>
 
-				<GlassCard>
-					<View style={styles.header}>
-						<Text style={styles.title}>{t("login.title")}</Text>
-						<Text style={styles.subtitle}>{t("login.subtitle")}</Text>
+			<View style={styles.spacer} />
+
+			<GlassCard>
+				<View style={styles.header}>
+					<Text style={styles.title}>{t("login.title")}</Text>
+					<Text style={styles.subtitle}>{t("login.subtitle")}</Text>
+				</View>
+
+				{errorMessage !== "" && (
+					<View style={styles.errorContainer}>
+						<Text style={styles.errorText}>{errorMessage}</Text>
 					</View>
+				)}
 
-					{errorMessage !== "" && (
-						<View style={styles.errorContainer}>
-							<Text style={styles.errorText}>{errorMessage}</Text>
-						</View>
-					)}
+				<Input label={t("login.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="naam@mail.com" />
 
-					<Input label={t("login.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="naam@mail.com" />
+				<Input label={t("login.password")} value={password} onChangeText={setPassword} secureTextEntry placeholder="••••••••" />
 
-					<Input label={t("login.password")} value={password} onChangeText={setPassword} secureTextEntry placeholder="••••••••" />
+				<Button title={isSubmitting ? "..." : t("login.button")} onPress={handleSignInPress} disabled={isSubmitting} style={{ marginTop: 16 }} />
 
-					<Button title={isSubmitting ? "..." : t("login.button")} onPress={handleSignInPress} disabled={isSubmitting} style={{ marginTop: 16 }} />
-
-					<View style={styles.footer}>
-						<Text style={styles.footerText}>{t("login.noAccount")} </Text>
-						<Link href="/sign-up" asChild>
-							<Pressable>
-								<Text style={styles.footerLink}>{t("login.createAccount")}</Text>
-							</Pressable>
-						</Link>
-					</View>
-				</GlassCard>
-			</ImageBackground>
+				<View style={styles.footer}>
+					<Text style={styles.footerText}>{t("login.noAccount")} </Text>
+					<Link href="/sign-up" asChild>
+						<Pressable>
+							<Text style={styles.footerLink}>{t("login.createAccount")}</Text>
+						</Pressable>
+					</Link>
+				</View>
+			</GlassCard>
 		</KeyboardAvoidingView>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: { flex: 1 },
-	background: { flex: 1, width: "100%", height: "100%" },
+	container: { flex: 1, backgroundColor: COLORS.primary },
 	spacer: { flex: 1 },
 	languageContainer: {
 		position: "absolute",

@@ -51,7 +51,7 @@ export default function JoinCircle() {
 		<SafeAreaView style={styles.safeArea}>
 			<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
 				<View style={styles.backButtonContainer}>
-					<Pressable onPress={() => router.back()} style={styles.backButton}>
+					<Pressable onPress={() => router.replace("/onboarding?step=2")} style={styles.backButton}>
 						<Ionicons name="chevron-back" size={28} color={COLORS.primary} />
 					</Pressable>
 				</View>

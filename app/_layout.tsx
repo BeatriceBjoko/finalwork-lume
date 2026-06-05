@@ -3,6 +3,7 @@ import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } f
 import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SessionProvider } from "../context";
@@ -18,7 +19,6 @@ export default function RootLayout() {
 		InterBold: Inter_700Bold,
 	});
 
-	// Show a loading spinner until fonts are ready to prevent UI jumping
 	if (!fontsLoaded) {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

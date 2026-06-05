@@ -1,10 +1,11 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { BackdropBlur, BlurMask, Canvas, Circle, Fill, FillType, Group, RoundedRect, Shadow, Skia, LinearGradient as SkiaGradient, rect, rrect, vec } from "@shopify/react-native-skia";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../../components/ui/Button";
@@ -92,7 +93,7 @@ export default function ReceiverProfileScreen() {
 							<View style={styles.photoBorder}>
 								<View style={styles.photoClip}>
 									{state.profileImage ? (
-										<Image source={{ uri: state.profileImage }} style={styles.photo} />
+										<Image source={{ uri: state.profileImage }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" transition={200} />
 									) : (
 										<View style={styles.initialsBox}>
 											<Text style={styles.initialsText}>{getInitials(state.name)}</Text>

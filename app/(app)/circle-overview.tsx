@@ -1,4 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -44,6 +45,13 @@ export default function CircleOverviewScreen() {
 	useEffect(() => {
 		loadData();
 	}, []);
+
+	useEffect(() => {
+		const urls = members.map((m) => m.photoUrl).filter((u): u is string => !!u && typeof u === "string");
+		if (urls.length > 0) {
+			ExpoImage.prefetch(urls);
+		}
+	}, [members]);
 
 	const loadData = async () => {
 		try {

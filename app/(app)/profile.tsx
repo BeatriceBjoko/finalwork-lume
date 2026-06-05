@@ -1,8 +1,9 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "../../components/ui/Button";
 import { COLORS, FONTS } from "../../constants/theme";
@@ -57,7 +58,7 @@ export default function ProfileScreen() {
 						<View style={styles.photoBorder}>
 							<View style={styles.photoClip}>
 								{profileImage ? (
-									<Image source={{ uri: profileImage }} style={styles.photo} />
+									<Image source={{ uri: profileImage }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" transition={200} />
 								) : (
 									<View style={styles.initialsBox}>
 										<Text style={styles.initialsText}>{getInitials()}</Text>
