@@ -4,7 +4,6 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { auth, db } from "../lib/firebase-config";
 import { login, logout, register } from "../lib/firebase-service";
 
-//  wat we uit de database verwachten
 interface UserData {
 	onboardingCompleted?: boolean;
 	careCircleId?: string;
@@ -38,30 +37,53 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		let unsubscribeDoc: () => void;
+		let unsubscribeDoc: (() => void) | undefined;
+		let fallbackTimer: ReturnType<typeof setTimeout> | undefined;
+
+		const cleanupDocListener = () => {
+			if (unsubscribeDoc) {
+				unsubscribeDoc();
+				unsubscribeDoc = undefined;
+			}
+			if (fallbackTimer) {
+				clearTimeout(fallbackTimer);
+				fallbackTimer = undefined;
+			}
+		};
 
 		const unsubscribeAuth = onAuthStateChanged(auth, (authUser) => {
 			setUser(authUser);
+			cleanupDocListener();
 
-			if (authUser) {
-				// Als we zijn ingelogd, haal dan live de extra Firestore data op
-				const docRef = doc(db, "users", authUser.uid);
-				unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
-					if (docSnap.exists()) {
-						setUserData(docSnap.data() as UserData);
-					}
-					setIsLoading(false);
-				});
-			} else {
+			if (!authUser) {
 				setUserData(null);
 				setIsLoading(false);
-				if (unsubscribeDoc) unsubscribeDoc();
+				return;
 			}
+
+			const docRef = doc(db, "users", authUser.uid);
+			let serverSeen = false;
+
+			fallbackTimer = setTimeout(() => {
+				if (!serverSeen) setIsLoading(false);
+			}, 3000);
+
+			unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
+				if (docSnap.exists()) {
+					setUserData(docSnap.data() as UserData);
+				} else {
+					setUserData(null);
+				}
+				if (!docSnap.metadata.fromCache) {
+					serverSeen = true;
+					setIsLoading(false);
+				}
+			});
 		});
 
 		return () => {
 			unsubscribeAuth();
-			if (unsubscribeDoc) unsubscribeDoc();
+			cleanupDocListener();
 		};
 	}, []);
 

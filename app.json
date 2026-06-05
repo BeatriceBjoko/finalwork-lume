@@ -1,71 +1,77 @@
 {
-	"expo": {
-		"name": "finalwork-lume",
-		"slug": "finalwork-lume",
-		"version": "1.0.0",
-		"orientation": "portrait",
-		"icon": "./assets/images/logo-lume.png",
-		"scheme": "finalworklume",
-		"userInterfaceStyle": "automatic",
-		"newArchEnabled": true,
-		"ios": {
-			"supportsTablet": true
-		},
-		"android": {
-			"googleServicesFile": "./google-services.json",
-			"adaptiveIcon": {
-				"backgroundColor": "#E6F4FE",
-				"foregroundImage": "./assets/images/logo-lume.png"
-			},
-			"edgeToEdgeEnabled": true,
-			"predictiveBackGestureEnabled": false,
-			"permissions": ["android.permission.READ_CALENDAR", "android.permission.WRITE_CALENDAR", "android.permission.CAMERA", "android.permission.RECORD_AUDIO"],
-			"package": "com.beatricebj.finalworklume"
-		},
-		"web": {
-			"output": "static",
-			"favicon": "./assets/images/logo-lume.png"
-		},
-		"plugins": [
-			"expo-router",
-			[
-				"expo-splash-screen",
-				{
-					"image": "./assets/images/logo-lume.png",
-					"imageWidth": 200,
-					"resizeMode": "contain",
-					"backgroundColor": "#ffffff",
-					"dark": {
-						"backgroundColor": "#000000"
-					}
-				}
-			],
-			"expo-font",
-			"expo-localization",
-			"@react-native-community/datetimepicker",
-			[
-				"expo-calendar",
-				{
-					"calendarPermission": "Lume wil je zorgtaken aan je agenda toevoegen."
-				}
-			],
-			[
-				"expo-camera",
-				{
-					"cameraPermission": "Lume gebruikt de camera om medicatie te scannen."
-				}
-			]
-		],
-		"experiments": {
-			"typedRoutes": true,
-			"reactCompiler": true
-		},
-		"extra": {
-			"router": {},
-			"eas": {
-				"projectId": "c176d6f3-6197-4909-8e98-518aa014a616"
-			}
-		},
-		"owner": "beatricebj"
-	}
+  "expo": {
+    "name": "finalwork-lume",
+    "slug": "finalwork-lume",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo-lume.png",
+    "scheme": "finalworklume",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.beatricebj.finalworklume"
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/logo-lume.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.beatricebj.finalworklume"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/logo-lume.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo-lume.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      "expo-font",
+      "expo-localization",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Lume wil je zorgtaken aan je agenda toevoegen."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Lume gebruikt de camera om medicatie te scannen."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c176d6f3-6197-4909-8e98-518aa014a616"
+      }
+    },
+    "owner": "beatricebj"
+  }
 }
