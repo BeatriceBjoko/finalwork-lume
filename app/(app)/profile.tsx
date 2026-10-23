@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
 	photo: { width: PHOTO_SIZE, height: PHOTO_SIZE },
 	initialsBox: { width: PHOTO_SIZE, height: PHOTO_SIZE, backgroundColor: "rgba(176, 248, 0, 0.2)", justifyContent: "center", alignItems: "center" },
 	initialsText: { fontFamily: FONTS.heading, fontSize: 34, color: COLORS.primary },
-	photoInnerGlow: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(239, 252, 0, 0.12)" },
+	photoInnerGlow: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(239, 252, 0, 0.12)" },
 	nameText: { fontFamily: "InterRegular", fontSize: 16, color: COLORS.primary, textAlign: "center", marginBottom: 4 },
 	relationText: { fontFamily: "InterRegular", fontSize: 14, color: "#131F00", opacity: 0.6, textAlign: "center", marginBottom: 24 },
 	editBtn: { width: "100%", paddingHorizontal: 8, marginBottom: 32 },

@@ -11,7 +11,7 @@ export default function Step1() {
 
 	return (
 		<View style={styles.slide}>
-			<View style={StyleSheet.absoluteFillObject}>
+			<View style={StyleSheet.absoluteFill}>
 				<Image source={require("../../assets/images/blobs-left.png")} style={styles.blob1} />
 				<View style={[styles.avatarWrapper, styles.avatar1]}>
 					<Image source={require("../../assets/images/person1.png")} style={styles.avatarImage} />
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
 		elevation: 6,
 	},
 	avatarImage: { width: "100%", height: "100%", borderRadius: 53.5, borderWidth: 1.3, borderColor: "#FFFFFF" },
-	avatarInnerShadow: { ...StyleSheet.absoluteFillObject, borderRadius: 53.5, borderWidth: 4, borderColor: "rgba(70, 74, 0, 0.1)" },
+	avatarInnerShadow: { ...StyleSheet.absoluteFill, borderRadius: 53.5, borderWidth: 4, borderColor: "rgba(70, 74, 0, 0.1)" },
 	safeArea: { flex: 1, justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 30, paddingBottom: 30, zIndex: 10 },
 	spacer: { flex: 1 },
 	headerContainer: { alignItems: "center" },

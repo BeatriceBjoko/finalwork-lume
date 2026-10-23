@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
 	pickerDone: { marginTop: 8, backgroundColor: COLORS.buttonFill, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 10 },
 	pickerDoneText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.buttonText },
 
-	scanOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "#000", zIndex: 50, elevation: 50 },
+	scanOverlay: { ...StyleSheet.absoluteFill, backgroundColor: "#000", zIndex: 50, elevation: 50 },
 	scanHintWrap: { position: "absolute", top: 130, left: 24, right: 24, alignItems: "center" },
 	scanHint: { fontFamily: "InterMedium", fontSize: 14, color: "#FFFFFF", textAlign: "center", backgroundColor: "rgba(0,0,0,0.45)", paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, overflow: "hidden" },
 	scanClose: { position: "absolute", top: 50, right: 20, width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(0,0,0,0.45)", alignItems: "center", justifyContent: "center" },

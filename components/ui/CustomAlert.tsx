@@ -22,9 +22,9 @@ export default function CustomAlert({ visible, title, message, confirmText, canc
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel || onConfirm}>
 			<Pressable style={styles.modalOverlay} onPress={onCancel || onConfirm}>
-				<BlurView intensity={Platform.OS === "android" ? 60 : 22} tint="dark" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} pointerEvents="none" />
+				<BlurView intensity={Platform.OS === "android" ? 60 : 22} tint="dark" blurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} pointerEvents="none" />
 				<Pressable style={styles.alertWrapper} onPress={(e) => e.stopPropagation()}>
-					<BlurView intensity={Platform.OS === "android" ? 90 : 8} tint="light" experimentalBlurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
+					<BlurView intensity={Platform.OS === "android" ? 90 : 8} tint="light" blurMethod="dimezisBlurView" style={StyleSheet.absoluteFill} />
 					<View style={[StyleSheet.absoluteFill, { backgroundColor: Platform.OS === "android" ? "rgba(255, 255, 255, 0.92)" : "rgba(255, 255, 255, 0.45)" }]} />
 					<View style={styles.textContainer}>
 						<Text style={styles.title}>{title}</Text>

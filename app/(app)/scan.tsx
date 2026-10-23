@@ -189,7 +189,7 @@ function InfoBox({ icon, title, sub }: { icon: keyof typeof MaterialCommunityIco
 
 const styles = StyleSheet.create({
 	root: { flex: 1, backgroundColor: "#000" },
-	scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.22)" },
+	scrim: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(0,0,0,0.22)" },
 	backBtn: { position: "absolute", left: 16, width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(0,0,0,0.4)", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.2)", zIndex: 5 },
 
 	topOverlay: { position: "absolute", left: 0, right: 0, alignItems: "center" },
@@ -199,8 +199,8 @@ const styles = StyleSheet.create({
 	highlightText: { fontFamily: FONTS.heading, fontSize: 24, color: COLORS.primary },
 	subtitle: { fontFamily: FONTS.body, fontSize: 13, color: "#FFFFFF", marginTop: 8, textShadowColor: "rgba(0,0,0,0.4)", textShadowRadius: 4 },
 
-	frameArea: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center" },
-	resultArea: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center", paddingHorizontal: 18 },
+	frameArea: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center" },
+	resultArea: { ...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center", paddingHorizontal: 18 },
 
 	scanWindow: { position: "absolute", top: WINDOW_INSET, left: WINDOW_INSET, right: WINDOW_INSET, bottom: WINDOW_INSET, borderRadius: 30, borderWidth: 1.25, borderColor: "rgba(255,255,255,0.45)", backgroundColor: "rgba(255,255,255,0.05)" },
 	corner: { position: "absolute", width: BRACKET, height: BRACKET, borderColor: SCAN_YELLOW },

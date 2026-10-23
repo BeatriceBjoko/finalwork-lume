@@ -244,8 +244,8 @@ const styles = StyleSheet.create({
 	highlightText: { fontFamily: FONTS.heading, fontSize: 28, color: COLORS.primary },
 	subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.primary, opacity: 0.6, marginTop: 8, textAlign: "center" },
 
-	glassOverlay: { ...StyleSheet.absoluteFillObject, opacity: 0.5 },
-	glassInset: { ...StyleSheet.absoluteFillObject, borderRadius: 19, borderWidth: 1, borderColor: "rgba(255,255,255,0.55)", margin: 1 },
+	glassOverlay: { ...StyleSheet.absoluteFill, opacity: 0.5 },
+	glassInset: { ...StyleSheet.absoluteFill, borderRadius: 19, borderWidth: 1, borderColor: "rgba(255,255,255,0.55)", margin: 1 },
 	iconLabel: { flexDirection: "row", alignItems: "center", gap: 5 },
 
 	emptyState: { alignItems: "center", paddingVertical: 48, paddingHorizontal: 24, gap: 12, marginBottom: 24 },

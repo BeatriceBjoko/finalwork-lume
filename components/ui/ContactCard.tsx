@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
 	cardFace: { width: "100%", height: "100%", position: "absolute", backfaceVisibility: "hidden" },
 	cardBack: {},
 	shadowBase: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		backgroundColor: "white",
 		borderRadius: 24,
 		shadowColor: "#233600",

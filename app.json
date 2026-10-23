@@ -7,7 +7,6 @@
     "icon": "./assets/images/logo-lume.png",
     "scheme": "finalworklume",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.beatricebj.finalworklume"
@@ -18,7 +17,6 @@
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/logo-lume.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.READ_CALENDAR",
@@ -60,7 +58,10 @@
         {
           "cameraPermission": "Lume gebruikt de camera om medicatie te scannen."
         }
-      ]
+      ],
+      "expo-image",
+      "expo-web-browser",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,

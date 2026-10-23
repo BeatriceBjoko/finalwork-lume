@@ -16,7 +16,7 @@ export default function Step3() {
 
 	return (
 		<View style={styles.slide}>
-			<View style={StyleSheet.absoluteFillObject}>
+			<View style={StyleSheet.absoluteFill}>
 				<Image source={require("../../assets/images/screen3down.jpg")} style={[styles.backgroundImage, styles.bgImageBottom]} />
 				<Image source={require("../../assets/images/screen3up.jpg")} style={[styles.backgroundImage, styles.bgImageTop]} />
 			</View>

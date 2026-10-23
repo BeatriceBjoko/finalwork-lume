@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
 	photo: { width: PHOTO_SIZE, height: PHOTO_SIZE },
 	initialsBox: { width: PHOTO_SIZE, height: PHOTO_SIZE, backgroundColor: "rgba(239, 252, 0, 0.4)", justifyContent: "center", alignItems: "center" },
 	initialsText: { fontFamily: "BricolageBold", fontSize: 42, color: COLORS.primary },
-	photoInnerGlow: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(239, 252, 0, 0.12)" },
+	photoInnerGlow: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(239, 252, 0, 0.12)" },
 	cameraBadge: { position: "absolute", bottom: 4, right: 4, width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.white, justifyContent: "center", alignItems: "center", elevation: 4 },
 	personalDataSection: { width: "100%", marginBottom: 24, zIndex: 10 },
 	section: { width: "100%", marginBottom: 24 },

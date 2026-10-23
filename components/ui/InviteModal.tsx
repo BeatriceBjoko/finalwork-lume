@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
 	shadowWrapper1: { width: "100%", shadowColor: "#233600", shadowOffset: { width: 0, height: 35 }, shadowOpacity: 0.25, shadowRadius: 15 },
 	shadowWrapper2: { width: "100%", shadowColor: "#233600", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 1, shadowRadius: 25 },
 	modalContent: { width: "100%", borderRadius: 12, borderWidth: 1, borderColor: "rgba(53, 78, 0, 0.20)", overflow: "hidden" },
-	glassBackground: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(255, 255, 255, 0.10)" },
+	glassBackground: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(255, 255, 255, 0.10)" },
 	closeButton: { position: "absolute", top: 16, right: 16, zIndex: 10, padding: 4 },
 	topSection: { paddingTop: 30, paddingBottom: 24, paddingHorizontal: 20, alignItems: "center" },
 	title: { fontFamily: "BricolageMedium", fontSize: 20, color: "#131F00", letterSpacing: 1, marginBottom: 24 },
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
 		overflow: "hidden",
 	},
 	bottomSectionBackground: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		backgroundColor: "rgba(248, 250, 252, 0.20)",
 	},
 	orText: { fontFamily: "InterSemiBold", fontSize: 14, color: "#131F00", marginBottom: 4 },

@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
 	photo: { width: PHOTO_SIZE, height: PHOTO_SIZE },
 	initialsBox: { width: PHOTO_SIZE, height: PHOTO_SIZE, backgroundColor: COLORS.accent, justifyContent: "center", alignItems: "center" },
 	initialsText: { fontFamily: FONTS.heading, fontSize: 42, color: COLORS.primary },
-	photoInnerGlow: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(239, 252, 0, 0.12)" },
+	photoInnerGlow: { ...StyleSheet.absoluteFill, backgroundColor: "rgba(239, 252, 0, 0.12)" },
 	cameraBadge: {
 		position: "absolute",
 		bottom: 4,
