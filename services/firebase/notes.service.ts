@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, limit, onSnapshot, orderBy, query, startAfter, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, limit, onSnapshot, orderBy, query, setDoc, startAfter, updateDoc, where } from "firebase/firestore";
 import { db } from "../../lib/firebase-config";
 import { uploadImageAsync } from "../../lib/firebase-service";
 
@@ -116,9 +116,8 @@ export async function addNoteToDB(circleId: string, noteData: NoteInputData, cre
 		author: noteData.author || null,
 	};
 
-	await updateDoc(newNoteDoc, newNote).catch(async () => {
-		await addDoc(notesRef, newNote);
-	});
+	// Create the note under the id reserved above, so it matches the photo folder in Storage
+	await setDoc(newNoteDoc, newNote);
 
 	return noteId;
 }
