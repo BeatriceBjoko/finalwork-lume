@@ -43,7 +43,7 @@ function formatDateKey(d: Date): string {
 
 export function useCalendarFeed() {
 	const { t } = useTranslation();
-	const { user, userData } = useSession();
+	const { user, userData, isCircleAdmin } = useSession();
 	const circleId = userData?.careCircleId;
 
 	const [selectedDate, setSelectedDate] = useState<string>(() => formatDateKey(new Date()));
@@ -221,7 +221,7 @@ export function useCalendarFeed() {
 	const handleDeleteTask = async (taskId: string, creatorId: string) => {
 		if (!user) return;
 		try {
-			await deleteTaskFromDB(taskId, creatorId, userData?.role ?? "member", user.uid);
+			await deleteTaskFromDB(taskId, creatorId, isCircleAdmin ? "admin" : "member", user.uid);
 		} catch (err: any) {
 			Alert.alert(t("tasks.errors.deniedTitle"), err.message ?? t("tasks.errors.deleteDenied"));
 		}

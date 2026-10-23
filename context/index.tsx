@@ -21,6 +21,8 @@ interface AuthContextType {
 	user: User | null;
 	userData: UserData | null;
 	isLoading: boolean;
+	// Role inside the care circle (careCircleMembers doc), NOT userData.role
+	isCircleAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -35,6 +37,24 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
 	const [userData, setUserData] = useState<UserData | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const [isCircleAdmin, setIsCircleAdmin] = useState(false);
+
+	const uid = user?.uid;
+	const careCircleId = userData?.careCircleId;
+
+	// Live membership listener: the admin/member role lives on careCircleMembers/{circleId}_{uid}
+	useEffect(() => {
+		if (!uid || !careCircleId) {
+			setIsCircleAdmin(false);
+			return;
+		}
+		const memberRef = doc(db, "careCircleMembers", `${careCircleId}_${uid}`);
+		return onSnapshot(
+			memberRef,
+			(snap) => setIsCircleAdmin(snap.exists() && snap.data().role === "admin"),
+			() => setIsCircleAdmin(false),
+		);
+	}, [uid, careCircleId]);
 
 	useEffect(() => {
 		let unsubscribeDoc: (() => void) | undefined;
@@ -103,7 +123,10 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 		setUserData(null);
 	}, []);
 
-	const value = useMemo(() => ({ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, userData, isLoading }), [handleSignIn, handleSignUp, handleSignOut, user, userData, isLoading]);
+	const value = useMemo(
+		() => ({ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, userData, isLoading, isCircleAdmin }),
+		[handleSignIn, handleSignUp, handleSignOut, user, userData, isLoading, isCircleAdmin],
+	);
 
 	return <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>;
 }

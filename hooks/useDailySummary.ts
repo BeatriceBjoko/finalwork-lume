@@ -12,10 +12,10 @@ import { enrichMedicationTask, useMedicationDetails } from "./useMedicationDetai
 
 export function useDailySummary() {
 	const { t, i18n } = useTranslation();
-	const { userData, user } = useSession();
+	const { userData, user, isCircleAdmin } = useSession();
 	const circleId = userData?.careCircleId;
 	const currentUserId = user?.uid;
-	const userRole = userData?.role || "member";
+	const userRole = isCircleAdmin ? "admin" : "member";
 
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [liveTasks, setLiveTasks] = useState<any[]>([]);

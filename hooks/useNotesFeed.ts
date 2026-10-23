@@ -33,7 +33,7 @@ const TEMPLATE_NOTES = [
 ];
 
 export function useNotesFeed() {
-	const { user, userData } = useSession();
+	const { user, userData, isCircleAdmin } = useSession();
 	const circleId = userData?.careCircleId;
 
 	const [notes, setNotes] = useState<any[]>([]);
@@ -143,7 +143,7 @@ export function useNotesFeed() {
 			return;
 		}
 		try {
-			await deleteNoteFromDB(noteId, creatorId, userData?.role || "member", user!.uid);
+			await deleteNoteFromDB(noteId, creatorId, isCircleAdmin ? "admin" : "member", user!.uid);
 		} catch (error: any) {
 			Alert.alert("Geweigerd", error.message);
 		}

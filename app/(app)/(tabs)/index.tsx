@@ -18,7 +18,7 @@ import { useDailySummary } from "../../../hooks/useDailySummary";
 export default function DailySummaryHome() {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { user, userData } = useSession();
+	const { user, isCircleAdmin } = useSession();
 
 	const [isAddTaskModalVisible, setAddTaskModalVisible] = useState(false);
 	const [taskToEdit, setTaskToEdit] = useState<any>(null);
@@ -107,8 +107,7 @@ export default function DailySummaryHome() {
 
 						const currentUserId = user?.uid;
 						const isOwner = task.createdBy === currentUserId;
-						const isAdmin = userData?.role === "admin";
-						const canManageTask = isTemplateMode ? true : isAdmin || isOwner;
+						const canManageTask = isTemplateMode ? true : isCircleAdmin || isOwner;
 
 						return (
 							<TaskCard

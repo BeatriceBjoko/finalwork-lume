@@ -20,7 +20,7 @@ function getEmptyStateText(searchQuery: string, activeFilter: string, selectedDa
 
 export default function NotesScreen() {
 	const { t } = useTranslation();
-	const { user, userData } = useSession();
+	const { user, isCircleAdmin } = useSession();
 	const insets = useSafeAreaInsets();
 
 	const [searchQuery, setSearchQuery] = useState("");
@@ -79,14 +79,13 @@ export default function NotesScreen() {
 			}
 
 			const isOwner = item.createdBy === user?.uid;
-			const isAdmin = userData?.role === "admin";
-			const canEdit = isTemplateMode || isOwner || isAdmin;
+			const canEdit = isTemplateMode || isOwner || isCircleAdmin;
 
 			return (
 				<NoteCard note={item} onToggleImportant={() => handleToggleImportant(item.id, item.isImportant)} onEdit={canEdit ? () => handleEditNote(item) : undefined} onDelete={canEdit ? () => handleDeleteNote(item.id, item.createdBy) : undefined} />
 			);
 		},
-		[searchQuery, t, user?.uid, userData?.role, isTemplateMode, handleToggleImportant, handleEditNote, handleDeleteNote],
+		[searchQuery, t, user?.uid, isCircleAdmin, isTemplateMode, handleToggleImportant, handleEditNote, handleDeleteNote],
 	);
 
 	return (

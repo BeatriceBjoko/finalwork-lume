@@ -47,14 +47,10 @@ function buildTaskCardData(task: CalendarTask, theme: "yellow" | "purple"): Task
 export function DayAgenda({ tasks, onTaskPress, onTaskToggleStatus, onTaskSync, onTaskDelete }: DayAgendaProps) {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { user, userData } = useSession();
+	const { user, isCircleAdmin } = useSession();
 	const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
 
-	const canManage = (task: CalendarTask) => {
-		const isOwner = task.createdBy === user?.uid;
-		const isAdmin = userData?.role === "admin";
-		return isAdmin || isOwner;
-	};
+	const canManage = (task: CalendarTask) => isCircleAdmin || task.createdBy === user?.uid;
 
 	return (
 		<View style={styles.container}>
