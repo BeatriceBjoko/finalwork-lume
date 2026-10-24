@@ -26,7 +26,7 @@ const TAB_CONFIG: Record<string, TabConfig> = {
 const PILL_SIZE = 44;
 const ROW_PADDING_H = 6;
 
-export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
+export function BottomTabBar({ state, emitter, navigateToTab }: BottomTabBarProps) {
 	const { t } = useTranslation();
 	const insets = useSafeAreaInsets();
 
@@ -81,7 +81,7 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
 									const isFocused = state.index === index;
 
 									const onPress = () => {
-										const event = navigation.emit({
+										const event = emitter.emit({
 											type: "tabPress",
 											target: route.key,
 											canPreventDefault: true,
@@ -89,7 +89,7 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
 
 										if (!isFocused && !event.defaultPrevented) {
 											Haptics.selectionAsync();
-											navigation.navigate(route.name);
+											navigateToTab(route.key);
 										}
 									};
 

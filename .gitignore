@@ -46,3 +46,6 @@ app-example
 
 # Firebase admin key 
 scripts/serviceAccountKey.json
+# Firebase emulator logs
+*-debug.log
+firebase-debug.log

@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import React, { useRef, useState } from "react";
-import { Dimensions, FlatList, Pressable, StyleSheet, View, ViewToken } from "react-native";
+import { Dimensions, FlatList, Pressable, StyleSheet, View, type ListViewToken } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Step1 from "../components/onboarding/Step1";
@@ -33,7 +33,7 @@ export default function Onboarding() {
 		}
 	};
 
-	const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+	const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ListViewToken[] }) => {
 		if (viewableItems.length > 0) {
 			const newIndex = viewableItems[0].index ?? 0;
 			setCurrentIndex(newIndex);

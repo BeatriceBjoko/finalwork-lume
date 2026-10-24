@@ -2,7 +2,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type TextInputInstance } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../components/ui/Button";
@@ -15,7 +15,7 @@ import { useJoinCircle } from "../hooks/useJoinCircle";
 export default function JoinCircle() {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const inputRef = useRef<TextInput>(null);
+	const inputRef = useRef<TextInputInstance>(null);
 
 	const {
 		inviteCode,

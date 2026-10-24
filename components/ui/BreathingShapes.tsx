@@ -8,7 +8,7 @@ import { BREATHING, type Session } from "../../hooks/useBreathing";
 // Pure path builders (worklet-safe)
 function buildPolygonPath(cx: number, cy: number, radius: number, vertexCount: number, rotateOffsetDeg: number): SkPath {
 	"worklet";
-	const p = Skia.Path.Make();
+	const p = Skia.PathBuilder.Make();
 	const startAngle = (rotateOffsetDeg * Math.PI) / 180 - Math.PI / 2;
 	for (let i = 0; i < vertexCount; i++) {
 		const a = startAngle + (i / vertexCount) * Math.PI * 2;
@@ -18,12 +18,12 @@ function buildPolygonPath(cx: number, cy: number, radius: number, vertexCount: n
 		else p.lineTo(x, y);
 	}
 	p.close();
-	return p;
+	return p.build();
 }
 
 function buildBlobPath(cx: number, cy: number, baseRadius: number, variance: number, phase: number, segments = 7): SkPath {
 	"worklet";
-	const p = Skia.Path.Make();
+	const p = Skia.PathBuilder.Make();
 	const pts: { x: number; y: number }[] = [];
 	for (let i = 0; i < segments; i++) {
 		const a = (i / segments) * Math.PI * 2;
@@ -39,12 +39,12 @@ function buildBlobPath(cx: number, cy: number, baseRadius: number, variance: num
 		p.quadTo(cur.x, cur.y, (cur.x + next.x) / 2, (cur.y + next.y) / 2);
 	}
 	p.close();
-	return p;
+	return p.build();
 }
 
 function buildBloomPath(cx: number, cy: number, petalLength: number, petalWidth: number, petals: number, rotationRad: number): SkPath {
 	"worklet";
-	const p = Skia.Path.Make();
+	const p = Skia.PathBuilder.Make();
 	for (let i = 0; i < petals; i++) {
 		const a = (i / petals) * Math.PI * 2 + rotationRad;
 		const tipX = cx + Math.cos(a) * petalLength;
@@ -58,7 +58,7 @@ function buildBloomPath(cx: number, cy: number, petalLength: number, petalWidth:
 		p.quadTo(midX - perpX * petalWidth, midY - perpY * petalWidth, cx, cy);
 		p.close();
 	}
-	return p;
+	return p.build();
 }
 
 interface ShapeBaseProps {

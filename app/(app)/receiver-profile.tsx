@@ -53,11 +53,11 @@ export default function ReceiverProfileScreen() {
 
 	const outerClipPath = useMemo(() => {
 		if (cardWidth <= 0 || cardHeight <= 0) return null;
-		const path = Skia.Path.Make();
-		path.addRect(rect(-SKIA_PADDING, -SKIA_PADDING, cardWidth + SKIA_PADDING * 2, cardHeight + SKIA_PADDING * 2));
-		path.addRRect(rrect(rect(0, 0, cardWidth, cardHeight), 16, 16));
-		path.setFillType(FillType.EvenOdd);
-		return path;
+		return Skia.PathBuilder.Make()
+			.addRect(rect(-SKIA_PADDING, -SKIA_PADDING, cardWidth + SKIA_PADDING * 2, cardHeight + SKIA_PADDING * 2))
+			.addRRect(rrect(rect(0, 0, cardWidth, cardHeight), 16, 16))
+			.setFillType(FillType.EvenOdd)
+			.build();
 	}, [cardWidth, cardHeight]);
 
 	if (isLoading) {

@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
-import { Pressable, StyleProp, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from "react-native";
+import { Pressable, StyleProp, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle, type TextInputInstance } from "react-native";
 import { COLORS, FONTS } from "../../constants/theme";
 
 interface InputProps extends Omit<TextInputProps, "style"> {
@@ -12,7 +12,7 @@ interface InputProps extends Omit<TextInputProps, "style"> {
 
 export default function Input({ label, secureTextEntry, variant = "underline", isRequired = false, style, ...props }: InputProps) {
 	const [isPasswordHidden, setIsPasswordHidden] = useState(secureTextEntry);
-	const inputRef = useRef<TextInput>(null);
+	const inputRef = useRef<TextInputInstance>(null);
 
 	return (
 		<View style={styles.container}>
