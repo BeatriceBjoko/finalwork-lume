@@ -31,8 +31,7 @@ export default function CircleOverviewScreen() {
 	const isTemplateMode = members.length <= 1;
 	const isAdmin = circleData?.role === "admin";
 
-	// Let op: shareSMS uit de hook gehaald (in plaats van shareWhatsApp)
-	const { isVisible: isInviteModalVisible, setIsVisible: setInviteModalVisible, inviteCode, formattedTime, shareSMS, shareEmail } = useCircleInvite(circleData?.careCircleId);
+	const { isVisible: isInviteModalVisible, openInvite, closeInvite, inviteCode, validUntil, isLoadingCode, shareSMS, shareEmail } = useCircleInvite(circleData?.careCircleId);
 
 	const SLOT_STYLES = [
 		{ left: 0, top: 0, zIndex: 1, size: 130, isCenter: false },
@@ -43,19 +42,15 @@ export default function CircleOverviewScreen() {
 	];
 
 	useEffect(() => {
-		loadData();
-	}, []);
-
-	useEffect(() => {
 		const urls = members.map((m) => m.photoUrl).filter((u): u is string => !!u && typeof u === "string");
 		if (urls.length > 0) {
 			ExpoImage.prefetch(urls);
 		}
 	}, [members]);
 
+	// isLoading starts as true, so no need to set it here
 	const loadData = async () => {
 		try {
-			setIsLoading(true);
 			const data = await getCurrentUserCircleData();
 			if (data && data.careCircleId) {
 				setCircleData(data);
@@ -68,6 +63,10 @@ export default function CircleOverviewScreen() {
 			setIsLoading(false);
 		}
 	};
+
+	useEffect(() => {
+		loadData();
+	}, []);
 
 	const handleOpenRemoveModal = (memberId: string) => {
 		setSelectedMemberToRemove(memberId);
@@ -149,13 +148,16 @@ export default function CircleOverviewScreen() {
 				<View style={{ height: 180 }} />
 			</ScrollView>
 
-			<View style={styles.bottomContainer}>
-				<Button title={tCircle("inviteBtn")} onPress={() => setInviteModalVisible(true)} variant="primary" />
-				<View style={styles.infoRow}>
-					<MaterialCommunityIcons name="information-outline" size={20} color={COLORS.primary} />
-					<Text style={styles.infoText}>{tCircle("inviteInfo")}</Text>
+			{!isLoading && (
+				<View style={styles.bottomContainer}>
+					{/* Only admins can invite; the server (getInviteCode) enforces this as well */}
+					{isAdmin && <Button title={tCircle("inviteBtn")} onPress={openInvite} variant="primary" />}
+					<View style={styles.infoRow}>
+						<MaterialCommunityIcons name="information-outline" size={20} color={COLORS.primary} />
+						<Text style={styles.infoText}>{isAdmin ? tCircle("inviteInfo") : tCircle("inviteAdminOnly")}</Text>
+					</View>
 				</View>
-			</View>
+			)}
 
 			<CustomAlert
 				visible={isRemoveModalVisible}
@@ -170,7 +172,7 @@ export default function CircleOverviewScreen() {
 				primaryLeft={true}
 			/>
 
-			<InviteModal visible={isInviteModalVisible} onClose={() => setInviteModalVisible(false)} inviteCode={inviteCode} formattedTime={formattedTime} onShareSMS={shareSMS} onShareEmail={shareEmail} />
+			<InviteModal visible={isInviteModalVisible} onClose={closeInvite} inviteCode={inviteCode} validUntil={validUntil} isLoading={isLoadingCode} onShareSMS={shareSMS} onShareEmail={shareEmail} />
 		</SafeAreaView>
 	);
 }
@@ -193,5 +195,5 @@ const styles = StyleSheet.create({
 
 	bottomContainer: { position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 24, paddingTop: 24, paddingBottom: 30, backgroundColor: "rgba(255, 255, 255, 0.95)" },
 	infoRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 12 },
-	infoText: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.primary, marginLeft: 6 },
+	infoText: { flexShrink: 1, fontFamily: FONTS.body, fontSize: 12, color: COLORS.primary, marginLeft: 6 },
 });

@@ -16,7 +16,7 @@ import { useCreateCircleStep2 } from "../hooks/useCreateCircleStep2";
 export default function CreateCircleStep2() {
 	const { t } = useTranslation();
 
-	const { inviteInput, setInviteInput, inviteList, hasShared, alertConfig, handleAddPerson, handleShareLink, handleCreateCircle, closeAlert } = useCreateCircleStep2();
+	const { inviteInput, setInviteInput, inviteList, hasShared, alertConfig, isLoading, handleAddPerson, handleShareLink, handleCreateCircle, closeAlert } = useCreateCircleStep2();
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -59,7 +59,7 @@ export default function CreateCircleStep2() {
 								keyboardType="email-address"
 							/>
 
-							<Pressable style={styles.glassAddBtn} onPress={handleAddPerson}>
+							<Pressable style={({ pressed }) => [styles.glassAddBtn, pressed && styles.glassAddBtnPressed]} onPress={handleAddPerson}>
 								<BlurView intensity={15} tint="light" style={StyleSheet.absoluteFill} />
 								<View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(224, 224, 224, 0.26)" }]} />
 								<Text style={styles.glassAddBtnText}>{t("createCircle.step2.addBtn")}</Text>
@@ -99,13 +99,13 @@ export default function CreateCircleStep2() {
 							<Text style={styles.linkSubtitle}>{t("createCircle.step2.linkSectionSubtitle")}</Text>
 
 							<View style={styles.copyBtnWrapper}>
-								<Button title={hasShared ? "✅  " + t("createCircle.step2.linkShared") : t("createCircle.step2.shareLinkBtn")} variant="secondary" onPress={handleShareLink} style={styles.copyBtn} />
+								<Button title={hasShared ? "✅  " + t("createCircle.step2.linkShared") : t("createCircle.step2.shareLinkBtn")} variant="secondary" onPress={handleShareLink} style={styles.copyBtn} disabled={isLoading} />
 							</View>
 						</View>
 					</ShadowCard>
 
 					<View style={styles.footer}>
-						<Button title={t("createCircle.step2.finishBtn")} onPress={handleCreateCircle} variant="primary" />
+						<Button title={isLoading ? t("common.loading") : t("createCircle.step2.finishBtn")} onPress={handleCreateCircle} variant="primary" disabled={isLoading} />
 						<View style={styles.infoRow}>
 							<MaterialCommunityIcons name="information-outline" size={20} color={COLORS.primary} />
 							<Text style={styles.infoText}>{t("createCircle.step1.infoText")}</Text>
@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 	},
+	glassAddBtnPressed: { opacity: 0.6, transform: [{ scale: 0.95 }] },
 	glassAddBtnText: { fontFamily: FONTS.button, fontSize: 14, color: "#233600" },
 
 	personRow: { flexDirection: "row", alignItems: "center", marginBottom: 16 },

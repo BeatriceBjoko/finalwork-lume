@@ -150,7 +150,7 @@
 			"linkSectionSubtitle": "Partagez ce lien avec votre famille",
 			"shareLinkBtn": "Partager le lien d'invitation",
 			"linkShared": "Lien partagé !",
-			"shareMessage": "Hey! J'ai créé un cercle de soins sur Lume. Rejoins-nous pour organiser les soins ensemble. Clique ici : lume.app/invite/12345",
+			"shareMessage": "Hey! J'ai créé un cercle de soins sur Lume. Rejoins-nous pour organiser les soins ensemble. Télécharge l'application Lume et entre ce code :",
 			"finishBtn": "Créer le cercle de soins"
 		}
 	},
@@ -165,7 +165,9 @@
 		"success": "Vous avez rejoint le cercle de soins avec succès.",
 		"errors": {
 			"invalidCode": "Le code doit comporter exactement 6 caractères.",
-			"notFound": "Aucun cercle de soins trouvé avec ce code."
+			"notFound": "Aucun cercle de soins valide trouvé avec ce code. Demande un nouveau code à l'administrateur.",
+			"tooManyAttempts": "Trop de tentatives incorrectes. Réessaie dans 15 minutes.",
+			"alreadyInCircle": "Tu fais déjà partie d'un cercle de soins."
 		}
 	},
 	"profile": {
@@ -276,6 +278,7 @@
 		"templateMessage": "Ceci est un exemple de ce à quoi ressemblera votre cercle. Invitez ou supprimez des personnes pour créer votre propre cercle !",
 		"inviteBtn": "Inviter une personne",
 		"inviteInfo": "Les invités reçoivent une invitation sécurisée",
+		"inviteAdminOnly": "Seul l'administrateur peut inviter de nouvelles personnes.",
 		"removeTitle": "Supprimer la personne ?",
 		"removeMessage": "Cette personne sera supprimée de votre cercle.\nCette action est irréversible.",
 		"removeConfirm": "Supprimer",
@@ -283,7 +286,10 @@
 	},
 	"inviteModal": {
 		"title": "PARTAGEZ CE CODE",
-		"timerSubtitle": "Le code expire dans 20 minutes",
+		"tapToCopy": "Touche pour copier",
+		"copied": "Copié !",
+		"validUntil": "Valable jusqu'au {{date}}",
+		"validSubtitle": "Ensuite, Lume crée automatiquement un nouveau code",
 		"or": "Ou",
 		"shareText": "Envoyez un lien pour ajouter quelqu'un",
 		"shareMessage": "Hey ! J'ai créé un cercle de soins sur Lume. Rejoignez-nous pour organiser les soins ensemble. Entrez ce code dans l'application : {{code}}"

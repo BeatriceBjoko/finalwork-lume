@@ -1,7 +1,9 @@
+import { FirebaseError } from "firebase/app";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { auth, db, storage } from "./firebase-config";
+import { auth, db, functions, storage } from "./firebase-config";
 
 export interface FirebaseUserResponse {
 	user: User;
@@ -46,8 +48,31 @@ export interface CreateCircleParams {
 	profileImage: string;
 	relation: string;
 	customRelation: string;
-	inviteCode: string;
-	invitees: Array<{ contact: string }>;
+	invitees: { contact: string }[];
+}
+
+export interface InviteCodeInfo {
+	// Without the "LUME-" prefix, e.g. "ABC234"
+	code: string;
+	expiresAt: number;
+}
+
+export interface CreatedCircle extends InviteCodeInfo {
+	circleId: string;
+}
+
+// Server errors that the screens show as a specific message
+export type CircleErrorCode = "NOT_FOUND" | "TOO_MANY_ATTEMPTS" | "ALREADY_IN_CIRCLE" | "NOT_ADMIN";
+
+function toCircleError(error: unknown): Error {
+	const code = (error as FirebaseError)?.code;
+	const map: Record<string, CircleErrorCode> = {
+		"functions/not-found": "NOT_FOUND",
+		"functions/resource-exhausted": "TOO_MANY_ATTEMPTS",
+		"functions/failed-precondition": "ALREADY_IN_CIRCLE",
+		"functions/permission-denied": "NOT_ADMIN",
+	};
+	return map[code] ? new Error(map[code]) : (error as Error);
 }
 
 export async function uploadImageAsync(uri: string, path: string): Promise<string> {
@@ -70,81 +95,34 @@ export async function uploadImageAsync(uri: string, path: string): Promise<strin
 	}
 }
 
-export async function createCareCircleInDB(params: CreateCircleParams): Promise<void> {
+// The server (Cloud Function createCircle) creates the circle, makes the caller admin
+// and issues the first invite code. Firestore rules do not allow the app to do this itself.
+export async function createCareCircleInDB(params: CreateCircleParams): Promise<CreatedCircle> {
 	const currentUser = auth.currentUser;
 	if (!currentUser) throw new Error("Je bent niet ingelogd.");
-	const currentUserId = currentUser.uid;
 
-	const batch = writeBatch(db);
+	const createCircle = httpsCallable<object, { circleId: string; inviteCode: string; expiresAt: number }>(functions, "createCircle");
+	let result;
+	try {
+		result = await createCircle({
+			circleName: params.circleName,
+			receiverName: params.receiverName,
+			relation: params.relation,
+			customRelation: params.customRelation,
+			invitees: params.invitees.map((i) => i.contact),
+		});
+	} catch (error) {
+		throw toCircleError(error);
+	}
+	const { circleId, inviteCode, expiresAt } = result.data;
 
-	// Zorgkring aanmaken
-	const circleRef = doc(collection(db, "careCircles"));
-	const circleId = circleRef.id;
-
-	let uploadedPhotoUrl = "";
+	// Now that we are admin of the circle, upload the care receiver photo
 	if (params.profileImage) {
-		// hier uniek pad maken in Storage: careCircles/ID/profile_tijdstip.jpg
-		const imagePath = `careCircles/${circleId}/profile_${Date.now()}.jpg`;
-		uploadedPhotoUrl = await uploadImageAsync(params.profileImage, imagePath);
+		const photoUrl = await uploadImageAsync(params.profileImage, `careCircles/${circleId}/profile_${Date.now()}.jpg`);
+		await updateDoc(doc(db, "careCircles", circleId), { "careReceiver.photoUrl": photoUrl });
 	}
 
-	batch.set(circleRef, {
-		id: circleId,
-		name: params.circleName,
-		careReceiver: {
-			name: params.receiverName,
-			photoUrl: uploadedPhotoUrl,
-			dob: null,
-			hobbies: "",
-			address: "",
-			medication: "",
-			allergies: "",
-			diagnoses: "",
-			gpVisit: "",
-		},
-		createdBy: currentUserId,
-		inviteCode: params.inviteCode,
-		createdAt: new Date().toISOString(),
-	});
-
-	// Maker als Admin toevoegen
-	const memberRef = doc(db, "careCircleMembers", `${circleId}_${currentUserId}`);
-	batch.set(memberRef, {
-		careCircleId: circleId,
-		userId: currentUserId,
-		role: "admin",
-		relationshipToCareReceiver: params.relation === "andere" ? params.customRelation : params.relation,
-		status: "active",
-		joinedAt: new Date().toISOString(),
-	});
-
-	// User updaten
-	const userRef = doc(db, "users", currentUserId);
-	batch.update(userRef, {
-		onboardingCompleted: true,
-		careCircleId: circleId,
-	});
-
-	// Uitnodigingen opslaan
-	const expiresAtDate = new Date();
-	expiresAtDate.setDate(expiresAtDate.getDate() + 7);
-
-	params.invitees.forEach((invitee) => {
-		const inviteRef = doc(collection(db, "careCircleInvites"));
-		batch.set(inviteRef, {
-			id: inviteRef.id,
-			careCircleId: circleId,
-			emailOrPhone: invitee.contact,
-			invitedBy: currentUserId,
-			inviteCode: params.inviteCode,
-			roleOnJoin: "member",
-			status: "pending",
-			createdAt: new Date().toISOString(),
-			expiresAt: expiresAtDate.toISOString(),
-		});
-	});
-
-	await batch.commit();
+	return { circleId, code: inviteCode, expiresAt };
 }
 
 export interface JoinCircleParams {
@@ -154,60 +132,27 @@ export interface JoinCircleParams {
 	profileImage: string;
 }
 
+// The server (Cloud Function joinCircle) checks the code and adds the caller as "member"
 export async function joinCareCircleInDB(params: JoinCircleParams): Promise<void> {
 	const currentUser = auth.currentUser;
 	if (!currentUser) throw new Error("Je bent niet ingelogd.");
 	const currentUserId = currentUser.uid;
 
-	// Zoek de zorgkring met deze code
-	const circlesRef = collection(db, "careCircles");
-	const q = query(circlesRef, where("inviteCode", "==", params.inviteCode));
-	const querySnapshot = await getDocs(q);
-
-	if (querySnapshot.empty) {
-		throw new Error("NOT_FOUND");
+	const joinCircle = httpsCallable<object, { circleId: string }>(functions, "joinCircle");
+	let circleId: string;
+	try {
+		const result = await joinCircle({ inviteCode: params.inviteCode, relation: params.relation, customRelation: params.customRelation });
+		circleId = result.data.circleId;
+	} catch (error) {
+		throw toCircleError(error);
 	}
 
-	// Pak de data van de gevonden zorgkring
-	const circleDoc = querySnapshot.docs[0];
-	const circleId = circleDoc.id;
-
-	let uploadedPhotoUrl = "";
+	// Now that we are a member, upload our own profile photo
 	if (params.profileImage) {
-		// Uniek pad voor de profielfoto van deze gebruiker
-		const imagePath = `users/${currentUserId}/profile_${Date.now()}.jpg`;
-		uploadedPhotoUrl = await uploadImageAsync(params.profileImage, imagePath);
+		const photoUrl = await uploadImageAsync(params.profileImage, `users/${currentUserId}/profile_${Date.now()}.jpg`);
+		await updateDoc(doc(db, "careCircleMembers", `${circleId}_${currentUserId}`), { photoUrl });
+		await updateDoc(doc(db, "users", currentUserId), { photoUrl });
 	}
-
-	const batch = writeBatch(db);
-
-	// Voeg de gebruiker toe als 'member' aan de zorgkring
-	const memberRef = doc(db, "careCircleMembers", `${circleId}_${currentUserId}`);
-	batch.set(memberRef, {
-		careCircleId: circleId,
-		userId: currentUserId,
-		role: "member",
-		relationshipToCareReceiver: params.relation === "andere" ? params.customRelation : params.relation,
-		status: "active",
-		joinedAt: new Date().toISOString(),
-		photoUrl: uploadedPhotoUrl,
-	});
-
-	//  Update het User profiel (zodat de onboarding klaar is)
-	const userRef = doc(db, "users", currentUserId);
-	const userUpdates: any = {
-		onboardingCompleted: true,
-		careCircleId: circleId,
-	};
-
-	if (uploadedPhotoUrl) {
-		userUpdates.photoUrl = uploadedPhotoUrl;
-	}
-
-	batch.update(userRef, userUpdates);
-
-	// Alles tegelijk opslaan!
-	await batch.commit();
 }
 
 export async function updateCareReceiverInDB(circleId: string, data: any): Promise<void> {
@@ -272,12 +217,13 @@ export async function removeCircleMember(circleId: string, userIdToRemove: strin
 	});
 }
 
-// Haal specifiek de uitnodigingscode van een kring op
-export async function getCircleInviteCode(circleId: string): Promise<string | null> {
-	const circleRef = doc(db, "careCircles", circleId);
-	const snap = await getDoc(circleRef);
-	if (snap.exists() && snap.data().inviteCode) {
-		return snap.data().inviteCode.replace("LUME-", "");
+// Current invite code of the circle (admins only); the server issues a new one when it expired
+export async function getCircleInviteCode(circleId: string): Promise<InviteCodeInfo> {
+	const getInviteCode = httpsCallable<object, { inviteCode: string; expiresAt: number }>(functions, "getInviteCode");
+	try {
+		const result = await getInviteCode({ circleId });
+		return { code: result.data.inviteCode, expiresAt: result.data.expiresAt };
+	} catch (error) {
+		throw toCircleError(error);
 	}
-	return null;
 }

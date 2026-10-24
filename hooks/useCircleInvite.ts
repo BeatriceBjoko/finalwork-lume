@@ -1,34 +1,37 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Linking, Platform, Share } from "react-native";
 import { getCircleInviteCode } from "../lib/firebase-service";
 
 export function useCircleInvite(careCircleId: string | undefined) {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const [isVisible, setIsVisible] = useState(false);
 	const [inviteCode, setInviteCode] = useState<string>("");
-	const [timeLeft, setTimeLeft] = useState(1200);
+	const [expiresAt, setExpiresAt] = useState<number | null>(null);
+	const [isLoadingCode, setIsLoadingCode] = useState(false);
 
-	useEffect(() => {
-		if (isVisible && careCircleId) {
-			getCircleInviteCode(careCircleId).then((code) => {
-				if (code) setInviteCode(code);
-			});
-			setTimeLeft(1200);
+	// Opens the modal and fetches the code from the server (it may have expired since last time)
+	const openInvite = useCallback(async () => {
+		if (!careCircleId) return;
+		setIsVisible(true);
+		setIsLoadingCode(true);
+		try {
+			const { code, expiresAt: expiry } = await getCircleInviteCode(careCircleId);
+			setInviteCode(code);
+			setExpiresAt(expiry);
+		} catch (error: any) {
+			console.error("Kon uitnodigingscode niet ophalen:", error);
+			setIsVisible(false);
+			Alert.alert(t("errors.errorTitle"), error?.message === "NOT_ADMIN" ? t("circleOverview.inviteAdminOnly") : t("errors.default"));
+		} finally {
+			setIsLoadingCode(false);
 		}
-	}, [isVisible, careCircleId]);
+	}, [careCircleId, t]);
 
-	useEffect(() => {
-		if (!isVisible) return;
-		const timer = setInterval(() => {
-			setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-		}, 1000);
-		return () => clearInterval(timer);
-	}, [isVisible]);
+	const locale = i18n.language.startsWith("fr") ? "fr-BE" : "nl-BE";
+	const validUntil = expiresAt ? new Date(expiresAt).toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" }) : "";
 
-	const formattedTime = `${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, "0")}`;
-
-	const shareMessage = t("inviteModal.shareMessage").replace("{{code}}", `LUME-${inviteCode}`);
+	const shareMessage = t("inviteModal.shareMessage", { code: `LUME-${inviteCode}` });
 
 	const shareSMS = async () => {
 		const separator = Platform.OS === "ios" ? "&" : "?";
@@ -36,10 +39,10 @@ export function useCircleInvite(careCircleId: string | undefined) {
 
 		try {
 			await Linking.openURL(url);
-		} catch (error) {
+		} catch {
 			try {
 				await Share.share({ message: shareMessage });
-			} catch (fallbackError) {
+			} catch {
 				Alert.alert("Fout", "Kon het bericht niet delen.");
 			}
 		}
@@ -60,9 +63,11 @@ export function useCircleInvite(careCircleId: string | undefined) {
 
 	return {
 		isVisible,
-		setIsVisible,
+		openInvite,
+		closeInvite: () => setIsVisible(false),
 		inviteCode,
-		formattedTime,
+		validUntil,
+		isLoadingCode,
 		shareSMS,
 		shareEmail,
 	};
