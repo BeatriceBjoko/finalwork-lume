@@ -3,6 +3,7 @@ import { deleteField, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { auth, db } from "../lib/firebase-config";
 import { login, logout, register } from "../lib/firebase-service";
+import { isSupportedLanguage, setAppLanguage } from "../locales/i18n";
 
 interface UserData {
 	onboardingCompleted?: boolean;
@@ -41,6 +42,12 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 
 	const uid = user?.uid;
 	const careCircleId = userData?.careCircleId;
+	const accountLanguage = userData?.language;
+
+	// The language saved on the account wins after login (also on a new phone)
+	useEffect(() => {
+		if (isSupportedLanguage(accountLanguage)) setAppLanguage(accountLanguage);
+	}, [accountLanguage]);
 
 	// Live membership listener: the admin/member role lives on careCircleMembers/{circleId}_{uid}
 	useEffect(() => {

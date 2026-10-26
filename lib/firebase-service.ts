@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, up
 import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import i18n from "../locales/i18n";
+import i18n, { currentAppLanguage } from "../locales/i18n";
 import { auth, db, functions, storage } from "./firebase-config";
 
 export interface FirebaseUserResponse {
@@ -34,7 +34,8 @@ export async function register(email: string, password: string, name?: string): 
 		uid: user.uid,
 		email: user.email,
 		name: name || "",
-		language: "nl",
+		// The language the user is using right now (NL or FR), not always "nl"
+		language: currentAppLanguage(),
 		createdAt: new Date().toISOString(),
 		role: "mantelzorger",
 		onboardingCompleted: false,

@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocales } from "expo-localization";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
@@ -31,5 +32,32 @@ i18n.use(initReactI18next).init({
 
 	interpolation: { escapeValue: false },
 });
+
+// 4. De taal die op dit toestel gekozen werd (bv. met de FR/NL-knop op het loginscherm)
+// wint van de toesteltaal. Na het inloggen wint de taal van het account (zie context).
+const LANGUAGE_KEY = "lume.language";
+
+export type AppLanguage = "nl" | "fr";
+
+export function isSupportedLanguage(value: unknown): value is AppLanguage {
+	return typeof value === "string" && supportedLanguages.includes(value);
+}
+
+AsyncStorage.getItem(LANGUAGE_KEY)
+	.then((saved) => {
+		if (isSupportedLanguage(saved) && saved !== i18n.language) i18n.changeLanguage(saved);
+	})
+	.catch(() => {});
+
+// Switch the app language and remember it on this phone
+export async function setAppLanguage(lang: AppLanguage) {
+	if (i18n.language !== lang) await i18n.changeLanguage(lang);
+	await AsyncStorage.setItem(LANGUAGE_KEY, lang).catch(() => {});
+}
+
+// "nl" or "fr" for the language the app is showing right now
+export function currentAppLanguage(): AppLanguage {
+	return i18n.language?.startsWith("fr") ? "fr" : "nl";
+}
 
 export default i18n;

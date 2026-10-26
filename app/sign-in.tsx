@@ -10,6 +10,7 @@ import GlassCard from "../components/ui/GlassCard";
 import Input from "../components/ui/Input";
 import { COLORS, FONTS } from "../constants/theme";
 import { useSignIn } from "../hooks/useSignIn";
+import { setAppLanguage } from "../locales/i18n";
 
 export default function SignIn() {
 	const { t, i18n } = useTranslation();
@@ -18,7 +19,7 @@ export default function SignIn() {
 
 	const toggleLanguage = () => {
 		const nextLang = i18n.language === "nl" ? "fr" : "nl";
-		i18n.changeLanguage(nextLang);
+		setAppLanguage(nextLang);
 	};
 
 	return (

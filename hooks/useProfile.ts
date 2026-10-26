@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
 import { db } from "../lib/firebase-config";
+import { setAppLanguage } from "../locales/i18n";
 
 export function useProfile() {
 	const { user, userData, signOut } = useSession();
@@ -53,7 +54,7 @@ export function useProfile() {
 	// Functie om taal te veranderen in de app en in de database
 	const changeLanguage = async (langCode: "nl" | "fr") => {
 		try {
-			await i18n.changeLanguage(langCode); // Verandert de taal direct in de app
+			await setAppLanguage(langCode); // Verandert de taal direct in de app en onthoudt ze op dit toestel
 			setLangModalVisible(false);
 
 			// Sla het op in Firebase zodat het bewaard blijft
