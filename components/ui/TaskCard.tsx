@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BackdropBlur, Canvas, Fill, Group, RoundedRect, Shadow, rect, rrect } from "@shopify/react-native-skia";
 import { BlurView } from "expo-blur";
+import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -69,11 +70,14 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, canManage = 
 
 	const handleTrashClick = (e: any) => {
 		e.stopPropagation();
+		// Warning buzz: deleting cannot be undone
+		Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
 		setDeleteAlertVisible(true);
 	};
 
 	const handleEditClick = (e: any) => {
 		e.stopPropagation();
+		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 		if (onEdit) onEdit();
 	};
 
@@ -202,6 +206,7 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, canManage = 
 				primaryLeft={true}
 				onConfirm={() => {
 					setDeleteAlertVisible(false);
+					Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 					if (onDelete) onDelete();
 				}}
 				onCancel={() => setDeleteAlertVisible(false)}

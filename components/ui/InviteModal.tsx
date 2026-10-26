@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../constants/theme";
+import { haptic } from "../../lib/haptics";
 
 interface InviteModalProps {
 	visible: boolean;
@@ -51,7 +52,7 @@ export default function InviteModal({ visible, onClose, inviteCode, validUntil, 
 						<BlurView intensity={25} tint="light" style={styles.modalContent}>
 							<View style={styles.glassBackground} />
 
-							<Pressable style={styles.closeButton} onPress={onClose}>
+							<Pressable style={styles.closeButton} onPress={() => { haptic.close(); onClose(); }}>
 								<Ionicons name="close" size={24} color={COLORS.iconColor} />
 							</Pressable>
 

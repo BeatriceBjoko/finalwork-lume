@@ -1,5 +1,6 @@
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
 import { db } from "../lib/firebase-config";
@@ -12,38 +13,40 @@ export function useProfile() {
 	const [circleRole, setCircleRole] = useState("lid");
 	const [memberPhoto, setMemberPhoto] = useState<string | null>(null);
 
+	const [memberName, setMemberName] = useState<string | null>(null);
 	const [isLangModalVisible, setLangModalVisible] = useState(false);
 
-	useEffect(() => {
-		async function fetchMemberData() {
-			if (userData?.careCircleId && user?.uid) {
-				try {
-					const memberRef = doc(db, "careCircleMembers", `${userData.careCircleId}_${user.uid}`);
-					const memberSnap = await getDoc(memberRef);
+	const careCircleId = userData?.careCircleId;
+	const uid = user?.uid;
 
-					if (memberSnap.exists()) {
-						const data = memberSnap.data();
-						setRelation(data.relationshipToCareReceiver || "");
-						setCircleRole(data.role || "lid");
-
-						if (data.photoUrl) {
-							setMemberPhoto(data.photoUrl);
-						}
-					}
-				} catch (error) {
-					console.error("Kon member data niet ophalen:", error);
-				}
-			}
-		}
-		fetchMemberData();
-	}, [userData, user]);
+	// Live membership (name, photo, relation, role). Re-subscribed every time the screen
+	// gains focus, so changes made in "Profiel bewerken" show as soon as you come back.
+	useFocusEffect(
+		useCallback(() => {
+			if (!careCircleId || !uid) return;
+			const memberRef = doc(db, "careCircleMembers", `${careCircleId}_${uid}`);
+			return onSnapshot(
+				memberRef,
+				(snap) => {
+					if (!snap.exists()) return;
+					const data = snap.data();
+					setRelation(data.relationshipToCareReceiver || "");
+					setCircleRole(data.role || "lid");
+					setMemberPhoto(data.photoUrl || null);
+					setMemberName(data.name || null);
+				},
+				(error) => console.error("Kon member data niet ophalen:", error),
+			);
+		}, [careCircleId, uid]),
+	);
 
 	const handleLogout = async () => {
 		await signOut();
 	};
 
 	const getInitials = () => {
-		const nameToUse = user?.displayName || userData?.name || user?.email || "?";
+		// The live membership name is updated by "Profiel bewerken" together with the profile
+		const nameToUse = memberName || userData?.name || user?.displayName || user?.email || "?";
 		return nameToUse.substring(0, 2).toUpperCase();
 	};
 
@@ -62,7 +65,7 @@ export function useProfile() {
 		}
 	};
 
-	const displayName = user?.displayName || userData?.name || "Gebruiker";
+	const displayName = memberName || userData?.name || user?.displayName || "Gebruiker";
 
 	const { t } = useTranslation();
 	const roleDisplay = circleRole === "admin" ? t("profile.roleAdmin", "beheerder") : t("profile.roleMember", "lid");

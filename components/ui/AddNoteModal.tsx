@@ -3,6 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { COLORS, FONTS } from "../../constants/theme";
+import { haptic } from "../../lib/haptics";
 import { NOTE_CATEGORIES, useNoteForm } from "../../hooks/useNoteForm";
 import Button from "./Button";
 
@@ -35,7 +36,7 @@ export function AddNoteModal({ visible, onClose, noteToEdit }: AddNoteModalProps
 				<View style={styles.modalContent}>
 					<View style={styles.header}>
 						<Text style={styles.title}>{isEditing ? t("logbook.modal.editTitle") : t("logbook.modal.newTitle")}</Text>
-						<Pressable onPress={onClose} style={styles.closeBtn}>
+						<Pressable onPress={() => { haptic.close(); onClose(); }} style={styles.closeBtn}>
 							<Ionicons name="close" size={24} color={COLORS.primary} />
 						</Pressable>
 					</View>
@@ -77,7 +78,7 @@ export function AddNoteModal({ visible, onClose, noteToEdit }: AddNoteModalProps
 							{images.map((imgUri, idx) => (
 								<View key={idx} style={styles.imagePreviewWrap}>
 									<Image source={{ uri: imgUri }} style={styles.previewImage} />
-									<Pressable style={styles.removeImgBtn} onPress={() => handleRemoveImage(idx)}>
+									<Pressable style={styles.removeImgBtn} onPress={() => { haptic.remove(); handleRemoveImage(idx); }}>
 										<Ionicons name="close" size={16} color="#FFF" />
 									</Pressable>
 								</View>

@@ -35,7 +35,7 @@ export function useEditProfile() {
 
 	useEffect(() => {
 		if (user && userData) {
-			setName(user.displayName || userData.name || "");
+			setName(userData.name || user.displayName || "");
 			setEmail(user.email || "");
 			setProfileImage(userData.photoUrl || null);
 

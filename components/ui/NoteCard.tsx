@@ -1,4 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -6,6 +7,7 @@ import { Alert, Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Tex
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { COLORS } from "../../constants/theme";
+import { haptic } from "../../lib/haptics";
 import CustomAlert from "./CustomAlert";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -73,9 +75,24 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 	}));
 
 	const handleOptionsClick = () => {
+		Haptics.selectionAsync();
 		Alert.alert(t("logbook.options.title"), t("logbook.options.message"), [
-			{ text: t("importantContacts.editAction"), onPress: onEdit },
-			{ text: t("importantContacts.deleteAction"), onPress: () => setDeleteAlertVisible(true), style: "destructive" },
+			{
+				text: t("importantContacts.editAction"),
+				onPress: () => {
+					Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+					onEdit?.();
+				},
+			},
+			{
+				text: t("importantContacts.deleteAction"),
+				onPress: () => {
+					// Warning buzz: deleting cannot be undone
+					Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+					setDeleteAlertVisible(true);
+				},
+				style: "destructive",
+			},
 			{ text: t("importantContacts.cancelBtn"), style: "cancel" },
 		]);
 	};
@@ -187,7 +204,7 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 
 			<Modal visible={isImageViewerOpen} transparent={true} animationType="fade">
 				<View style={styles.viewerContainer}>
-					<Pressable style={styles.viewerCloseBtn} onPress={() => setIsImageViewerOpen(false)}>
+					<Pressable style={styles.viewerCloseBtn} onPress={() => { haptic.close(); setIsImageViewerOpen(false); }}>
 						<Ionicons name="close" size={32} color="#FFF" />
 					</Pressable>
 					<ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
@@ -212,6 +229,7 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 				primaryLeft={true}
 				onConfirm={() => {
 					setDeleteAlertVisible(false);
+					Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 					if (onDelete) onDelete();
 				}}
 				onCancel={() => setDeleteAlertVisible(false)}

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
 import { COLORS, FONTS } from "../../constants/theme";
+import { haptic } from "../../lib/haptics";
 import { TASK_ICONS, useTaskForm } from "../../hooks/useTaskForm";
 import { lookupFaggByCode } from "../../services/firebase/medication.service";
 import type { MedicationVisibility } from "../../services/firebase/medication.types";
@@ -144,7 +145,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 				<View style={styles.modalContent}>
 					<View style={styles.header}>
 						<Text style={styles.title}>{isEditing ? t("tasks.editTask") : t("tasks.newTask")}</Text>
-						<Pressable onPress={onClose} style={styles.closeBtn}>
+						<Pressable onPress={() => { haptic.close(); onClose(); }} style={styles.closeBtn}>
 							<Ionicons name="close" size={24} color={COLORS.primary} />
 						</Pressable>
 					</View>
@@ -178,7 +179,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 												{t("scan.attach.linked")}: {scannedMedName ?? gtin}
 											</Text>
 
-											<Pressable onPress={clearScannedMedicine} hitSlop={6}>
+											<Pressable onPress={() => { haptic.remove(); clearScannedMedicine(); }} hitSlop={6}>
 												<Ionicons name="close" size={14} color={COLORS.primary} />
 											</Pressable>
 										</View>
@@ -204,7 +205,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 									{times.map((tm) => (
 										<View key={tm} style={styles.timeChip}>
 											<Text style={styles.timeChipText}>{tm}</Text>
-											<Pressable onPress={() => removeTime(tm)} hitSlop={6}>
+											<Pressable onPress={() => { haptic.remove(); removeTime(tm); }} hitSlop={6}>
 												<Ionicons name="close" size={14} color={COLORS.primary} />
 											</Pressable>
 										</View>
@@ -374,7 +375,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 					<View style={styles.scanHintWrap} pointerEvents="none">
 						<Text style={styles.scanHint}>{t("scan.attach.hint")}</Text>
 					</View>
-					<Pressable onPress={() => setScanOpen(false)} style={styles.scanClose} hitSlop={8}>
+					<Pressable onPress={() => { haptic.close(); setScanOpen(false); }} style={styles.scanClose} hitSlop={8}>
 						<Ionicons name="close" size={26} color="#FFFFFF" />
 					</Pressable>
 				</View>
