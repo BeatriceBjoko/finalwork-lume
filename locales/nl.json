@@ -363,7 +363,7 @@
 			"vis_selected": "Geselecteerde leden",
 			"vis_everyone": "Iedereen",
 			"selectMembers": "Selecteer leden",
-			"errors": { "noMedName": "Geef de medicatie een naam.", "noTimes": "Voeg minstens één tijdstip toe." }
+			"errors": { "noMedName": "Geef de medicatie een naam.", "noTimes": "Voeg minstens één tijdstip toe.", "noAccess": "Je kan de details van deze medicatie niet bekijken." }
 		}
 	},
 	"dailySummary": {

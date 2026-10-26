@@ -58,6 +58,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 		handleSaveTask,
 		isAdmin,
 		isMedication,
+		isLoadingMedication,
 		setIsMedication,
 		medName,
 		setMedName,
@@ -153,13 +154,13 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 					</View>
 
 					<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollBody} keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive" automaticallyAdjustKeyboardInsets>
-						{isAdmin && !isEditing && (
+						{isAdmin && (!isEditing || isMedication) && (
 							<View style={styles.medToggleRow}>
 								<View style={styles.medToggleText}>
 									<MaterialCommunityIcons name="shield-lock-outline" size={18} color={COLORS.iconColor} />
 									<Text style={styles.medToggleLabel}>{t("tasks.medication.toggle")}</Text>
 								</View>
-								<Switch value={isMedication} onValueChange={setIsMedication} trackColor={{ true: COLORS.accent, false: "#d1d5db" }} thumbColor="#fff" />
+								<Switch value={isMedication} onValueChange={setIsMedication} disabled={isEditing} trackColor={{ true: COLORS.accent, false: "#d1d5db" }} thumbColor="#fff" />
 							</View>
 						)}
 
@@ -315,7 +316,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 						)}
 
 						<View style={styles.footer}>
-							<Button title={isSaving ? t("tasks.saving") : isEditing ? t("tasks.saveChanges") : t("tasks.addTaskBtn")} onPress={handleSaveTask} variant="primary" disabled={isSaving} />
+							<Button title={isLoadingMedication ? t("common.loading") : isSaving ? t("tasks.saving") : isEditing ? t("tasks.saveChanges") : t("tasks.addTaskBtn")} onPress={handleSaveTask} variant="primary" disabled={isSaving || isLoadingMedication} />
 						</View>
 					</ScrollView>
 				</View>

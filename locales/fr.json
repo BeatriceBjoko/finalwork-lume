@@ -364,7 +364,7 @@
 			"vis_selected": "Membres sélectionnés",
 			"vis_everyone": "Tout le monde",
 			"selectMembers": "Sélectionnez des membres",
-			"errors": { "noMedName": "Donnez un nom au médicament.", "noTimes": "Ajoutez au moins un horaire." }
+			"errors": { "noMedName": "Donnez un nom au médicament.", "noTimes": "Ajoutez au moins un horaire.", "noAccess": "Vous ne pouvez pas consulter les détails de ce médicament." }
 		}
 	},
 	"dailySummary": {

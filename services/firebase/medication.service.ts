@@ -72,6 +72,56 @@ export async function createMedicationTask(p: CreateMedicationTaskParams): Promi
 	return { medicationId, taskIds };
 }
 
+// Edit an existing medication slot (admin only, enforced by the rules).
+// The real medicine info only ever goes to the PROTECTED record; the public task only
+// gets the neutral title and its time. Extra times become new slots for the same medicine.
+export interface UpdateMedicationTaskParams extends Omit<CreateMedicationTaskParams, "neutralTitle"> {
+	taskId: string;
+	medicationId: string;
+	neutralTitle: string;
+}
+
+export async function updateMedicationTask(p: UpdateMedicationTaskParams): Promise<void> {
+	const batch = writeBatch(db);
+
+	batch.update(doc(db, "medicationDetails", p.medicationId), {
+		medName: p.medName,
+		dose: p.dose,
+		instructions: p.instructions,
+		gtin: p.gtin,
+		cnk: p.cnk,
+		activeIngredient: p.activeIngredient,
+		atc: p.atc,
+		faggRef: p.faggRef,
+		visibility: p.visibility,
+		allowedUserIds: p.allowedUserIds,
+	});
+
+	const [firstTime, ...extraTimes] = p.times;
+	batch.update(doc(db, "careCircleTasks", p.taskId), { title: p.neutralTitle, neutralTitle: p.neutralTitle, time: firstTime });
+
+	const now = new Date().toISOString();
+	for (const time of extraTimes) {
+		batch.set(doc(collection(db, "careCircleTasks")), {
+			careCircleId: p.circleId,
+			createdBy: p.adminId,
+			createdAt: now,
+			title: p.neutralTitle,
+			time,
+			date: p.date,
+			icon: "pill",
+			description: [], // never put medicine info on the public task
+			assignee: null,
+			status: "Nog te doen",
+			isMedication: true,
+			neutralTitle: p.neutralTitle,
+			medicationId: p.medicationId,
+		});
+	}
+
+	await batch.commit();
+}
+
 // Read with permission check
 // The Security Rule decides. If the user isn't allowed, the read is
 // rejected → we return null → the UI safely shows the neutral label.

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
 import { getCircleMembers } from "../lib/firebase-service";
-import { createMedicationTask } from "../services/firebase/medication.service";
+import { createMedicationTask, getMedicationDetails, updateMedicationTask } from "../services/firebase/medication.service";
 import { MEDICATION, type FaggMedicine, type MedicationVisibility } from "../services/firebase/medication.types";
 import { addTaskToDB, TaskInputData, updateTaskInDB } from "../services/firebase/tasks.service";
 import { appAlert } from "../lib/appAlert";
@@ -40,6 +40,7 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 	const [times, setTimes] = useState<string[]>(["09:00"]);
 	const [visibility, setVisibility] = useState<MedicationVisibility>(MEDICATION.defaultVisibility);
 	const [allowedMemberIds, setAllowedMemberIds] = useState<string[]>([]);
+	const [isLoadingMedication, setIsLoadingMedication] = useState(false);
 
 	// scan-to-attach: codes captured from the box (enables exact GTIN matching)
 	const [gtin, setGtin] = useState<string | null>(null);
@@ -66,10 +67,54 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 		setScannedMedName(null);
 	};
 
+	// Editing a medication slot: fill the medication form from the PROTECTED record.
+	// Never start from taskToEdit.title, which shows the real medicine name to admins.
+	useEffect(() => {
+		if (!visible || !taskToEdit?.isMedication || !taskToEdit.medicationId) return;
+		let active = true;
+		setIsMedication(true);
+		setTitle(taskToEdit.neutralTitle || "");
+		setTimes([String(taskToEdit.time ?? "09:00").split(" - ")[0]]);
+		setMedName("");
+		setDose("");
+		setInstructions("");
+		clearScannedMedicine();
+		setIsLoadingMedication(true);
+		getMedicationDetails(taskToEdit.medicationId)
+			.then((d) => {
+				if (!active) return;
+				if (!d) {
+					appAlert(t("tasks.errors.errorTitle"), t("tasks.medication.errors.noAccess"));
+					onTaskSaved();
+					return;
+				}
+				setMedName(d.medName || "");
+				setDose(d.dose || "");
+				setInstructions(d.instructions || "");
+				setVisibility(d.visibility);
+				setAllowedMemberIds(d.allowedUserIds || []);
+				setGtin(d.gtin);
+				setCnk(d.cnk);
+				setActiveIngredient(d.activeIngredient);
+				setAtc(d.atc);
+				setFaggRef(d.faggRef);
+				setScannedMedName(d.faggRef ? d.medName : null);
+			})
+			.finally(() => {
+				if (active) setIsLoadingMedication(false);
+			});
+		return () => {
+			active = false;
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [visible, taskToEdit]);
+
 	useEffect(() => {
 		if (!visible) return;
 
-		if (taskToEdit) {
+		if (taskToEdit?.isMedication) {
+			// handled by the medication effect above
+		} else if (taskToEdit) {
 			setTitle(taskToEdit.title || "");
 			if (taskToEdit.time && taskToEdit.time.includes(" - ")) {
 				const tms = taskToEdit.time.split(" - ");
@@ -146,9 +191,10 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 				appAlert(t("tasks.errors.required"), t("tasks.medication.errors.noTimes"));
 				return;
 			}
+			if (isLoadingMedication) return;
 			setIsSaving(true);
 			try {
-				await createMedicationTask({
+				const medication = {
 					circleId,
 					adminId: user.uid,
 					medName: medName.trim(),
@@ -159,12 +205,17 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 					activeIngredient,
 					atc,
 					faggRef,
-					date: selectedDateStr,
 					times,
 					visibility,
 					allowedUserIds: visibility === "selected" ? allowedMemberIds : [],
 					neutralTitle: title.trim() || t("tasks.medication.neutralPlaceholder"),
-				});
+				};
+				if (taskToEdit?.isMedication && taskToEdit.medicationId) {
+					// Existing slot: keep its own date, update the protected record + this slot
+					await updateMedicationTask({ ...medication, date: taskToEdit.date, taskId: taskToEdit.id, medicationId: taskToEdit.medicationId });
+				} else {
+					await createMedicationTask({ ...medication, date: selectedDateStr });
+				}
 				onTaskSaved();
 			} catch (error) {
 				console.error(error);
@@ -237,6 +288,7 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 		handleSaveTask,
 		isAdmin,
 		isMedication,
+		isLoadingMedication,
 		setIsMedication,
 		medName,
 		setMedName,

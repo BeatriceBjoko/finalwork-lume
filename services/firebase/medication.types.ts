@@ -65,5 +65,6 @@ export interface FaggMedicine {
 export const MEDICATION = {
 	defaultNeutralTitle: "Medicatiemoment",
 	timeWindowHours: 2,
-	defaultVisibility: "selected" as MedicationVisibility,
+	// Safest default: only the admin sees the real medicine until they choose to share it
+	defaultVisibility: "admin" as MedicationVisibility,
 } as const;
