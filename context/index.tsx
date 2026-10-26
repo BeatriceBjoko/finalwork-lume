@@ -1,5 +1,5 @@
 import { User, onAuthStateChanged } from "firebase/auth";
-import { doc, onSnapshot } from "firebase/firestore";
+import { deleteField, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { auth, db } from "../lib/firebase-config";
 import { login, logout, register } from "../lib/firebase-service";
@@ -81,6 +81,12 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 				return;
 			}
 
+			// On EVERY sign-in (not only at app start): forget the previous user's data and
+			// wait for this user's profile from the server before the app decides where to go.
+			// Otherwise a second login in the same session could briefly route to onboarding.
+			setUserData(null);
+			setIsLoading(true);
+
 			const docRef = doc(db, "users", authUser.uid);
 			let serverSeen = false;
 
@@ -88,17 +94,25 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 				if (!serverSeen) setIsLoading(false);
 			}, 3000);
 
-			unsubscribeDoc = onSnapshot(docRef, (docSnap) => {
-				if (docSnap.exists()) {
-					setUserData(docSnap.data() as UserData);
-				} else {
-					setUserData(null);
-				}
-				if (!docSnap.metadata.fromCache) {
-					serverSeen = true;
+			unsubscribeDoc = onSnapshot(
+				docRef,
+				(docSnap) => {
+					if (docSnap.exists()) {
+						setUserData(docSnap.data() as UserData);
+					} else {
+						setUserData(null);
+					}
+					if (!docSnap.metadata.fromCache) {
+						serverSeen = true;
+						setIsLoading(false);
+					}
+				},
+				(error) => {
+					// e.g. no connection: stop the spinner instead of waiting forever
+					console.error("Kon profiel niet laden:", error);
 					setIsLoading(false);
-				}
-			});
+				},
+			);
 		});
 
 		return () => {
@@ -118,6 +132,17 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 	}, []);
 
 	const handleSignOut = useCallback(async () => {
+		// Remove this phone's push token first, so a logged-out phone stops receiving
+		// the circle's notifications (must happen while we are still signed in)
+		const uid = auth.currentUser?.uid;
+		if (uid) {
+			try {
+				await updateDoc(doc(db, "users", uid), { pushToken: deleteField(), pushPlatform: deleteField(), pushUpdatedAt: deleteField() });
+			} catch (error) {
+				// Offline or no profile: still sign out; the server removes duplicate tokens later
+				console.warn("Kon push token niet verwijderen:", error);
+			}
+		}
 		await logout();
 		setUser(null);
 		setUserData(null);
