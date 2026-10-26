@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { doc, onSnapshot } from "firebase/firestore";
+import { useEffect, useMemo, useState } from "react";
+import { db } from "../lib/firebase-config";
 import i18n from "../locales/i18n";
-import { getMedicationDetails } from "../services/firebase/medication.service";
 import type { MedicationDetails } from "../services/firebase/medication.types";
 
 export type MedDetailsMap = Record<string, MedicationDetails | null>;
@@ -9,11 +10,13 @@ const MAX_ATTEMPTS = 6;
 const RETRY_MS = 500;
 
 /**
- * Permission-checked medicine details for a set of medication slots.
+ * Permission-checked medicine details for a set of medication slots, kept LIVE:
+ * a changed dose or name shows immediately, and losing access hides the details
+ * immediately. A refused read (no permission) is retried a few times, because right
+ * after creating a medicine the read can briefly be refused; after that it stays null.
  */
 export function useMedicationDetails(medicationIds: string[]): MedDetailsMap {
 	const [map, setMap] = useState<MedDetailsMap>({});
-	const resolvedRef = useRef<Set<string>>(new Set());
 
 	const key = useMemo(
 		() =>
@@ -27,29 +30,36 @@ export function useMedicationDetails(medicationIds: string[]): MedDetailsMap {
 		const ids = key ? key.split("|") : [];
 		if (ids.length === 0) return;
 		let cancelled = false;
+		const unsubscribers = new Map<string, () => void>();
+		const timers: ReturnType<typeof setTimeout>[] = [];
 
-		const load = async (id: string, attempt: number) => {
-			const d = await getMedicationDetails(id);
-			if (cancelled) return;
-			if (d) {
-				resolvedRef.current.add(id);
-				setMap((prev) => ({ ...prev, [id]: d }));
-			} else if (attempt < MAX_ATTEMPTS) {
-				setTimeout(() => {
-					if (!cancelled) load(id, attempt + 1);
-				}, RETRY_MS);
-			} else {
-				resolvedRef.current.add(id);
-				setMap((prev) => ({ ...prev, [id]: null }));
-			}
+		const listen = (id: string, attempt: number) => {
+			const unsubscribe = onSnapshot(
+				doc(db, "medicationDetails", id),
+				(snap) => {
+					const details = snap.exists() ? ({ id: snap.id, ...snap.data() } as MedicationDetails) : null;
+					setMap((prev) => ({ ...prev, [id]: details }));
+				},
+				() => {
+					// permission-denied (not allowed, or not yet) → retry, then treat as no access
+					unsubscribers.delete(id);
+					if (cancelled) return;
+					if (attempt < MAX_ATTEMPTS) {
+						timers.push(setTimeout(() => !cancelled && listen(id, attempt + 1), RETRY_MS));
+					} else {
+						setMap((prev) => ({ ...prev, [id]: null }));
+					}
+				},
+			);
+			unsubscribers.set(id, unsubscribe);
 		};
 
-		ids.forEach((id) => {
-			if (!resolvedRef.current.has(id)) load(id, 0);
-		});
+		ids.forEach((id) => listen(id, 0));
 
 		return () => {
 			cancelled = true;
+			timers.forEach(clearTimeout);
+			unsubscribers.forEach((unsubscribe) => unsubscribe());
 		};
 	}, [key]);
 
