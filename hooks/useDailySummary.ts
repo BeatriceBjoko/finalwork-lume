@@ -1,7 +1,7 @@
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
+import {  } from "react-native";
 import { NoteData } from "../components/ui/NoteCard";
 import { getDailyQuote } from "../constants/quotes";
 import { useSession } from "../context";
@@ -9,6 +9,7 @@ import { db } from "../lib/firebase-config";
 import { subscribeToDailyNote } from "../services/firebase/notes.service";
 import { deleteTaskFromDB, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
 import { enrichMedicationTask, useMedicationDetails } from "./useMedicationDetails";
+import { appAlert } from "../lib/appAlert";
 
 export function useDailySummary() {
 	const { t, i18n } = useTranslation();
@@ -176,7 +177,7 @@ export function useDailySummary() {
 			await toggleTaskStatusInDB(taskId, currentStatus);
 		} catch (error) {
 			console.error(error);
-			Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.statusFailed"));
+			appAlert(t("tasks.errors.errorTitle"), t("tasks.errors.statusFailed"));
 		}
 	};
 
@@ -189,7 +190,7 @@ export function useDailySummary() {
 		try {
 			await deleteTaskFromDB(taskId, taskCreatorId, userRole, currentUserId);
 		} catch (error: any) {
-			Alert.alert(t("tasks.errors.deniedTitle"), error.message || t("tasks.errors.deleteDenied"));
+			appAlert(t("tasks.errors.deniedTitle"), error.message || t("tasks.errors.deleteDenied"));
 		}
 	};
 

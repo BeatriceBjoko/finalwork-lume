@@ -1,7 +1,8 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Linking, Platform, Share } from "react-native";
+import { Linking, Platform, Share } from "react-native";
 import { getCircleInviteCode } from "../lib/firebase-service";
+import { appAlert } from "../lib/appAlert";
 
 export function useCircleInvite(careCircleId: string | undefined) {
 	const { t, i18n } = useTranslation();
@@ -22,7 +23,7 @@ export function useCircleInvite(careCircleId: string | undefined) {
 		} catch (error: any) {
 			console.error("Kon uitnodigingscode niet ophalen:", error);
 			setIsVisible(false);
-			Alert.alert(t("errors.errorTitle"), error?.message === "NOT_ADMIN" ? t("circleOverview.inviteAdminOnly") : t("errors.default"));
+			appAlert(t("errors.errorTitle"), error?.message === "NOT_ADMIN" ? t("circleOverview.inviteAdminOnly") : t("errors.default"));
 		} finally {
 			setIsLoadingCode(false);
 		}
@@ -43,7 +44,7 @@ export function useCircleInvite(careCircleId: string | undefined) {
 			try {
 				await Share.share({ message: shareMessage });
 			} catch {
-				Alert.alert("Fout", "Kon het bericht niet delen.");
+				appAlert("Fout", "Kon het bericht niet delen.");
 			}
 		}
 	};
@@ -56,7 +57,7 @@ export function useCircleInvite(careCircleId: string | undefined) {
 		try {
 			await Linking.openURL(url);
 		} catch (error) {
-			Alert.alert("Oeps!", "Kon de e-mail app niet openen.");
+			appAlert("Oeps!", "Kon de e-mail app niet openen.");
 			console.error("Email openen mislukt:", error);
 		}
 	};

@@ -16,9 +16,12 @@ interface CustomAlertProps {
 	messageStyle?: StyleProp<TextStyle>;
 	isConfirming?: boolean;
 	primaryLeft?: boolean;
+	// Three or more choices (e.g. Bewerken / Verwijderen / Annuleren), stacked vertically.
+	// When given, confirmText/cancelText are not used.
+	actions?: { text: string; variant: "primary" | "secondary" | "destructive"; onPress: () => void }[];
 }
 
-export default function CustomAlert({ visible, title, message, confirmText, cancelText, onConfirm, onCancel, messageStyle, isConfirming, primaryLeft = false }: CustomAlertProps) {
+export default function CustomAlert({ visible, title, message, confirmText, cancelText, onConfirm, onCancel, messageStyle, isConfirming, primaryLeft = false, actions }: CustomAlertProps) {
 	return (
 		<Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel || onConfirm}>
 			<Pressable style={styles.modalOverlay} onPress={onCancel || onConfirm}>
@@ -28,11 +31,23 @@ export default function CustomAlert({ visible, title, message, confirmText, canc
 					<View style={[StyleSheet.absoluteFill, { backgroundColor: Platform.OS === "android" ? "rgba(255, 255, 255, 0.92)" : "rgba(255, 255, 255, 0.45)" }]} />
 					<View style={styles.textContainer}>
 						<Text style={styles.title}>{title}</Text>
-						<Text style={[styles.message, messageStyle]}>{message}</Text>
+						{!!message && <Text style={[styles.message, messageStyle]}>{message}</Text>}
 					</View>
 
-					<View style={styles.buttonContainer}>
-						{primaryLeft ? (
+					<View style={[styles.buttonContainer, actions && styles.buttonColumn]}>
+						{actions ? (
+							actions.map((action) => (
+								<Button
+									key={action.text}
+									title={action.text}
+									onPress={action.onPress}
+									variant={action.variant === "primary" ? "primary" : "secondary"}
+									style={action.variant === "destructive" && styles.destructiveButton}
+									textStyle={action.variant === "destructive" && styles.destructiveText}
+									disabled={isConfirming}
+								/>
+							))
+						) : primaryLeft ? (
 							<>
 								<Button title={confirmText} onPress={onConfirm} variant="primary" style={[styles.alertButton, { flex: 1.2 }]} disabled={isConfirming} />
 								{cancelText && onCancel && <Button title={cancelText} onPress={onCancel} variant="secondary" style={[styles.alertButton, { flex: 0.95 }]} disabled={isConfirming} />}
@@ -98,5 +113,15 @@ const styles = StyleSheet.create({
 	},
 	alertButton: {
 		flex: 1,
+	},
+	buttonColumn: {
+		flexDirection: "column",
+		gap: 10,
+	},
+	destructiveButton: {
+		borderColor: "#C94B47",
+	},
+	destructiveText: {
+		color: "#C94B47",
 	},
 });

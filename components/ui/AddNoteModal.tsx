@@ -5,6 +5,7 @@ import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View 
 import { COLORS, FONTS } from "../../constants/theme";
 import { haptic } from "../../lib/haptics";
 import { NOTE_CATEGORIES, useNoteForm } from "../../hooks/useNoteForm";
+import { AppAlertHost } from "./AppAlertHost";
 import Button from "./Button";
 
 interface AddNoteModalProps {
@@ -97,6 +98,7 @@ export function AddNoteModal({ visible, onClose, noteToEdit }: AddNoteModalProps
 					</ScrollView>
 				</View>
 			</View>
+			<AppAlertHost />
 		</Modal>
 	);
 }

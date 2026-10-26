@@ -2,7 +2,8 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurMask, Canvas, Circle, Group, RoundedRect, Shadow, rect, rrect } from "@shopify/react-native-skia";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Animated, Image, Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Image, Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { appAlert } from "../../lib/appAlert";
 
 export interface Contact {
 	id: string;
@@ -71,7 +72,7 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 	const handleCall = () => {
 		const formattedNumber = contact.phone.replace(/\s+/g, "");
 		Linking.openURL(`tel:${formattedNumber}`).catch(() => {
-			Alert.alert("Fout", "Kan de telefoon-app niet openen op dit apparaat.");
+			appAlert("Fout", "Kan de telefoon-app niet openen op dit apparaat.");
 		});
 	};
 

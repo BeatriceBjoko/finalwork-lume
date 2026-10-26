@@ -3,15 +3,17 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Image, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
+import { Image, Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from "react-native";
 
 import { COLORS, FONTS } from "../../constants/theme";
 import { haptic } from "../../lib/haptics";
 import { TASK_ICONS, useTaskForm } from "../../hooks/useTaskForm";
 import { lookupFaggByCode } from "../../services/firebase/medication.service";
 import type { MedicationVisibility } from "../../services/firebase/medication.types";
+import { AppAlertHost } from "./AppAlertHost";
 import Button from "./Button";
 import { ScanIcon } from "./TabIcons";
+import { appAlert } from "../../lib/appAlert";
 
 interface AddTaskModalProps {
 	visible: boolean;
@@ -93,7 +95,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 		if (!camPermission?.granted) {
 			const res = await requestCamPermission();
 			if (!res.granted) {
-				Alert.alert(t("scan.attach.permTitle"), t("scan.attach.permText"));
+				appAlert(t("scan.attach.permTitle"), t("scan.attach.permText"));
 				return;
 			}
 		}
@@ -113,7 +115,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 				applyScannedMedicine(fagg);
 			} else {
 				attachRawCode(code);
-				Alert.alert(t("scan.attach.notFoundTitle"), t("scan.attach.notFoundText"));
+				appAlert(t("scan.attach.notFoundTitle"), t("scan.attach.notFoundText"));
 			}
 		} catch (e) {
 			console.error("[attach-scan]", e);
@@ -380,6 +382,7 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 					</Pressable>
 				</View>
 			)}
+			<AppAlertHost />
 		</Modal>
 	);
 }

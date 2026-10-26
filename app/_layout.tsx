@@ -6,6 +6,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { AppAlertHost } from "../components/ui/AppAlertHost";
 import { SessionProvider } from "../context";
 import "../locales/i18n";
 
@@ -32,6 +33,7 @@ export default function RootLayout() {
 			<SessionProvider>
 				<StatusBar style="dark" />
 				<Slot />
+				<AppAlertHost />
 			</SessionProvider>
 		</GestureHandlerRootView>
 	);

@@ -3,12 +3,13 @@ import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring, withTiming } from "react-native-reanimated";
 import { COLORS } from "../../constants/theme";
 import { haptic } from "../../lib/haptics";
 import CustomAlert from "./CustomAlert";
+import { appAlert } from "../../lib/appAlert";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -76,7 +77,7 @@ export function NoteCard({ note, onToggleImportant, onEdit, onDelete }: NoteCard
 
 	const handleOptionsClick = () => {
 		Haptics.selectionAsync();
-		Alert.alert(t("logbook.options.title"), t("logbook.options.message"), [
+		appAlert(t("logbook.options.title"), t("logbook.options.message"), [
 			{
 				text: t("importantContacts.editAction"),
 				onPress: () => {

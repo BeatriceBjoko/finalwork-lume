@@ -2,12 +2,13 @@ import * as Calendar from "expo-calendar";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Linking, Platform } from "react-native";
+import { Linking, Platform } from "react-native";
 
 import { useSession } from "../context";
 import { db } from "../lib/firebase-config";
 import { deleteTaskFromDB, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
 import { enrichMedicationTask, useMedicationDetails } from "./useMedicationDetails";
+import { appAlert } from "../lib/appAlert";
 
 export interface CalendarTask {
 	id: string;
@@ -147,7 +148,7 @@ export function useCalendarFeed() {
 			const { status } = await Calendar.requestCalendarPermissionsAsync();
 			if (status !== "granted") {
 				setSyncStatus("error");
-				Alert.alert(t("calendar.permission.title"), t("calendar.permission.message"));
+				appAlert(t("calendar.permission.title"), t("calendar.permission.message"));
 				setTimeout(() => setSyncStatus("idle"), 2000);
 				return;
 			}
@@ -157,7 +158,7 @@ export function useCalendarFeed() {
 			const defaultCal = writable.find((c) => (c as any).isPrimary) ?? writable[0];
 			if (!defaultCal) {
 				setSyncStatus("error");
-				Alert.alert(t("calendar.errors.noCalendar"));
+				appAlert(t("calendar.errors.noCalendar"));
 				setTimeout(() => setSyncStatus("idle"), 2000);
 				return;
 			}
@@ -185,7 +186,7 @@ export function useCalendarFeed() {
 		} catch (err: any) {
 			console.error("[Calendar] Error:", err);
 			setSyncStatus("error");
-			Alert.alert(t("calendar.errors.exportFailed"), err?.message ?? "Unknown error");
+			appAlert(t("calendar.errors.exportFailed"), err?.message ?? "Unknown error");
 			setTimeout(() => setSyncStatus("idle"), 2500);
 		}
 	};
@@ -214,7 +215,7 @@ export function useCalendarFeed() {
 		try {
 			await toggleTaskStatusInDB(taskId, currentStatus);
 		} catch (err) {
-			Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.statusFailed"));
+			appAlert(t("tasks.errors.errorTitle"), t("tasks.errors.statusFailed"));
 		}
 	};
 
@@ -223,7 +224,7 @@ export function useCalendarFeed() {
 		try {
 			await deleteTaskFromDB(taskId, creatorId, isCircleAdmin ? "admin" : "member", user.uid);
 		} catch (err: any) {
-			Alert.alert(t("tasks.errors.deniedTitle"), err.message ?? t("tasks.errors.deleteDenied"));
+			appAlert(t("tasks.errors.deniedTitle"), err.message ?? t("tasks.errors.deleteDenied"));
 		}
 	};
 

@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
+import {  } from "react-native";
 import { useSession } from "../context";
 import { getCircleMembers } from "../lib/firebase-service";
 import { createMedicationTask } from "../services/firebase/medication.service";
 import { MEDICATION, type FaggMedicine, type MedicationVisibility } from "../services/firebase/medication.types";
 import { addTaskToDB, TaskInputData, updateTaskInDB } from "../services/firebase/tasks.service";
+import { appAlert } from "../lib/appAlert";
 
 export const TASK_ICONS = [
 	{ id: "pill", label: "Medicatie" },
@@ -133,17 +134,17 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 
 	const handleSaveTask = async () => {
 		if (!circleId || !user?.uid) {
-			Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.noCircle"));
+			appAlert(t("tasks.errors.errorTitle"), t("tasks.errors.noCircle"));
 			return;
 		}
 
 		if (isMedication) {
 			if (!medName.trim()) {
-				Alert.alert(t("tasks.errors.required"), t("tasks.medication.errors.noMedName"));
+				appAlert(t("tasks.errors.required"), t("tasks.medication.errors.noMedName"));
 				return;
 			}
 			if (times.length === 0) {
-				Alert.alert(t("tasks.errors.required"), t("tasks.medication.errors.noTimes"));
+				appAlert(t("tasks.errors.required"), t("tasks.medication.errors.noTimes"));
 				return;
 			}
 			setIsSaving(true);
@@ -168,7 +169,7 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 				onTaskSaved();
 			} catch (error) {
 				console.error(error);
-				Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.saveFailed"));
+				appAlert(t("tasks.errors.errorTitle"), t("tasks.errors.saveFailed"));
 			} finally {
 				setIsSaving(false);
 			}
@@ -176,7 +177,7 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 		}
 
 		if (!title.trim()) {
-			Alert.alert(t("tasks.errors.required"), t("tasks.errors.noTitle"));
+			appAlert(t("tasks.errors.required"), t("tasks.errors.noTitle"));
 			return;
 		}
 
@@ -213,7 +214,7 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 			onTaskSaved();
 		} catch (error) {
 			console.error(error);
-			Alert.alert(t("tasks.errors.errorTitle"), t("tasks.errors.saveFailed"));
+			appAlert(t("tasks.errors.errorTitle"), t("tasks.errors.saveFailed"));
 		} finally {
 			setIsSaving(false);
 		}

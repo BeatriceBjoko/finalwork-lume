@@ -4,7 +4,7 @@ import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../../components/ui/Button";
@@ -15,6 +15,7 @@ import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
 import { useCircleInvite } from "../../hooks/useCircleInvite";
 
 import { getCircleMembers, getCurrentUserCircleData, removeCircleMember } from "../../lib/firebase-service";
+import { appAlert } from "../../lib/appAlert";
 
 export default function CircleOverviewScreen() {
 	const router = useRouter();
@@ -90,7 +91,7 @@ export default function CircleOverviewScreen() {
 			console.error("Kon lid niet verwijderen:", error);
 			setRemoveModalVisible(false);
 			Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-			Alert.alert(t("errors.errorTitle"), (error as Error)?.message === "NOT_ADMIN" ? tCircle("removeAdminOnly") : t("errors.default"));
+			appAlert(t("errors.errorTitle"), (error as Error)?.message === "NOT_ADMIN" ? tCircle("removeAdminOnly") : t("errors.default"));
 		} finally {
 			setIsRemoving(false);
 		}

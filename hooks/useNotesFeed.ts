@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { Alert } from "react-native";
+import {  } from "react-native";
 import { useSession } from "../context";
 import { deleteNoteFromDB, getNotesByDate, subscribeToNotesFeed, toggleImportantInDB } from "../services/firebase/notes.service";
+import { appAlert } from "../lib/appAlert";
 
 const PAGE_SIZE = 10;
 
@@ -133,7 +134,7 @@ export function useNotesFeed() {
 			await toggleImportantInDB(noteId, currentStatus);
 		} catch {
 			setNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, isImportant: currentStatus } : n)));
-			Alert.alert("Fout", "Kon status niet aanpassen.");
+			appAlert("Fout", "Kon status niet aanpassen.");
 		}
 	};
 
@@ -145,7 +146,7 @@ export function useNotesFeed() {
 		try {
 			await deleteNoteFromDB(noteId, creatorId, isCircleAdmin ? "admin" : "member", user!.uid);
 		} catch (error: any) {
-			Alert.alert("Geweigerd", error.message);
+			appAlert("Geweigerd", error.message);
 		}
 	};
 

@@ -1,9 +1,10 @@
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Linking } from "react-native";
+import { Linking } from "react-native";
 import { useSession } from "../context";
 import { addNoteToDB, NoteInputData, updateNoteInDB } from "../services/firebase/notes.service";
+import { appAlert } from "../lib/appAlert";
 
 export const NOTE_CATEGORIES = [
 	{ id: "Medisch", icon: "hospital-building" },
@@ -47,14 +48,14 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 
 	const handlePickImage = async () => {
 		if (images.length >= 3) {
-			Alert.alert(t("logbook.alerts.maxImages"), t("logbook.alerts.maxImagesMessage"));
+			appAlert(t("logbook.alerts.maxImages"), t("logbook.alerts.maxImagesMessage"));
 			return;
 		}
 
 		try {
 			const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 			if (!permissionResult.granted) {
-				Alert.alert(t("logbook.alerts.permissionTitle"), t("logbook.alerts.permissionMessage"), [
+				appAlert(t("logbook.alerts.permissionTitle"), t("logbook.alerts.permissionMessage"), [
 					{ text: t("common.cancel"), style: "cancel" },
 					{ text: t("common.settings"), onPress: () => Linking.openSettings() },
 				]);
@@ -82,7 +83,7 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 	const handleSaveNote = async () => {
 		if (!circleId || !user?.uid) return;
 		if (!title.trim() || !content.trim()) {
-			Alert.alert(t("tasks.errors.errorTitle"), t("errors.missingFields"));
+			appAlert(t("tasks.errors.errorTitle"), t("errors.missingFields"));
 			return;
 		}
 
@@ -124,7 +125,7 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 			onClose();
 		} catch (error) {
 			console.error(error);
-			Alert.alert(t("tasks.errors.errorTitle"), t("logbook.alerts.saveError"));
+			appAlert(t("tasks.errors.errorTitle"), t("logbook.alerts.saveError"));
 		} finally {
 			setIsSaving(false);
 		}
