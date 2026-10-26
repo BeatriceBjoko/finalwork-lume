@@ -46,9 +46,9 @@ export default function SignUp() {
 					</View>
 				)}
 
-				<Input label={t("signup.namePlaceholder")} placeholder="Beatrice Bjoko" value={name} onChangeText={setName} autoCapitalize="words" />
+				<Input label={t("signup.namePlaceholder")} placeholder={t("signup.nameExample")} value={name} onChangeText={setName} autoCapitalize="words" />
 
-				<Input label={t("signup.email")} placeholder="beatricebjoko@gmail.be" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+				<Input label={t("signup.email")} placeholder={t("signup.emailExample")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
 
 				<Input label={t("signup.password")} placeholder="**********" value={password} onChangeText={setPassword} secureTextEntry />
 

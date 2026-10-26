@@ -45,7 +45,7 @@ export default function SignIn() {
 					</View>
 				)}
 
-				<Input label={t("login.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder="naam@mail.com" />
+				<Input label={t("login.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" placeholder={t("signup.emailExample")} />
 
 				<Input label={t("login.password")} value={password} onChangeText={setPassword} secureTextEntry placeholder="••••••••" />
 

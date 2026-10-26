@@ -47,7 +47,7 @@ export function useDailySummary() {
 				createdBy: "demo",
 				expanded: true,
 				description: [t("dailySummary.templateTask2Desc1"), t("dailySummary.templateTask2Desc2"), t("dailySummary.templateTask2Desc3")],
-				assignee: { name: "Beatrice", initials: "BB", photo: "https://i.pravatar.cc/100?img=5" },
+				assignee: { name: t("dailySummary.templateAssignee"), initials: "LU", photo: null },
 			},
 		],
 		[t],
@@ -140,7 +140,9 @@ export function useDailySummary() {
 		return () => unsubscribe();
 	}, [circleId, databaseDateQueryString, t]);
 
-	const displayName = userData?.name || user?.displayName?.split(" ")[0] || "Beatrice";
+	const displayName = userData?.name || user?.displayName?.split(" ")[0] || "";
+	// Without a name we greet with just "Hallo!" instead of showing a placeholder name
+	const greeting = displayName ? t("dailySummary.greeting", { name: displayName }) : t("dailySummary.greetingNoName");
 	const locale = i18n.language.startsWith("fr") ? "fr-FR" : "nl-BE";
 	const formattedTime = currentTime.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
 	const formattedDate = `${dayStr}.${monthStr}`;
@@ -202,6 +204,7 @@ export function useDailySummary() {
 
 	return {
 		displayName,
+		greeting,
 		formattedTime,
 		formattedDate,
 		capitalizedDayName,

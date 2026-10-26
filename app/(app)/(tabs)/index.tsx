@@ -24,7 +24,7 @@ export default function DailySummaryHome() {
 	const [taskToEdit, setTaskToEdit] = useState<any>(null);
 
 	const {
-		displayName,
+		greeting,
 		formattedTime,
 		formattedDate,
 		capitalizedDayName,
@@ -68,7 +68,7 @@ export default function DailySummaryHome() {
 							<Text style={styles.highlightText}>{t("dailySummary.titlePart2")}</Text>
 						</View>
 					</View>
-					<Text style={styles.greeting}>{t("dailySummary.greeting", { name: displayName })}</Text>
+					<Text style={styles.greeting}>{greeting}</Text>
 				</View>
 
 				<View style={styles.section}>
