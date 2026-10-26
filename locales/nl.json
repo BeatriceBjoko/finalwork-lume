@@ -3,6 +3,12 @@
 		"cancel": "Annuleren",
 		"ok": "OK",
 		"loading": "Laden...",
+		"oops": "Oeps!",
+		"success": "Gelukt!",
+		"welcome": "Welkom!",
+		"unknownName": "Onbekend",
+		"memberFallback": "Lid",
+		"userFallback": "Gebruiker",
 		"settings": "Instellingen"
 	},
 	"nav": {
@@ -78,6 +84,10 @@
 		"weakPassword": "Je wachtwoord moet minimaal 6 tekens lang zijn.",
 		"invalidCredential": "E-mailadres of wachtwoord is onjuist.",
 		"tooManyRequests": "Te veel mislukte pogingen. Probeer het later opnieuw.",
+		"phoneAppFailed": "Kan de telefoon-app niet openen op dit toestel.",
+		"shareFailed": "Kon het bericht niet delen.",
+		"mailAppFailed": "Kon de e-mailapp niet openen.",
+		"saveFailed": "Er ging iets mis bij het opslaan.",
 		"default": "Er is een onbekende fout opgetreden. Probeer het opnieuw."
 	},
 	"onboarding": {
@@ -153,6 +163,8 @@
 			"shareLinkBtn": "Deel uitnodigingslink",
 			"linkShared": "Uitnodigingslink gedeeld",
 			"shareMessage": "Hey! Ik heb een zorgkring aangemaakt op Lume. Sluit je aan om samen de zorg te organiseren. Download de app Lume en vul deze code in:",
+			"createdSuccess": "Je zorgkring is aangemaakt!",
+			"mailSubject": "Uitnodiging voor een zorgkring op Lume",
 			"finishBtn": "Zorgkring aanmaken"
 		}
 	},
@@ -341,6 +353,7 @@
 			"medNamePlaceholder": "bv. Metformine 500mg",
 			"dose": "Dosis",
 			"dosePlaceholder": "bv. 1 tablet",
+			"doseLine": "Dosis: {{dose}}",
 			"instructions": "Instructies",
 			"instructionsPlaceholder": "bv. Na het ontbijt",
 			"times": "Tijdstippen",
@@ -405,6 +418,8 @@
 			"deleteTitle": "Notitie verwijderen?",
 			"deleteMessage": "Weet je zeker dat je deze notitie wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
 			"maxImages": "Maximum bereikt",
+			"importantFailed": "Kon de status niet aanpassen.",
+			"deleteDenied": "Je hebt geen rechten om deze notitie te verwijderen.",
 			"maxImagesMessage": "Je kunt maximaal 3 foto's per notitie toevoegen.",
 			"permissionTitle": "Toegang vereist",
 			"permissionMessage": "We hebben toegang tot je foto's nodig. Wil je dit aanzetten in je instellingen?",
@@ -423,6 +438,12 @@
 		"search": "Zoek in notities...",
 		"filters": { "all": "Alles", "important": "Belangrijk", "date": "Datum" },
 		"dateHeaders": { "today": "Vandaag", "yesterday": "Gisteren" },
+		"templates": {
+			"note1Title": "Doktersbezoek",
+			"note1Content": "Dit is een voorbeeld van een notitie. Je kunt hier alles bijhouden rondom doktersbezoeken of observaties.",
+			"note2Title": "Wandeling in het park",
+			"note2Content": "De zon scheen en we hebben een prachtige wandeling gemaakt. Het deed enorm veel deugd!"
+		},
 		"templateBanner": "Dit is een voorbeeld van het logboek. Verwijder deze gerust en schrijf je eigen notitie!"
 	},
 	"calendar": {
@@ -455,6 +476,7 @@
 		"subtitle": "Een rustig moment voor jezelf",
 		"recommended": "Voor jou aanbevolen",
 		"viewAll": "Zie alle",
+		"emptyCategory": { "title": "Geen sessies in deze categorie", "subtitle": "Probeer een andere categorie hierboven." },
 		"categories": {
 			"all": "Alles",
 			"breath": "Adem",
@@ -499,6 +521,8 @@
 			"hold": "Houd vast",
 			"exhale": "Adem uit",
 			"round": "Ronde {{round}} / {{total}}",
+			"rounds_one": "{{count}} ronde",
+			"rounds_other": "{{count}} rondes",
 			"start": "Start",
 			"stop": "Stop",
 			"restart": "Opnieuw",

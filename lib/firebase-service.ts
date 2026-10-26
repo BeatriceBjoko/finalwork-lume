@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, up
 import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import i18n from "../locales/i18n";
 import { auth, db, functions, storage } from "./firebase-config";
 
 export interface FirebaseUserResponse {
@@ -193,8 +194,8 @@ export async function getCircleMembers(circleId: string): Promise<any[]> {
 		const data = docSnap.data();
 		return {
 			id: data.userId,
-			name: data.name || "Onbekend",
-			role: data.relationshipToCareReceiver || "Lid",
+			name: data.name || i18n.t("common.unknownName"),
+			role: data.relationshipToCareReceiver || i18n.t("common.memberFallback"),
 			photoUrl: data.photoUrl || null,
 			isAdmin: data.role === "admin",
 		};

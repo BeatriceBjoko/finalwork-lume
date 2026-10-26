@@ -38,7 +38,7 @@ export function useJoinCircle() {
 			if (!result.canceled) {
 				setProfileImage(result.assets[0].uri);
 			}
-		} catch (error) {
+		} catch {
 			setIsPermissionAlertVisible(true);
 		}
 	};
@@ -51,12 +51,12 @@ export function useJoinCircle() {
 
 	const handleJoinSubmit = async () => {
 		if (inviteCode.length !== 6) {
-			setAlertConfig({ visible: true, title: "Oeps!", message: t("joinCircle.errors.invalidCode", "De code moet precies 6 tekens lang zijn."), isSuccess: false });
+			setAlertConfig({ visible: true, title: t("common.oops"), message: t("joinCircle.errors.invalidCode", "De code moet precies 6 tekens lang zijn."), isSuccess: false });
 			return;
 		}
 
 		if (!relation || (relation === "andere" && !customRelation.trim())) {
-			setAlertConfig({ visible: true, title: "Oeps!", message: t("errors.missingFields", "Vul aub alle velden in."), isSuccess: false });
+			setAlertConfig({ visible: true, title: t("common.oops"), message: t("errors.missingFields", "Vul aub alle velden in."), isSuccess: false });
 			return;
 		}
 
@@ -73,18 +73,18 @@ export function useJoinCircle() {
 				profileImage: profileImage || "",
 			});
 
-			setAlertConfig({ visible: true, title: "Welkom!", message: t("joinCircle.success", "Je bent succesvol toegevoegd aan de zorgkring."), isSuccess: true });
+			setAlertConfig({ visible: true, title: t("common.welcome"), message: t("joinCircle.success", "Je bent succesvol toegevoegd aan de zorgkring."), isSuccess: true });
 		} catch (error: any) {
 			if (error.message === "NOT_FOUND") {
 				// Toon alleen CustomAlert, geen rode Expo error box
-				setAlertConfig({ visible: true, title: "Oeps!", message: t("joinCircle.errors.notFound", "Geen zorgkring gevonden met deze code."), isSuccess: false });
+				setAlertConfig({ visible: true, title: t("common.oops"), message: t("joinCircle.errors.notFound", "Geen zorgkring gevonden met deze code."), isSuccess: false });
 			} else if (error.message === "TOO_MANY_ATTEMPTS") {
-				setAlertConfig({ visible: true, title: "Oeps!", message: t("joinCircle.errors.tooManyAttempts"), isSuccess: false });
+				setAlertConfig({ visible: true, title: t("common.oops"), message: t("joinCircle.errors.tooManyAttempts"), isSuccess: false });
 			} else if (error.message === "ALREADY_IN_CIRCLE") {
-				setAlertConfig({ visible: true, title: "Oeps!", message: t("joinCircle.errors.alreadyInCircle"), isSuccess: false });
+				setAlertConfig({ visible: true, title: t("common.oops"), message: t("joinCircle.errors.alreadyInCircle"), isSuccess: false });
 			} else {
 				console.error("Echte backend crash:", error);
-				setAlertConfig({ visible: true, title: "Oeps!", message: t("errors.default", "Er is een onbekende fout opgetreden. Probeer het opnieuw."), isSuccess: false });
+				setAlertConfig({ visible: true, title: t("common.oops"), message: t("errors.default", "Er is een onbekende fout opgetreden. Probeer het opnieuw."), isSuccess: false });
 			}
 		} finally {
 			setIsLoading(false);

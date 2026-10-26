@@ -163,7 +163,7 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 					times,
 					visibility,
 					allowedUserIds: visibility === "selected" ? allowedMemberIds : [],
-					neutralTitle: title.trim() || MEDICATION.defaultNeutralTitle,
+					neutralTitle: title.trim() || t("tasks.medication.neutralPlaceholder"),
 				});
 				onTaskSaved();
 			} catch (error) {

@@ -186,7 +186,7 @@ export function useCalendarFeed() {
 		} catch (err: any) {
 			console.error("[Calendar] Error:", err);
 			setSyncStatus("error");
-			appAlert(t("calendar.errors.exportFailed"), err?.message ?? "Unknown error");
+			appAlert(t("calendar.errors.exportFailed"));
 			setTimeout(() => setSyncStatus("idle"), 2500);
 		}
 	};
@@ -214,7 +214,7 @@ export function useCalendarFeed() {
 	const handleToggleTaskStatus = async (taskId: string, currentStatus: string) => {
 		try {
 			await toggleTaskStatusInDB(taskId, currentStatus);
-		} catch (err) {
+		} catch {
 			appAlert(t("tasks.errors.errorTitle"), t("tasks.errors.statusFailed"));
 		}
 	};
@@ -223,8 +223,8 @@ export function useCalendarFeed() {
 		if (!user) return;
 		try {
 			await deleteTaskFromDB(taskId, creatorId, isCircleAdmin ? "admin" : "member", user.uid);
-		} catch (err: any) {
-			appAlert(t("tasks.errors.deniedTitle"), err.message ?? t("tasks.errors.deleteDenied"));
+		} catch {
+			appAlert(t("tasks.errors.deniedTitle"), t("tasks.errors.deleteDenied"));
 		}
 	};
 

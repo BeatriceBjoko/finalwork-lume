@@ -47,7 +47,7 @@ export function useCreateCircleStep2() {
 
 		if (!isValidEmail(inputStr)) {
 			Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-			setAlertConfig({ visible: true, title: "Oeps!", message: t("errors.invalidEmail"), isSuccess: false });
+			setAlertConfig({ visible: true, title: t("common.oops"), message: t("errors.invalidEmail"), isSuccess: false });
 			return;
 		}
 
@@ -96,7 +96,7 @@ export function useCreateCircleStep2() {
 		const alreadyInCircle = (error as Error)?.message === "ALREADY_IN_CIRCLE";
 		setAlertConfig({
 			visible: true,
-			title: "Oeps!",
+			title: t("common.oops"),
 			message: alreadyInCircle ? t("joinCircle.errors.alreadyInCircle") : t("errors.default"),
 			isSuccess: false,
 		});
@@ -134,8 +134,8 @@ export function useCreateCircleStep2() {
 			await ensureCircle();
 			setAlertConfig({
 				visible: true,
-				title: "Succes",
-				message: "Zorgkring is succesvol aangemaakt!",
+				title: t("common.success"),
+				message: t("createCircle.step2.createdSuccess"),
 				isSuccess: true,
 			});
 		} catch (error) {
@@ -153,7 +153,7 @@ export function useCreateCircleStep2() {
 			// Als er e-mailadressen zijn ingevuld, open de mail app
 			if (created && inviteList.length > 0) {
 				const emails = inviteList.map((i) => i.contact).join(",");
-				const subject = encodeURIComponent("Uitnodiging voor Zorgkring op Lume");
+				const subject = encodeURIComponent(t("createCircle.step2.mailSubject"));
 				const body = encodeURIComponent(`${t("createCircle.step2.shareMessage")}\n\nCode: LUME-${created.code}`);
 
 				// Open de native mail app met BCC (zodat ze elkaars adres niet zien)

@@ -64,7 +64,7 @@ const SESSIONS: Session[] = [
 const CATEGORIES: readonly (SessionCategory | "all")[] = ["all", "breath", "relax", "sleep", "energy"];
 
 export default function WellbeingScreen() {
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const insets = useSafeAreaInsets();
 	const [activeSession, setActiveSession] = useState<Session | null>(null);
 	const [activeCategory, setActiveCategory] = useState<SessionCategory | "all">("all");
@@ -134,7 +134,7 @@ export default function WellbeingScreen() {
 						)}
 					</>
 				) : (
-					<EmptyCategoryState isFrench={i18n.language.startsWith("fr")} />
+					<EmptyCategoryState />
 				)}
 
 				<EnergyPanel />
@@ -145,9 +145,10 @@ export default function WellbeingScreen() {
 	);
 }
 
-function EmptyCategoryState({ isFrench }: { isFrench: boolean }) {
-	const title = isFrench ? "Aucune session dans cette catégorie" : "Geen sessies in deze categorie";
-	const subtitle = isFrench ? "Essayez une autre catégorie ci-dessus." : "Probeer een andere categorie hierboven.";
+function EmptyCategoryState() {
+	const { t } = useTranslation();
+	const title = t("wellbeing.emptyCategory.title");
+	const subtitle = t("wellbeing.emptyCategory.subtitle");
 	return (
 		<View style={styles.emptyState}>
 			<View style={styles.emptyIcon}>

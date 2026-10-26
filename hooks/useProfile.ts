@@ -7,7 +7,7 @@ import { db } from "../lib/firebase-config";
 
 export function useProfile() {
 	const { user, userData, signOut } = useSession();
-	const { i18n } = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const [relation, setRelation] = useState("");
 	const [circleRole, setCircleRole] = useState("lid");
@@ -65,9 +65,8 @@ export function useProfile() {
 		}
 	};
 
-	const displayName = memberName || userData?.name || user?.displayName || "Gebruiker";
+	const displayName = memberName || userData?.name || user?.displayName || t("common.userFallback");
 
-	const { t } = useTranslation();
 	const roleDisplay = circleRole === "admin" ? t("profile.roleAdmin", "beheerder") : t("profile.roleMember", "lid");
 
 	const relationDisplay = relation ? t(`createCircle.relations.${relation}`, relation) : t("profile.unknownRelation", "Onbekend");

@@ -43,7 +43,6 @@ export function BreathingModal({ session, onClose }: { session: Session | null; 
 	if (!session) return null;
 
 	const techniqueLabel = `${session.technique.inhale}-${session.technique.hold1}-${session.technique.exhale}${session.technique.hold2 > 0 ? `-${session.technique.hold2}` : ""}`;
-	const roundLabel = session.rounds === 1 ? "ronde" : "rondes";
 
 	return (
 		<Modal visible animationType="slide" presentationStyle="fullScreen">
@@ -90,7 +89,7 @@ export function BreathingModal({ session, onClose }: { session: Session | null; 
 								<View style={styles.infoMeta}>
 									<InfoRow icon="target" label={t("wellbeing.bestForLabel")} value={t(`wellbeing.sessions.${session.id}.bestFor`)} glow={session.polygonGlow} />
 									<InfoRow icon="signal" label={t("wellbeing.levelLabel")} value={t(`wellbeing.sessions.${session.id}.level`)} glow={session.polygonGlow} />
-									<InfoRow icon="clock-outline" label={t("wellbeing.duration", { minutes: session.durationMin })} value={`${session.rounds} ${roundLabel}`} glow={session.polygonGlow} />
+									<InfoRow icon="clock-outline" label={t("wellbeing.duration", { minutes: session.durationMin })} value={t("wellbeing.breathe.rounds", { count: session.rounds })} glow={session.polygonGlow} />
 								</View>
 							</View>
 						</BlurView>

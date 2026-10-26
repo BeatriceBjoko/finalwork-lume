@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import i18n from "../locales/i18n";
 import { getMedicationDetails } from "../services/firebase/medication.service";
 import type { MedicationDetails } from "../services/firebase/medication.types";
 
@@ -59,6 +60,6 @@ export function enrichMedicationTask<T extends { isMedication?: boolean; medicat
 	if (!task.isMedication || !task.medicationId) return task;
 	const d = details[task.medicationId];
 	if (!d) return { ...task, locked: true };
-	const description = [d.dose ? `Dosis: ${d.dose}` : null, d.instructions || null].filter(Boolean) as string[];
+	const description = [d.dose ? i18n.t("tasks.medication.doseLine", { dose: d.dose }) : null, d.instructions || null].filter(Boolean) as string[];
 	return { ...task, title: d.medName, description: description.length ? description : task.description, locked: false };
 }

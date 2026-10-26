@@ -94,7 +94,7 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 			const month = (now.getMonth() + 1).toString().padStart(2, "0");
 			const day = now.getDate().toString().padStart(2, "0");
 
-			const authorName = userData?.name || user?.displayName || (t("profile.roleMember") === "membre" ? "Membre" : "Lid");
+			const authorName = userData?.name || user?.displayName || t("common.memberFallback");
 			const authorInitials = authorName.substring(0, 2).toUpperCase();
 			const authorPhoto = userData?.photoUrl || user?.photoURL || null;
 

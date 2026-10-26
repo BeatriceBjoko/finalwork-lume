@@ -3,15 +3,18 @@ import { useSession } from "../context";
 import { deleteNoteFromDB, getNotesByDate, subscribeToNotesFeed, toggleImportantInDB } from "../services/firebase/notes.service";
 import { appAlert } from "../lib/appAlert";
 import { toDateKey } from "../lib/dates";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 const PAGE_SIZE = 10;
 
-const TEMPLATE_NOTES = [
+// Example notes shown while the circle has none yet, in the current language and with today's date
+const buildTemplateNotes = (t: TFunction) => [
 	{
 		id: "tmpl_1",
-		title: "Doktersbezoek",
+		title: t("logbook.templates.note1Title"),
 		time: "10:30",
-		content: "Dit is een voorbeeld van een notitie. Je kunt hier alles bijhouden rondom doktersbezoeken of observaties.",
+		content: t("logbook.templates.note1Content"),
 		tag: "Medisch",
 		icon: "hospital-building",
 		isImportant: true,
@@ -21,9 +24,9 @@ const TEMPLATE_NOTES = [
 	},
 	{
 		id: "tmpl_2",
-		title: "Wandeling in het park",
+		title: t("logbook.templates.note2Title"),
 		time: "15:00",
-		content: "De zon scheen en we hebben een prachtige wandeling gemaakt. Het deed enorm veel deugd!",
+		content: t("logbook.templates.note2Content"),
 		tag: "Dagelijks",
 		icon: "weather-sunny",
 		isImportant: false,
@@ -34,6 +37,7 @@ const TEMPLATE_NOTES = [
 ];
 
 export function useNotesFeed() {
+	const { t } = useTranslation();
 	const { user, userData, isCircleAdmin } = useSession();
 	const circleId = userData?.careCircleId;
 
@@ -50,7 +54,7 @@ export function useNotesFeed() {
 
 	useEffect(() => {
 		if (!circleId) {
-			setNotes(TEMPLATE_NOTES);
+			setNotes(buildTemplateNotes(t));
 			setIsTemplateMode(true);
 			setIsLoading(false);
 			return;
@@ -79,7 +83,7 @@ export function useNotesFeed() {
 			(liveNotes) => {
 				setHasMore(liveNotes.length >= feedLimit);
 				if (liveNotes.length === 0) {
-					setNotes(TEMPLATE_NOTES);
+					setNotes(buildTemplateNotes(t));
 					setIsTemplateMode(true);
 				} else {
 					setNotes(liveNotes);
@@ -96,7 +100,7 @@ export function useNotesFeed() {
 		);
 
 		return () => unsubscribe();
-	}, [circleId, activeFilter, selectedDate, feedLimit]);
+	}, [circleId, activeFilter, selectedDate, feedLimit, t]);
 
 	useEffect(() => {
 		let filtered = notes;
@@ -134,7 +138,7 @@ export function useNotesFeed() {
 			await toggleImportantInDB(noteId, currentStatus);
 		} catch {
 			setNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, isImportant: currentStatus } : n)));
-			appAlert("Fout", "Kon status niet aanpassen.");
+			appAlert(t("errors.errorTitle"), t("logbook.alerts.importantFailed"));
 		}
 	};
 
@@ -145,8 +149,8 @@ export function useNotesFeed() {
 		}
 		try {
 			await deleteNoteFromDB(noteId, creatorId, isCircleAdmin ? "admin" : "member", user!.uid);
-		} catch (error: any) {
-			appAlert("Geweigerd", error.message);
+		} catch {
+			appAlert(t("tasks.errors.deniedTitle"), t("logbook.alerts.deleteDenied"));
 		}
 	};
 

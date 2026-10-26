@@ -65,7 +65,7 @@ export function useImportantContacts() {
 			setAlertConfig({ visible: true, title: tContacts("saveSuccessTitle"), message: tContacts("saveSuccessMessage"), type: "save", contactId: "" });
 		} catch (error) {
 			console.error(error);
-			setAlertConfig({ visible: true, title: "Oei", message: "Er ging iets mis bij het opslaan.", type: "error", contactId: "" });
+			setAlertConfig({ visible: true, title: t("common.oops"), message: t("errors.saveFailed"), type: "error", contactId: "" });
 		} finally {
 			setIsSaving(false);
 		}

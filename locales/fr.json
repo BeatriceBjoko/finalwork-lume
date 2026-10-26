@@ -3,6 +3,12 @@
 		"cancel": "Annuler",
 		"ok": "OK",
 		"loading": "Chargement...",
+		"oops": "Oups !",
+		"success": "Réussi !",
+		"welcome": "Bienvenue !",
+		"unknownName": "Inconnu",
+		"memberFallback": "Membre",
+		"userFallback": "Utilisateur",
 		"settings": "Paramètres"
 	},
 	"nav": {
@@ -78,6 +84,10 @@
 		"weakPassword": "Le mot de passe doit comporter au moins 6 caractères.",
 		"invalidCredential": "L'adresse e-mail ou le mot de passe est incorrect.",
 		"tooManyRequests": "Trop de tentatives infructueuses. Veuillez réessayer plus tard.",
+		"phoneAppFailed": "Impossible d'ouvrir l'application Téléphone sur cet appareil.",
+		"shareFailed": "Impossible de partager le message.",
+		"mailAppFailed": "Impossible d'ouvrir l'application e-mail.",
+		"saveFailed": "Un problème est survenu lors de l'enregistrement.",
 		"default": "Une erreur inconnue s'est produite. Veuillez réessayer."
 	},
 	"onboarding": {
@@ -153,6 +163,8 @@
 			"shareLinkBtn": "Partager le lien d'invitation",
 			"linkShared": "Lien partagé !",
 			"shareMessage": "Hey! J'ai créé un cercle de soins sur Lume. Rejoins-nous pour organiser les soins ensemble. Télécharge l'application Lume et entre ce code :",
+			"createdSuccess": "Votre cercle de soins a été créé !",
+			"mailSubject": "Invitation à un cercle de soins sur Lume",
 			"finishBtn": "Créer le cercle de soins"
 		}
 	},
@@ -167,9 +179,9 @@
 		"success": "Vous avez rejoint le cercle de soins avec succès.",
 		"errors": {
 			"invalidCode": "Le code doit comporter exactement 6 caractères.",
-			"notFound": "Aucun cercle de soins valide trouvé avec ce code. Demande un nouveau code à l'administrateur.",
-			"tooManyAttempts": "Trop de tentatives incorrectes. Réessaie dans 15 minutes.",
-			"alreadyInCircle": "Tu fais déjà partie d'un cercle de soins."
+			"notFound": "Aucun cercle de soins valide trouvé avec ce code. Demandez un nouveau code à l'administrateur.",
+			"tooManyAttempts": "Trop de tentatives incorrectes. Réessayez dans 15 minutes.",
+			"alreadyInCircle": "Vous faites déjà partie d'un cercle de soins."
 		}
 	},
 	"profile": {
@@ -289,7 +301,7 @@
 	},
 	"inviteModal": {
 		"title": "PARTAGEZ CE CODE",
-		"tapToCopy": "Touche pour copier",
+		"tapToCopy": "Touchez pour copier",
 		"copied": "Copié !",
 		"validUntil": "Valable jusqu'au {{date}}",
 		"validSubtitle": "Ensuite, Lume crée automatiquement un nouveau code",
@@ -342,6 +354,7 @@
 			"medNamePlaceholder": "ex. Metformine 500mg",
 			"dose": "Dose",
 			"dosePlaceholder": "ex. 1 comprimé",
+			"doseLine": "Dose : {{dose}}",
 			"instructions": "Instructions",
 			"instructionsPlaceholder": "ex. Après le petit-déjeuner",
 			"times": "Horaires",
@@ -406,6 +419,8 @@
 			"deleteTitle": "Supprimer la note ?",
 			"deleteMessage": "Êtes-vous sûr de vouloir supprimer cette note ? Cette action est irréversible.",
 			"maxImages": "Maximum atteint",
+			"importantFailed": "Impossible de modifier le statut.",
+			"deleteDenied": "Vous n'avez pas l'autorisation de supprimer cette note.",
 			"maxImagesMessage": "Vous pouvez ajouter un maximum de 3 photos par note.",
 			"permissionTitle": "Accès requis",
 			"permissionMessage": "Nous avons besoin d'accéder à vos photos. Voulez-vous activer cela dans vos paramètres ?",
@@ -424,6 +439,12 @@
 		"search": "Rechercher dans les notes...",
 		"filters": { "all": "Tout", "important": "Important", "date": "Date" },
 		"dateHeaders": { "today": "Aujourd'hui", "yesterday": "Hier" },
+		"templates": {
+			"note1Title": "Visite chez le médecin",
+			"note1Content": "Ceci est un exemple de note. Vous pouvez y noter tout ce qui concerne les visites médicales ou vos observations.",
+			"note2Title": "Promenade au parc",
+			"note2Content": "Le soleil brillait et nous avons fait une magnifique promenade. Cela a fait beaucoup de bien !"
+		},
 		"templateBanner": "Ceci est un exemple du journal de bord. N'hésitez pas à le supprimer et à écrire votre propre note !"
 	},
 	"calendar": {
@@ -456,6 +477,7 @@
 		"subtitle": "Un moment calme rien que pour vous",
 		"recommended": "Recommandé pour vous",
 		"viewAll": "Tout voir",
+		"emptyCategory": { "title": "Aucune session dans cette catégorie", "subtitle": "Essayez une autre catégorie ci-dessus." },
 		"categories": {
 			"all": "Tout",
 			"breath": "Respiration",
@@ -500,6 +522,8 @@
 			"hold": "Retenez",
 			"exhale": "Expirez",
 			"round": "Cycle {{round}} / {{total}}",
+			"rounds_one": "{{count}} cycle",
+			"rounds_other": "{{count}} cycles",
 			"start": "Commencer",
 			"stop": "Arrêter",
 			"restart": "Recommencer",

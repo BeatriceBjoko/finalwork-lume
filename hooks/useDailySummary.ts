@@ -190,8 +190,8 @@ export function useDailySummary() {
 		if (!currentUserId) return;
 		try {
 			await deleteTaskFromDB(taskId, taskCreatorId, userRole, currentUserId);
-		} catch (error: any) {
-			appAlert(t("tasks.errors.deniedTitle"), error.message || t("tasks.errors.deleteDenied"));
+		} catch {
+			appAlert(t("tasks.errors.deniedTitle"), t("tasks.errors.deleteDenied"));
 		}
 	};
 

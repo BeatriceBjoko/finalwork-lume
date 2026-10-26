@@ -72,7 +72,7 @@ const ContactCard: React.FC<ContactCardProps> = ({ contact, index, cardWidth, ca
 	const handleCall = () => {
 		const formattedNumber = contact.phone.replace(/\s+/g, "");
 		Linking.openURL(`tel:${formattedNumber}`).catch(() => {
-			appAlert("Fout", "Kan de telefoon-app niet openen op dit apparaat.");
+			appAlert(t("errors.errorTitle"), t("errors.phoneAppFailed"));
 		});
 	};
 

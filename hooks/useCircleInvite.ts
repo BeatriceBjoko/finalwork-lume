@@ -44,20 +44,20 @@ export function useCircleInvite(careCircleId: string | undefined) {
 			try {
 				await Share.share({ message: shareMessage });
 			} catch {
-				appAlert("Fout", "Kon het bericht niet delen.");
+				appAlert(t("errors.errorTitle"), t("errors.shareFailed"));
 			}
 		}
 	};
 
 	const shareEmail = async () => {
-		const subject = encodeURIComponent("Uitnodiging Zorgkring");
+		const subject = encodeURIComponent(t("createCircle.step2.mailSubject"));
 		const body = encodeURIComponent(shareMessage);
 		const url = `mailto:?subject=${subject}&body=${body}`;
 
 		try {
 			await Linking.openURL(url);
 		} catch (error) {
-			appAlert("Oeps!", "Kon de e-mail app niet openen.");
+			appAlert(t("common.oops"), t("errors.mailAppFailed"));
 			console.error("Email openen mislukt:", error);
 		}
 	};
