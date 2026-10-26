@@ -10,7 +10,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { after, before, beforeEach, describe, test } = require("node:test");
 const { assertFails, assertSucceeds, initializeTestEnvironment } = require("@firebase/rules-unit-testing");
-const { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } = require("firebase/firestore");
+const { collection, deleteDoc, deleteField, doc, getDoc, getDocs, query, setDoc, updateDoc, where } = require("firebase/firestore");
 
 let env;
 
@@ -69,6 +69,9 @@ describe("users (private profiles)", () => {
 	test("logged-out users cannot read profiles", () => assertFails(getDoc(doc(anonymous(), "users/alice"))));
 	test("you can change your own name, photo and language", () => assertSucceeds(updateDoc(doc(as("alice"), "users/alice"), { name: "Alice B", photoUrl: "https://x.test/a.jpg", language: "fr" })));
 	test("you can save your own push token", () => assertSucceeds(setDoc(doc(as("alice"), "users/alice"), { pushToken: "ExponentPushToken[new]", pushPlatform: "ios", pushUpdatedAt: "now" }, { merge: true })));
+	test("you can remove your own push token when logging out", () =>
+		assertSucceeds(updateDoc(doc(as("alice"), "users/alice"), { pushToken: deleteField(), pushPlatform: deleteField(), pushUpdatedAt: deleteField() })));
+	test("you cannot remove someone else's push token", () => assertFails(updateDoc(doc(as("eve"), "users/bob"), { pushToken: deleteField() })));
 	test("you cannot move yourself into another circle", () => assertFails(updateDoc(doc(as("alice"), "users/alice"), { careCircleId: "c2" })));
 	test("you cannot change your role", () => assertFails(updateDoc(doc(as("alice"), "users/alice"), { role: "admin" })));
 	test("you cannot edit someone else's profile", () => assertFails(updateDoc(doc(as("eve"), "users/bob"), { name: "Hacked" })));

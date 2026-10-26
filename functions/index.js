@@ -1,6 +1,6 @@
 const crypto = require("node:crypto");
 const { setGlobalOptions } = require("firebase-functions/v2");
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
@@ -301,8 +301,32 @@ async function fetchTokens(uids) {
 			if (tok && String(tok).startsWith("ExponentPushToken")) tokens.push(tok);
 		}),
 	);
-	return tokens;
+	// Never send the same notification twice to one phone
+	return [...new Set(tokens)];
 }
+
+// A push token belongs to one phone, so it may only be on one account. When a phone
+// registers its token for a user, remove that token from any other account (for
+// example someone who used this phone before and never logged out).
+exports.onPushTokenChanged = onDocumentWritten("users/{uid}", async (event) => {
+	const before = event.data && event.data.before.exists ? event.data.before.get("pushToken") : undefined;
+	const after = event.data && event.data.after.exists ? event.data.after.get("pushToken") : undefined;
+	if (!after || after === before) return;
+
+	// Triggers can run late or out of order, so do not trust "this write is the newest":
+	// the account that registered the token most recently keeps it, every other one loses it.
+	const sameToken = await db.collection("users").where("pushToken", "==", after).get();
+	if (sameToken.size < 2) return;
+
+	// pushUpdatedAt is written by the app at registration; the uid breaks exact ties
+	const registeredAt = (d) => `${d.get("pushUpdatedAt") || d.updateTime.toDate().toISOString()}|${d.id}`;
+	const [newest, ...older] = [...sameToken.docs].sort((a, b) => registeredAt(b).localeCompare(registeredAt(a)));
+
+	const batch = db.batch();
+	for (const d of older) batch.update(d.ref, { pushToken: FieldValue.delete(), pushPlatform: FieldValue.delete(), pushUpdatedAt: FieldValue.delete() });
+	await batch.commit();
+	console.log(`Push token kept on ${newest.id}, removed from ${older.length} older account(s)`);
+});
 
 async function sendExpoPush(messages) {
 	for (let i = 0; i < messages.length; i += 100) {
