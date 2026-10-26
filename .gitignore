@@ -51,3 +51,7 @@ scripts/serviceAccountKey.json
 firebase-debug.log
 
 firestore.rules
+storage.rules
+
+# Claude Code workspace 
+.claude/

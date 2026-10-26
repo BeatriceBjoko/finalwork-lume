@@ -84,8 +84,10 @@ export async function uploadImageAsync(uri: string, path: string): Promise<strin
 		// Vertel Firebase waar we de foto willen opslaan
 		const storageRef = ref(storage, path);
 
-		// Upload het bestand naar Firebase Storage
-		await uploadBytes(storageRef, blob);
+		// Upload het bestand naar Firebase Storage. The Storage rules only accept images,
+		// so always send an image content type (the picker returns JPEG files).
+		const contentType = blob.type?.startsWith("image/") ? blob.type : "image/jpeg";
+		await uploadBytes(storageRef, blob, { contentType });
 
 		// Vraag de publieke "https://" download-link op en geef deze terug
 		return await getDownloadURL(storageRef);
@@ -118,7 +120,7 @@ export async function createCareCircleInDB(params: CreateCircleParams): Promise<
 
 	// Now that we are admin of the circle, upload the care receiver photo
 	if (params.profileImage) {
-		const photoUrl = await uploadImageAsync(params.profileImage, `careCircles/${circleId}/profile_${Date.now()}.jpg`);
+		const photoUrl = await uploadImageAsync(params.profileImage, `careCircles/${circleId}/receiver/photo_${Date.now()}.jpg`);
 		await updateDoc(doc(db, "careCircles", circleId), { "careReceiver.photoUrl": photoUrl });
 	}
 

@@ -1,11 +1,11 @@
 import * as ImagePicker from "expo-image-picker";
 import { updatePassword, updateProfile } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
-import { db, storage } from "../lib/firebase-config";
+import { db } from "../lib/firebase-config";
+import { uploadImageAsync } from "../lib/firebase-service";
 
 export function useEditProfile() {
 	const { user, userData } = useSession();
@@ -81,22 +81,6 @@ export function useEditProfile() {
 		}
 	};
 
-	const uploadImageAsync = async (uri: string) => {
-		const blob: any = await new Promise((resolve, reject) => {
-			const xhr = new XMLHttpRequest();
-			xhr.onload = () => resolve(xhr.response);
-			xhr.onerror = () => reject(new TypeError("Network request failed"));
-			xhr.responseType = "blob";
-			xhr.open("GET", uri, true);
-			xhr.send(null);
-		});
-
-		const fileRef = ref(storage, `profilePhotos/${user?.uid}_${Date.now()}`);
-		await uploadBytes(fileRef, blob);
-		blob.close();
-		return await getDownloadURL(fileRef);
-	};
-
 	const handleSave = async () => {
 		if (!user || !userData) return false;
 
@@ -127,7 +111,8 @@ export function useEditProfile() {
 			let finalPhotoUrl = profileImage;
 
 			if (profileImage && (profileImage.startsWith("file://") || profileImage.startsWith("content://"))) {
-				finalPhotoUrl = await uploadImageAsync(profileImage);
+				// Own profile photos live in users/{uid}/ (Storage rules: only you can upload there)
+				finalPhotoUrl = await uploadImageAsync(profileImage, `users/${user.uid}/profile_${Date.now()}.jpg`);
 			}
 
 			if (password) {

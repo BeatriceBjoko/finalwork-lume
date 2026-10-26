@@ -84,7 +84,8 @@ export function useReceiverProfile() {
 			let finalPhotoUrl = profileImage;
 
 			if (profileImage && (profileImage.startsWith("file://") || profileImage.startsWith("content://"))) {
-				const storagePath = `circles/${circleId}/receiver_profile.jpg`;
+				// Circle photos live in careCircles/{circleId}/ (Storage rules: members only)
+				const storagePath = `careCircles/${circleId}/receiver/photo_${Date.now()}.jpg`;
 				finalPhotoUrl = await uploadImageAsync(profileImage, storagePath);
 			}
 
