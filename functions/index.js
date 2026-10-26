@@ -69,19 +69,29 @@ function randomInviteCode() {
 	return code;
 }
 
+// The circle's current invite code lives in circlePrivate/{circleId}. Firestore rules
+// do not allow the app to read that collection, not even for members.
+function circlePrivateRef(circleId) {
+	return db.collection("circlePrivate").doc(circleId);
+}
+
 // Creates a fresh code for the circle, removes its previous one and returns { code, expiresAt }
 async function issueInviteCode(circleId, createdBy) {
 	const circleRef = db.collection("careCircles").doc(circleId);
+	const privateRef = circlePrivateRef(circleId);
 	for (let attempt = 0; attempt < 5; attempt++) {
 		const code = randomInviteCode();
 		const expiresAt = Timestamp.fromMillis(Date.now() + INVITE_CODE_TTL_MS);
 		try {
 			await db.runTransaction(async (tx) => {
-				const circleSnap = await tx.get(circleRef);
-				const previous = circleSnap.get("inviteCode");
+				const [circleSnap, privateSnap] = await Promise.all([tx.get(circleRef), tx.get(privateRef)]);
+				// Older circles kept the code on the circle document itself
+				const legacy = circleSnap.get("inviteCode");
+				const previous = privateSnap.get("inviteCode") || legacy;
 				tx.create(db.collection("inviteCodes").doc(code), { careCircleId: circleId, createdBy, createdAt: FieldValue.serverTimestamp(), expiresAt });
 				if (previous && previous !== code) tx.delete(db.collection("inviteCodes").doc(previous));
-				tx.update(circleRef, { inviteCode: code, inviteCodeExpiresAt: expiresAt });
+				tx.set(privateRef, { inviteCode: code, inviteCodeExpiresAt: expiresAt });
+				if (legacy !== undefined) tx.update(circleRef, { inviteCode: FieldValue.delete(), inviteCodeExpiresAt: FieldValue.delete() });
 			});
 			return { code, expiresAt: expiresAt.toMillis() };
 		} catch (err) {
@@ -92,11 +102,14 @@ async function issueInviteCode(circleId, createdBy) {
 	throw new HttpsError("internal", "Kon geen uitnodigingscode maken.");
 }
 
-async function assertNotInCircle(uid) {
+// Throws when the user is already in a circle; returns the name and photo to copy onto the
+// membership, so circle members never need to read each other's private users document
+async function getProfileOutsideCircle(uid) {
 	const userSnap = await db.collection("users").doc(uid).get();
 	if (userSnap.exists && userSnap.get("careCircleId")) {
 		throw new HttpsError("failed-precondition", "Je bent al lid van een zorgkring.");
 	}
+	return { name: (userSnap.exists && userSnap.get("name")) || "", photoUrl: (userSnap.exists && userSnap.get("photoUrl")) || null };
 }
 
 // Throws when the account has too many recent wrong codes
@@ -132,7 +145,7 @@ exports.createCircle = onCall(async (request) => {
 	const inviteeEmails = invitees.map((e) => cleanText(e, "E-mail", 254).toLowerCase());
 	if (inviteeEmails.some((e) => !EMAIL_RE.test(e))) throw new HttpsError("invalid-argument", "Ongeldig e-mailadres.");
 
-	await assertNotInCircle(uid);
+	const profile = await getProfileOutsideCircle(uid);
 
 	const circleRef = db.collection("careCircles").doc();
 	const circleId = circleRef.id;
@@ -150,6 +163,8 @@ exports.createCircle = onCall(async (request) => {
 		careCircleId: circleId,
 		userId: uid,
 		role: "admin",
+		name: profile.name,
+		photoUrl: profile.photoUrl,
 		relationshipToCareReceiver: relationship,
 		status: "active",
 		joinedAt: now,
@@ -182,10 +197,9 @@ exports.getInviteCode = onCall(async (request) => {
 		throw new HttpsError("permission-denied", "Alleen een beheerder kan uitnodigen.");
 	}
 
-	const circleSnap = await db.collection("careCircles").doc(circleId).get();
-	if (!circleSnap.exists) throw new HttpsError("not-found", "Zorgkring niet gevonden.");
-	const code = circleSnap.get("inviteCode");
-	const expiresAt = circleSnap.get("inviteCodeExpiresAt");
+	const privateSnap = await circlePrivateRef(circleId).get();
+	const code = privateSnap.get("inviteCode");
+	const expiresAt = privateSnap.get("inviteCodeExpiresAt");
 	const stillValid = code && expiresAt instanceof Timestamp && expiresAt.toMillis() > Date.now();
 	if (stillValid) return { inviteCode: code, expiresAt: expiresAt.toMillis() };
 
@@ -201,7 +215,7 @@ exports.joinCircle = onCall(async (request) => {
 	const relationship = cleanRelation(data.relation, data.customRelation);
 
 	await assertJoinAllowed(uid);
-	await assertNotInCircle(uid);
+	const profile = await getProfileOutsideCircle(uid);
 
 	const codeSnap = await db.collection("inviteCodes").doc(code).get();
 	const expiresAt = codeSnap.exists ? codeSnap.get("expiresAt") : null;
@@ -218,6 +232,8 @@ exports.joinCircle = onCall(async (request) => {
 		careCircleId: circleId,
 		userId: uid,
 		role: "member",
+		name: profile.name,
+		photoUrl: profile.photoUrl,
 		relationshipToCareReceiver: relationship,
 		status: "active",
 		joinedAt: now,

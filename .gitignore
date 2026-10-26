@@ -49,3 +49,5 @@ scripts/serviceAccountKey.json
 # Firebase emulator logs
 *-debug.log
 firebase-debug.log
+
+firestore.rules

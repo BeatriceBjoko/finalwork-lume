@@ -186,22 +186,17 @@ export async function getCircleMembers(circleId: string): Promise<any[]> {
 	const q = query(membersRef, where("careCircleId", "==", circleId));
 	const snapshot = await getDocs(q);
 
-	const members = [];
-	for (const docSnap of snapshot.docs) {
+	// Name and photo are stored on the membership itself; users documents are private
+	return snapshot.docs.map((docSnap) => {
 		const data = docSnap.data();
-
-		const userSnap = await getDoc(doc(db, "users", data.userId));
-		const userData = userSnap.exists() ? userSnap.data() : {};
-
-		members.push({
+		return {
 			id: data.userId,
-			name: userData.name || "Onbekend",
+			name: data.name || "Onbekend",
 			role: data.relationshipToCareReceiver || "Lid",
-			photoUrl: data.photoUrl || userData.photoUrl || null,
+			photoUrl: data.photoUrl || null,
 			isAdmin: data.role === "admin",
-		});
-	}
-	return members;
+		};
+	});
 }
 
 // 3. Verwijder een lid uit de kring. The server (Cloud Function removeMember) checks that the
