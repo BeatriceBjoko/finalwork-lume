@@ -11,6 +11,7 @@ import { NoteCard } from "../../../components/ui/NoteCard";
 import { COLORS, FONTS, TYPOGRAPHY } from "../../../constants/theme";
 import { useSession } from "../../../context";
 import { useNotesFeed } from "../../../hooks/useNotesFeed";
+import { fromDateKey, toDateKey } from "../../../lib/dates";
 
 function getEmptyStateText(searchQuery: string, activeFilter: string, selectedDate: string | null, t: (key: string, opts?: any) => string): string {
 	if (searchQuery) return t("logbook.empty.search", { query: searchQuery });
@@ -40,7 +41,7 @@ export default function NotesScreen() {
 			setDatePickerVisible(false);
 		}
 		if (event.type === "set" && date) {
-			const dateStr = date.toISOString().split("T")[0];
+			const dateStr = toDateKey(date);
 			setSelectedDate(dateStr);
 			setActiveFilter("Datum");
 			if (Platform.OS === "ios") setDatePickerVisible(false);
@@ -189,12 +190,12 @@ export default function NotesScreen() {
 				<Modal transparent animationType="fade">
 					<Pressable style={styles.calendarOverlay} onPress={() => setDatePickerVisible(false)}>
 						<Pressable style={styles.calendarContent}>
-							<DateTimePicker value={selectedDate ? new Date(selectedDate) : new Date()} mode="date" display="inline" onChange={onDateChange} maximumDate={new Date()} themeVariant="light" />
+							<DateTimePicker value={selectedDate ? fromDateKey(selectedDate) : new Date()} mode="date" display="inline" onChange={onDateChange} maximumDate={new Date()} themeVariant="light" />
 						</Pressable>
 					</Pressable>
 				</Modal>
 			)}
-			{isDatePickerVisible && Platform.OS === "android" && <DateTimePicker value={selectedDate ? new Date(selectedDate) : new Date()} mode="date" display="calendar" onChange={onDateChange} maximumDate={new Date()} />}
+			{isDatePickerVisible && Platform.OS === "android" && <DateTimePicker value={selectedDate ? fromDateKey(selectedDate) : new Date()} mode="date" display="calendar" onChange={onDateChange} maximumDate={new Date()} />}
 		</View>
 	);
 }

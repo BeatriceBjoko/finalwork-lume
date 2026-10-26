@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import {  } from "react-native";
 import { useSession } from "../context";
 import { deleteNoteFromDB, getNotesByDate, subscribeToNotesFeed, toggleImportantInDB } from "../services/firebase/notes.service";
 import { appAlert } from "../lib/appAlert";
+import { toDateKey } from "../lib/dates";
 
 const PAGE_SIZE = 10;
 
@@ -15,7 +15,7 @@ const TEMPLATE_NOTES = [
 		tag: "Medisch",
 		icon: "hospital-building",
 		isImportant: true,
-		date: new Date().toISOString().split("T")[0],
+		date: toDateKey(),
 		createdBy: "demo",
 		author: { name: "Lume", initials: "LU" },
 	},
@@ -27,7 +27,7 @@ const TEMPLATE_NOTES = [
 		tag: "Dagelijks",
 		icon: "weather-sunny",
 		isImportant: false,
-		date: new Date().toISOString().split("T")[0],
+		date: toDateKey(),
 		createdBy: "demo",
 		author: { name: "Lume", initials: "LU" },
 	},
@@ -107,10 +107,10 @@ export function useNotesFeed() {
 		const grouped: any[] = [];
 		let currentDate = "";
 
-		const todayStr = new Date().toISOString().split("T")[0];
+		const todayStr = toDateKey();
 		const yesterday = new Date();
 		yesterday.setDate(yesterday.getDate() - 1);
-		const yesterdayStr = yesterday.toISOString().split("T")[0];
+		const yesterdayStr = toDateKey(yesterday);
 
 		filtered.forEach((note, index) => {
 			if (note.date !== currentDate) {

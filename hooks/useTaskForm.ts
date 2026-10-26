@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {  } from "react-native";
 import { useSession } from "../context";
 import { getCircleMembers } from "../lib/firebase-service";
 import { createMedicationTask } from "../services/firebase/medication.service";

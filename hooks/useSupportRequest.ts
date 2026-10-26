@@ -2,6 +2,7 @@ import { useCallback } from "react";
 
 import { useSession } from "../context";
 import { addNoteToDB } from "../services/firebase/notes.service";
+import { toDateKey } from "../lib/dates";
 
 function initialsFrom(name: string): string {
 	return name
@@ -30,7 +31,7 @@ export function useSupportRequest() {
 				{
 					title,
 					content,
-					date: now.toISOString().split("T")[0],
+					date: toDateKey(now),
 					time: now.toTimeString().slice(0, 5),
 					tag: "feeling",
 					icon: "heart-pulse",
