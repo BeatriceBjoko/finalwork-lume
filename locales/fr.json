@@ -282,7 +282,8 @@
 		"removeTitle": "Supprimer la personne ?",
 		"removeMessage": "Cette personne sera supprimée de votre cercle.\nCette action est irréversible.",
 		"removeConfirm": "Supprimer",
-		"removeCancel": "Annuler"
+		"removeCancel": "Annuler",
+		"removeAdminOnly": "Seul l'administrateur peut retirer des personnes."
 	},
 	"inviteModal": {
 		"title": "PARTAGEZ CE CODE",

@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, db, functions, storage } from "./firebase-config";
@@ -204,17 +204,15 @@ export async function getCircleMembers(circleId: string): Promise<any[]> {
 	return members;
 }
 
-// 3. Verwijder een lid uit de kring (Alleen admin kan dit doen)
+// 3. Verwijder een lid uit de kring. The server (Cloud Function removeMember) checks that the
+// caller is admin, unlinks the member's account and revokes their medication access.
 export async function removeCircleMember(circleId: string, userIdToRemove: string): Promise<void> {
-	// 1. Verwijder de relatie uit careCircleMembers
-	const memberRef = doc(db, "careCircleMembers", `${circleId}_${userIdToRemove}`);
-	await deleteDoc(memberRef);
-
-	// 2. Haal de careCircleId weg bij de user zelf, zodat ze weer bij onboarding komen
-	const userRef = doc(db, "users", userIdToRemove);
-	await updateDoc(userRef, {
-		careCircleId: null,
-	});
+	const removeMember = httpsCallable(functions, "removeMember");
+	try {
+		await removeMember({ circleId, userId: userIdToRemove });
+	} catch (error) {
+		throw toCircleError(error);
+	}
 }
 
 // Current invite code of the circle (admins only); the server issues a new one when it expired

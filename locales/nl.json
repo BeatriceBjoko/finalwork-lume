@@ -281,7 +281,8 @@
 		"removeTitle": "Persoon verwijderen?",
 		"removeMessage": "Deze persoon wordt verwijderd uit jouw kring.\nDit kan niet ongedaan worden gemaakt.",
 		"removeConfirm": "Verwijderen",
-		"removeCancel": "Annuleren"
+		"removeCancel": "Annuleren",
+		"removeAdminOnly": "Alleen de beheerder kan personen verwijderen."
 	},
 	"inviteModal": {
 		"title": "DEEL DEZE CODE",

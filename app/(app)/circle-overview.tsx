@@ -1,9 +1,10 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "../../components/ui/Button";
@@ -69,6 +70,8 @@ export default function CircleOverviewScreen() {
 	}, []);
 
 	const handleOpenRemoveModal = (memberId: string) => {
+		// Warning buzz: removing someone cannot be undone
+		Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
 		setSelectedMemberToRemove(memberId);
 		setRemoveModalVisible(true);
 	};
@@ -82,8 +85,12 @@ export default function CircleOverviewScreen() {
 
 			setMembers((prev) => prev.filter((m) => m.id !== selectedMemberToRemove));
 			setRemoveModalVisible(false);
+			Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 		} catch (error) {
 			console.error("Kon lid niet verwijderen:", error);
+			setRemoveModalVisible(false);
+			Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+			Alert.alert(t("errors.errorTitle"), (error as Error)?.message === "NOT_ADMIN" ? tCircle("removeAdminOnly") : t("errors.default"));
 		} finally {
 			setIsRemoving(false);
 		}

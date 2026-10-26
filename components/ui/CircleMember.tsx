@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { BlurMask, Canvas, Group, Path, Rect, Shadow, Image as SkImage, useImage } from "@shopify/react-native-skia";
-import { BlurView } from "expo-blur";
+import * as Haptics from "expo-haptics";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { FONTS } from "../../constants/theme";
+import { COLORS, FONTS } from "../../constants/theme";
 
 interface CircleMemberProps {
 	name: string;
@@ -33,8 +33,8 @@ export default function CircleMember({ name, role, photoUrl, size, onPressOption
 	const anchorX = 82;
 	const anchorY = 14;
 
-	const glassLeft = anchorX * scale - 16;
-	const glassTop = anchorY * scale - 16;
+	const glassLeft = anchorX * scale - 18;
+	const glassTop = anchorY * scale - 18;
 
 	return (
 		<View style={{ width: size, alignItems: "center" }}>
@@ -65,12 +65,15 @@ export default function CircleMember({ name, role, photoUrl, size, onPressOption
 				)}
 
 				{onPressOptions && (
-					<Pressable style={[styles.glassButton, { top: glassTop, left: glassLeft }]} onPress={onPressOptions}>
-						<BlurView intensity={15} tint="light" style={styles.glassBlur}>
-							<View style={styles.glassInner}>
-								<Ionicons name="ellipsis-vertical" size={16} color="#FFFFFF" />
-							</View>
-						</BlurView>
+					<Pressable
+						style={({ pressed }) => [styles.optionsButton, { top: glassTop, left: glassLeft }, pressed && styles.optionsButtonPressed]}
+						onPress={() => {
+							Haptics.selectionAsync();
+							onPressOptions();
+						}}
+						hitSlop={8}
+					>
+						<Ionicons name="ellipsis-vertical" size={18} color={COLORS.iconColor} />
 					</Pressable>
 				)}
 			</View>
@@ -88,28 +91,25 @@ export default function CircleMember({ name, role, photoUrl, size, onPressOption
 }
 
 const styles = StyleSheet.create({
-	glassButton: {
+	// Solid white so the button stays visible on any photo
+	optionsButton: {
 		position: "absolute",
-		width: 32,
-		height: 32,
-		borderRadius: 16,
-		overflow: "hidden",
+		width: 36,
+		height: 36,
+		borderRadius: 18,
+		backgroundColor: COLORS.white,
 		borderWidth: 1.5,
-		borderColor: "rgba(255, 255, 255, 0.6)",
-		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 4 },
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 5,
-		zIndex: 10,
-	},
-	glassBlur: { flex: 1 },
-	glassInner: {
-		flex: 1,
-		backgroundColor: "rgba(255, 255, 255, 0.15)",
+		borderColor: "rgba(154, 217, 0, 0.6)",
 		justifyContent: "center",
 		alignItems: "center",
+		shadowColor: "#233600",
+		shadowOffset: { width: 0, height: 3 },
+		shadowOpacity: 0.25,
+		shadowRadius: 6,
+		elevation: 6,
+		zIndex: 10,
 	},
+	optionsButtonPressed: { opacity: 0.7, transform: [{ scale: 0.92 }] },
 	textContainer: {
 		marginTop: 12,
 		alignItems: "center",

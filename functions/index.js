@@ -229,6 +229,53 @@ exports.joinCircle = onCall(async (request) => {
 	return { circleId };
 });
 
+// Removes uid from allowedUserIds on every doc of the circle in this collection
+async function revokeAllowedUser(collectionName, circleId, uid) {
+	// Single-field query (no composite index needed); filter on the circle here
+	const snap = await db.collection(collectionName).where("allowedUserIds", "array-contains", uid).get();
+	const docs = snap.docs.filter((d) => d.get("careCircleId") === circleId);
+	for (let i = 0; i < docs.length; i += 400) {
+		const batch = db.batch();
+		for (const d of docs.slice(i, i + 400)) batch.update(d.ref, { allowedUserIds: FieldValue.arrayRemove(uid) });
+		await batch.commit();
+	}
+	return docs.length;
+}
+
+// Removes a member from the circle (admins only). The member loses access to
+// the circle and to every medication record they were allowed to see.
+exports.removeMember = onCall(async (request) => {
+	const uid = requireAuth(request);
+	const data = request.data || {};
+	const circleId = cleanText(data.circleId, "Zorgkring", 128);
+	const memberUid = cleanText(data.userId, "Lid", 128);
+
+	const callerSnap = await db.collection("careCircleMembers").doc(`${circleId}_${uid}`).get();
+	if (!callerSnap.exists || callerSnap.get("role") !== "admin") {
+		throw new HttpsError("permission-denied", "Alleen een beheerder kan leden verwijderen.");
+	}
+	if (memberUid === uid) {
+		throw new HttpsError("failed-precondition", "Je kan jezelf niet verwijderen.");
+	}
+
+	const memberRef = db.collection("careCircleMembers").doc(`${circleId}_${memberUid}`);
+	const userRef = db.collection("users").doc(memberUid);
+	await db.runTransaction(async (tx) => {
+		const [memberSnap, userSnap] = await Promise.all([tx.get(memberRef), tx.get(userRef)]);
+		if (!memberSnap.exists) throw new HttpsError("not-found", "Deze persoon is geen lid van de zorgkring.");
+		tx.delete(memberRef);
+		// Only unlink the account if it points to this circle
+		if (userSnap.exists && userSnap.get("careCircleId") === circleId) {
+			tx.update(userRef, { careCircleId: FieldValue.delete() });
+		}
+	});
+
+	await revokeAllowedUser("medicationDetails", circleId, memberUid);
+	await revokeAllowedUser("medicationLogs", circleId, memberUid);
+
+	return { removed: memberUid };
+});
+
 async function fetchTokens(uids) {
 	const tokens = [];
 	await Promise.all(
