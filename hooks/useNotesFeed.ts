@@ -5,6 +5,8 @@ import { appAlert } from "../lib/appAlert";
 import { toDateKey } from "../lib/dates";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
+import { resolveAuthor } from "../lib/memberDisplay";
+import { listenerError } from "../lib/firestoreErrors";
 
 const PAGE_SIZE = 10;
 
@@ -38,7 +40,7 @@ const buildTemplateNotes = (t: TFunction) => [
 
 export function useNotesFeed() {
 	const { t } = useTranslation();
-	const { user, userData, isCircleAdmin } = useSession();
+	const { user, userData, isCircleAdmin, circleMembers } = useSession();
 	const circleId = userData?.careCircleId;
 
 	const [notes, setNotes] = useState<any[]>([]);
@@ -93,7 +95,8 @@ export function useNotesFeed() {
 				setIsRefreshing(false);
 			},
 			(e) => {
-				console.error("Fout bij live notities:", e);
+				// No access anymore (account deleted, removed from the circle): empty quietly
+				listenerError("Fout bij live notities:", () => setNotes([]))(e);
 				setIsLoading(false);
 				setIsRefreshing(false);
 			},
@@ -125,11 +128,12 @@ export function useNotesFeed() {
 
 				grouped.push({ type: "header", titleKey, id: `header_${currentDate}_${index}` });
 			}
-			grouped.push({ type: "note", ...note });
+			// Show the author's CURRENT name and photo (live member list), not the copy in the note
+			grouped.push({ type: "note", ...note, author: resolveAuthor(circleMembers, note.createdBy, note.author) });
 		});
 
 		setFeedData(grouped);
-	}, [notes, activeFilter]);
+	}, [notes, activeFilter, circleMembers]);
 
 	const handleToggleImportant = async (noteId: string, currentStatus: boolean) => {
 		if (isTemplateMode) return;

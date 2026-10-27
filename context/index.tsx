@@ -2,7 +2,8 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { deleteField, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { auth, db } from "../lib/firebase-config";
-import { login, logout, register } from "../lib/firebase-service";
+import { login, logout, register, subscribeToCircleMembers, type CircleMemberInfo } from "../lib/firebase-service";
+import { listenerError } from "../lib/firestoreErrors";
 import { isSupportedLanguage, setAppLanguage } from "../locales/i18n";
 
 interface UserData {
@@ -24,6 +25,8 @@ interface AuthContextType {
 	isLoading: boolean;
 	// Role inside the care circle (careCircleMembers doc), NOT userData.role
 	isCircleAdmin: boolean;
+	// Live members of the current circle (name, photo, relation, admin)
+	circleMembers: CircleMemberInfo[];
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -38,7 +41,7 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
 	const [userData, setUserData] = useState<UserData | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
-	const [isCircleAdmin, setIsCircleAdmin] = useState(false);
+	const [circleMembers, setCircleMembers] = useState<CircleMemberInfo[]>([]);
 
 	const uid = user?.uid;
 	const careCircleId = userData?.careCircleId;
@@ -49,19 +52,17 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 		if (isSupportedLanguage(accountLanguage)) setAppLanguage(accountLanguage);
 	}, [accountLanguage]);
 
-	// Live membership listener: the admin/member role lives on careCircleMembers/{circleId}_{uid}
+	// One live list of the circle's members for the whole app (names, photos, roles).
+	// A changed name or photo shows everywhere at once; the admin role comes from here too.
 	useEffect(() => {
 		if (!uid || !careCircleId) {
-			setIsCircleAdmin(false);
+			setCircleMembers([]);
 			return;
 		}
-		const memberRef = doc(db, "careCircleMembers", `${careCircleId}_${uid}`);
-		return onSnapshot(
-			memberRef,
-			(snap) => setIsCircleAdmin(snap.exists() && snap.data().role === "admin"),
-			() => setIsCircleAdmin(false),
-		);
+		return subscribeToCircleMembers(careCircleId, setCircleMembers, listenerError("Kon leden niet laden:", () => setCircleMembers([])));
 	}, [uid, careCircleId]);
+
+	const isCircleAdmin = useMemo(() => circleMembers.some((m) => m.id === uid && m.isAdmin), [circleMembers, uid]);
 
 	useEffect(() => {
 		let unsubscribeDoc: (() => void) | undefined;
@@ -115,8 +116,9 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 					}
 				},
 				(error) => {
-					// e.g. no connection: stop the spinner instead of waiting forever
-					console.error("Kon profiel niet laden:", error);
+					// e.g. no connection: stop the spinner instead of waiting forever.
+					// After deleting the account, access is revoked on purpose: stay quiet.
+					listenerError("Kon profiel niet laden:")(error);
 					setIsLoading(false);
 				},
 			);
@@ -156,8 +158,8 @@ export function SessionProvider(props: { children: React.ReactNode }) {
 	}, []);
 
 	const value = useMemo(
-		() => ({ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, userData, isLoading, isCircleAdmin }),
-		[handleSignIn, handleSignUp, handleSignOut, user, userData, isLoading, isCircleAdmin],
+		() => ({ signIn: handleSignIn, signUp: handleSignUp, signOut: handleSignOut, user, userData, isLoading, isCircleAdmin, circleMembers }),
+		[handleSignIn, handleSignUp, handleSignOut, user, userData, isLoading, isCircleAdmin, circleMembers],
 	);
 
 	return <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>;

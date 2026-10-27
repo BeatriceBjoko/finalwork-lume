@@ -6,6 +6,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, FONTS } from "../../constants/theme";
 import { useSession } from "../../context";
 import { ScanIcon } from "./TabIcons";
+import { getInitials } from "../../lib/initials";
 
 export function TopBar() {
 	const router = useRouter();
@@ -13,10 +14,7 @@ export function TopBar() {
 
 	const photoUrl = userData?.photoUrl || user?.photoURL || null;
 
-	const getInitials = () => {
-		const name = userData?.name || user?.displayName || user?.email || "?";
-		return name.substring(0, 2).toUpperCase();
-	};
+	const userInitials = getInitials(userData?.name || user?.displayName || user?.email);
 
 	const handleScanPress = () => {
 		Haptics.selectionAsync();
@@ -43,7 +41,7 @@ export function TopBar() {
 					<Image source={{ uri: photoUrl }} style={styles.profileImage} />
 				) : (
 					<View style={styles.profileInitials}>
-						<Text style={styles.initialsText}>{getInitials()}</Text>
+						<Text style={styles.initialsText}>{userInitials}</Text>
 					</View>
 				)}
 			</Pressable>

@@ -9,6 +9,8 @@ import { db } from "../lib/firebase-config";
 import { deleteTaskFromDB, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
 import { enrichMedicationTask, useMedicationDetails } from "./useMedicationDetails";
 import { appAlert } from "../lib/appAlert";
+import { resolveAssignee } from "../lib/memberDisplay";
+import { listenerError } from "../lib/firestoreErrors";
 
 export interface CalendarTask {
 	id: string;
@@ -44,7 +46,7 @@ function formatDateKey(d: Date): string {
 
 export function useCalendarFeed() {
 	const { t } = useTranslation();
-	const { user, userData, isCircleAdmin } = useSession();
+	const { user, userData, isCircleAdmin, circleMembers } = useSession();
 	const circleId = userData?.careCircleId;
 
 	const [selectedDate, setSelectedDate] = useState<string>(() => formatDateKey(new Date()));
@@ -86,7 +88,8 @@ export function useCalendarFeed() {
 				setIsLoading(false);
 			},
 			(err) => {
-				console.error("Calendar feed error:", err);
+				// No access anymore (account deleted, removed from the circle): empty quietly
+				listenerError("Calendar feed error:", () => setAllTasks([]))(err);
 				setIsLoading(false);
 			},
 		);
@@ -96,7 +99,11 @@ export function useCalendarFeed() {
 
 	const medicationIds = useMemo(() => allTasks.filter((task) => task.isMedication && task.medicationId).map((task) => task.medicationId as string), [allTasks]);
 	const medDetails = useMedicationDetails(medicationIds);
-	const enrichedTasks = useMemo<CalendarTask[]>(() => allTasks.map((task) => enrichMedicationTask(task, medDetails)), [allTasks, medDetails]);
+	// Assignee: CURRENT name and photo from the live member list, not the copy in the task
+	const enrichedTasks = useMemo<CalendarTask[]>(
+		() => allTasks.map((task) => ({ ...enrichMedicationTask(task, medDetails), assignee: resolveAssignee(circleMembers, task.assignee) })),
+		[allTasks, medDetails, circleMembers],
+	);
 
 	const taskDaysInMonth = useMemo(() => {
 		const prefix = `${currentMonth.year}-${String(currentMonth.month + 1).padStart(2, "0")}`;

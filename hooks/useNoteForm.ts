@@ -5,6 +5,7 @@ import { Linking } from "react-native";
 import { useSession } from "../context";
 import { addNoteToDB, NoteInputData, updateNoteInDB } from "../services/firebase/notes.service";
 import { appAlert } from "../lib/appAlert";
+import { getInitials } from "../lib/initials";
 
 export const NOTE_CATEGORIES = [
 	{ id: "Medisch", icon: "hospital-building" },
@@ -95,7 +96,7 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 			const day = now.getDate().toString().padStart(2, "0");
 
 			const authorName = userData?.name || user?.displayName || t("common.memberFallback");
-			const authorInitials = authorName.substring(0, 2).toUpperCase();
+			const authorInitials = getInitials(authorName);
 			const authorPhoto = userData?.photoUrl || user?.photoURL || null;
 
 			const noteData: NoteInputData = {

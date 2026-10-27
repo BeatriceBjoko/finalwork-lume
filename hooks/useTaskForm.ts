@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
-import { getCircleMembers } from "../lib/firebase-service";
 import { createMedicationTask, getMedicationDetails, updateMedicationTask } from "../services/firebase/medication.service";
 import { MEDICATION, type FaggMedicine, type MedicationVisibility } from "../services/firebase/medication.types";
 import { addTaskToDB, TaskInputData, updateTaskInDB } from "../services/firebase/tasks.service";
 import { appAlert } from "../lib/appAlert";
+import { getInitials } from "../lib/initials";
 
 export const TASK_ICONS = [
 	{ id: "pill", label: "Medicatie" },
@@ -20,7 +20,8 @@ export const TASK_ICONS = [
 
 export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSaved: () => void, taskToEdit?: any) {
 	const { t } = useTranslation();
-	const { user, userData } = useSession();
+	// Live member list from the session: names and photos are always up to date
+	const { user, userData, circleMembers: members, isCircleAdmin: isAdmin } = useSession();
 	const circleId = userData?.careCircleId;
 
 	const [title, setTitle] = useState("");
@@ -29,7 +30,6 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 	const [selectedIcon, setSelectedIcon] = useState(TASK_ICONS[0].id);
 	const [descriptionText, setDescriptionText] = useState("");
 
-	const [members, setMembers] = useState<any[]>([]);
 	const [selectedMember, setSelectedMember] = useState<any | null>(null);
 	const [isSaving, setIsSaving] = useState(false);
 
@@ -50,13 +50,6 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 	const [faggRef, setFaggRef] = useState<string | null>(null);
 	const [scannedMedName, setScannedMedName] = useState<string | null>(null);
 
-	const isAdmin = useMemo(() => members.some((m) => m.id === user?.uid && m.isAdmin), [members, user?.uid]);
-
-	useEffect(() => {
-		if (circleId) {
-			getCircleMembers(circleId).then(setMembers).catch(console.error);
-		}
-	}, [circleId]);
 
 	const clearScannedMedicine = () => {
 		setGtin(null);
@@ -149,7 +142,8 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 	useEffect(() => {
 		if (!visible) return;
 		if (taskToEdit?.assignee && members.length > 0) {
-			const memberMatch = members.find((m) => m.name === taskToEdit.assignee.name);
+			const a = taskToEdit.assignee;
+			const memberMatch = members.find((m) => (a.uid ? m.id === a.uid : m.name === a.name));
 			if (memberMatch) setSelectedMember(memberMatch);
 		}
 	}, [visible, taskToEdit, members]);
@@ -240,8 +234,9 @@ export function useTaskForm(visible: boolean, selectedDateStr: string, onTaskSav
 
 			const assigneeData = selectedMember
 				? {
+						uid: selectedMember.id,
 						name: selectedMember.name,
-						initials: selectedMember.name.substring(0, 2).toUpperCase(),
+						initials: getInitials(selectedMember.name),
 						photo: selectedMember.photoUrl || null,
 					}
 				: null;

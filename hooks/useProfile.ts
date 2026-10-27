@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
 import { db } from "../lib/firebase-config";
 import { setAppLanguage } from "../locales/i18n";
+import { getInitials as initialsOf } from "../lib/initials";
+import { listenerError } from "../lib/firestoreErrors";
 
 export function useProfile() {
 	const { user, userData, signOut } = useSession();
@@ -36,7 +38,7 @@ export function useProfile() {
 					setMemberPhoto(data.photoUrl || null);
 					setMemberName(data.name || null);
 				},
-				(error) => console.error("Kon member data niet ophalen:", error),
+				listenerError("Kon member data niet ophalen:"),
 			);
 		}, [careCircleId, uid]),
 	);
@@ -48,7 +50,7 @@ export function useProfile() {
 	const getInitials = () => {
 		// The live membership name is updated by "Profiel bewerken" together with the profile
 		const nameToUse = memberName || userData?.name || user?.displayName || user?.email || "?";
-		return nameToUse.substring(0, 2).toUpperCase();
+		return initialsOf(nameToUse);
 	};
 
 	// Functie om taal te veranderen in de app en in de database

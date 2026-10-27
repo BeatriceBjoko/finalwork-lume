@@ -14,7 +14,8 @@ import InviteModal from "../../components/ui/InviteModal";
 import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
 import { useCircleInvite } from "../../hooks/useCircleInvite";
 
-import { getCircleMembers, getCurrentUserCircleData, removeCircleMember } from "../../lib/firebase-service";
+import { useSession } from "../../context";
+import { removeCircleMember } from "../../lib/firebase-service";
 import { appAlert } from "../../lib/appAlert";
 
 export default function CircleOverviewScreen() {
@@ -22,18 +23,20 @@ export default function CircleOverviewScreen() {
 	const { t } = useTranslation();
 	const tCircle = (key: string) => t(`circleOverview.${key}`);
 
-	const [members, setMembers] = useState<any[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [circleData, setCircleData] = useState<{ careCircleId: string; role: string; currentUserId: string } | null>(null);
+	// Live from the session: a member who joins, leaves or changes their name or photo shows immediately
+	const { user, userData, circleMembers: members, isCircleAdmin: isAdmin } = useSession();
+	const careCircleId = userData?.careCircleId;
+	const currentUserId = user?.uid;
+	// A circle always has at least one member (you), so an empty list means still loading
+	const isLoading = !!careCircleId && members.length === 0;
 
 	const [isRemoveModalVisible, setRemoveModalVisible] = useState(false);
 	const [selectedMemberToRemove, setSelectedMemberToRemove] = useState<string | null>(null);
 	const [isRemoving, setIsRemoving] = useState(false);
 
 	const isTemplateMode = members.length <= 1;
-	const isAdmin = circleData?.role === "admin";
 
-	const { isVisible: isInviteModalVisible, openInvite, closeInvite, inviteCode, validUntil, isLoadingCode, shareSMS, shareEmail } = useCircleInvite(circleData?.careCircleId);
+	const { isVisible: isInviteModalVisible, openInvite, closeInvite, inviteCode, validUntil, isLoadingCode, shareSMS, shareEmail } = useCircleInvite(careCircleId);
 
 	const SLOT_STYLES = [
 		{ left: 0, top: 0, zIndex: 1, size: 130, isCenter: false },
@@ -50,26 +53,6 @@ export default function CircleOverviewScreen() {
 		}
 	}, [members]);
 
-	// isLoading starts as true, so no need to set it here
-	const loadData = async () => {
-		try {
-			const data = await getCurrentUserCircleData();
-			if (data && data.careCircleId) {
-				setCircleData(data);
-				const fetchedMembers = await getCircleMembers(data.careCircleId);
-				setMembers(fetchedMembers);
-			}
-		} catch (error) {
-			console.error("Fout bij laden leden:", error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		loadData();
-	}, []);
-
 	const handleOpenRemoveModal = (memberId: string) => {
 		// Warning buzz: removing someone cannot be undone
 		Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -78,13 +61,12 @@ export default function CircleOverviewScreen() {
 	};
 
 	const handleConfirmRemove = async () => {
-		if (!circleData?.careCircleId || !selectedMemberToRemove) return;
+		if (!careCircleId || !selectedMemberToRemove) return;
 
 		try {
 			setIsRemoving(true);
-			await removeCircleMember(circleData.careCircleId, selectedMemberToRemove);
-
-			setMembers((prev) => prev.filter((m) => m.id !== selectedMemberToRemove));
+			// The live member list drops the removed member by itself
+			await removeCircleMember(careCircleId, selectedMemberToRemove);
 			setRemoveModalVisible(false);
 			Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 		} catch (error) {
@@ -142,7 +124,7 @@ export default function CircleOverviewScreen() {
 							if (baseStyle.right !== undefined) positionStyle.right = baseStyle.right;
 							if (baseStyle.transform) positionStyle.transform = baseStyle.transform;
 
-							const canShowOptions = isAdmin && member.id !== circleData?.currentUserId;
+							const canShowOptions = isAdmin && member.id !== currentUserId;
 
 							return (
 								<View key={member.id} style={positionStyle}>

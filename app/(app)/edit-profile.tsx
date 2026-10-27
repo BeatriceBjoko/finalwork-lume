@@ -13,6 +13,7 @@ import { COLORS, FONTS, TYPOGRAPHY } from "../../constants/theme";
 import { useSession } from "../../context";
 import { RELATION_KEYS } from "../../hooks/useCreateCircle";
 import { useEditProfile } from "../../hooks/useEditProfile";
+import { getInitials } from "../../lib/initials";
 
 const PHOTO_SIZE = 130;
 const ICON_CIRCLE_SIZE = 48;
@@ -37,15 +38,6 @@ export default function EditProfileScreen() {
 		await handleSave();
 	};
 
-	const getInitials = (userName: string) => {
-		if (!userName) return "?";
-		return userName
-			.split(" ")
-			.map((n) => n[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2);
-	};
 
 	return (
 		<SafeAreaView style={styles.safeArea}>

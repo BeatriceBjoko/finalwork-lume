@@ -9,10 +9,12 @@ import { subscribeToDailyNote } from "../services/firebase/notes.service";
 import { deleteTaskFromDB, toggleTaskStatusInDB } from "../services/firebase/tasks.service";
 import { enrichMedicationTask, useMedicationDetails } from "./useMedicationDetails";
 import { appAlert } from "../lib/appAlert";
+import { resolveAssignee } from "../lib/memberDisplay";
+import { listenerError } from "../lib/firestoreErrors";
 
 export function useDailySummary() {
 	const { t, i18n } = useTranslation();
-	const { userData, user, isCircleAdmin } = useSession();
+	const { userData, user, isCircleAdmin, circleMembers } = useSession();
 	const circleId = userData?.careCircleId;
 	const currentUserId = user?.uid;
 	const userRole = isCircleAdmin ? "admin" : "member";
@@ -77,7 +79,8 @@ export function useDailySummary() {
 				setLiveTasks(items);
 				setIsTemplateMode(items.length === 0);
 			},
-			(e) => console.error("Daily tasks feed error:", e),
+			// No access anymore (account deleted, removed from the circle): empty quietly
+			listenerError("Daily tasks feed error:", () => setLiveTasks([])),
 		);
 		return () => unsub();
 	}, [circleId, databaseDateQueryString]);
@@ -102,8 +105,9 @@ export function useDailySummary() {
 	const tasks = useMemo(() => {
 		if (isTemplateMode) return templateTasks;
 		const sorted = [...liveTasks].sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
-		return sorted.map((tk) => ({ ...enrichMedicationTask(tk, medDetails), expanded: expandedIds.has(tk.id) }));
-	}, [isTemplateMode, templateTasks, liveTasks, medDetails, expandedIds]);
+		// Assignee: CURRENT name and photo from the live member list, not the copy in the task
+		return sorted.map((tk) => ({ ...enrichMedicationTask(tk, medDetails), assignee: resolveAssignee(circleMembers, tk.assignee), expanded: expandedIds.has(tk.id) }));
+	}, [isTemplateMode, templateTasks, liveTasks, medDetails, expandedIds, circleMembers]);
 
 	useEffect(() => {
 		if (!circleId) {
@@ -134,7 +138,7 @@ export function useDailySummary() {
 					});
 				}
 			},
-			(e) => console.error("Error live daily note:", e),
+			listenerError("Error live daily note:", () => setNote(null)),
 		);
 		return () => unsubscribe();
 	}, [circleId, databaseDateQueryString, t]);

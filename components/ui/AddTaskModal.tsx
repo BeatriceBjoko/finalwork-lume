@@ -14,6 +14,7 @@ import { AppAlertHost } from "./AppAlertHost";
 import Button from "./Button";
 import { ScanIcon } from "./TabIcons";
 import { appAlert } from "../../lib/appAlert";
+import { getInitials } from "../../lib/initials";
 
 interface AddTaskModalProps {
 	visible: boolean;
@@ -33,6 +34,9 @@ function formatTimeFromDate(d: Date): string {
 	const m = String(d.getMinutes()).padStart(2, "0");
 	return `${h}:${m}`;
 }
+
+// First word of a name ("Beatrice Bjoko" → "Beatrice"), shown under the avatar
+const firstName = (name: string) => name.trim().split(/s+/)[0] || name;
 
 const VIS_KEYS: MedicationVisibility[] = ["admin", "selected", "everyone"];
 const SCAN_BARCODE_TYPES = ["datamatrix", "qr", "ean13", "ean8", "upc_a", "upc_e", "code128", "code39", "code93", "codabar", "itf14", "pdf417", "aztec"] as const;
@@ -245,13 +249,18 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 											{members.map((m) => {
 												const on = allowedMemberIds.includes(m.id);
 												return (
-													<Pressable key={m.id} onPress={() => toggleAllowedMember(m.id)} style={[styles.memberCircle, on && styles.memberCircleSelected]}>
-														{m.photoUrl ? <Image source={{ uri: m.photoUrl }} style={styles.memberPhoto} /> : <Text style={styles.memberInitials}>{m.name.substring(0, 2).toUpperCase()}</Text>}
+													<Pressable key={m.id} onPress={() => toggleAllowedMember(m.id)} style={styles.memberItem}>
+														<View style={[styles.memberCircle, on && styles.memberCircleSelected]}>
+															{m.photoUrl ? <Image source={{ uri: m.photoUrl }} style={styles.memberPhoto} /> : <Text style={styles.memberInitials}>{getInitials(m.name)}</Text>}
+														</View>
 														{on && (
 															<View style={styles.memberCheck}>
 																<Ionicons name="checkmark" size={12} color={COLORS.primary} />
 															</View>
 														)}
+														<Text style={[styles.memberName, on && styles.memberNameSelected]} numberOfLines={1}>
+															{firstName(m.name)}
+														</Text>
 													</Pressable>
 												);
 											})}
@@ -279,14 +288,27 @@ export function AddTaskModal({ visible, onClose, currentDateStr, taskToEdit }: A
 
 								<Text style={styles.label}>{t("tasks.assignTo")}</Text>
 								<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.memberList}>
-									<Pressable onPress={() => setSelectedMember(null)} style={[styles.memberCircle, !selectedMember && styles.memberCircleSelected]}>
-										<MaterialCommunityIcons name="account-off-outline" size={24} color={!selectedMember ? COLORS.primary : "#9ca3af"} />
+									<Pressable onPress={() => setSelectedMember(null)} style={styles.memberItem}>
+										<View style={[styles.memberCircle, !selectedMember && styles.memberCircleSelected]}>
+											<MaterialCommunityIcons name="account-off-outline" size={24} color={!selectedMember ? COLORS.primary : "#9ca3af"} />
+										</View>
+										<Text style={[styles.memberName, !selectedMember && styles.memberNameSelected]} numberOfLines={1}>
+											{t("tasks.assignNobody")}
+										</Text>
 									</Pressable>
-									{members.map((member) => (
-										<Pressable key={member.id} onPress={() => setSelectedMember(member)} style={[styles.memberCircle, selectedMember?.id === member.id && styles.memberCircleSelected]}>
-											{member.photoUrl ? <Image source={{ uri: member.photoUrl }} style={styles.memberPhoto} /> : <Text style={styles.memberInitials}>{member.name.substring(0, 2).toUpperCase()}</Text>}
-										</Pressable>
-									))}
+									{members.map((member) => {
+										const on = selectedMember?.id === member.id;
+										return (
+											<Pressable key={member.id} onPress={() => setSelectedMember(member)} style={styles.memberItem}>
+												<View style={[styles.memberCircle, on && styles.memberCircleSelected]}>
+													{member.photoUrl ? <Image source={{ uri: member.photoUrl }} style={styles.memberPhoto} /> : <Text style={styles.memberInitials}>{getInitials(member.name)}</Text>}
+												</View>
+												<Text style={[styles.memberName, on && styles.memberNameSelected]} numberOfLines={1}>
+													{firstName(member.name)}
+												</Text>
+											</Pressable>
+										);
+									})}
 								</ScrollView>
 
 								<Text style={styles.label}>{t("tasks.chooseIcon")}</Text>
@@ -407,9 +429,13 @@ const styles = StyleSheet.create({
 	memberList: { gap: 12, paddingVertical: 4 },
 	memberCircle: { width: 52, height: 52, borderRadius: 26, backgroundColor: "#f9fafb", borderWidth: 1, borderColor: "rgba(35,54,0,0.1)", justifyContent: "center", alignItems: "center", overflow: "hidden" },
 	memberCircleSelected: { borderColor: COLORS.accent, borderWidth: 2, backgroundColor: "rgba(239, 252, 0, 0.2)" },
+	// Avatar with the first name underneath, so members with the same initials are easy to tell apart
+	memberItem: { width: 64, alignItems: "center" },
+	memberName: { marginTop: 4, maxWidth: 64, fontFamily: "InterMedium", fontSize: 11, color: "#6b7280", textAlign: "center" },
+	memberNameSelected: { color: COLORS.primary, fontFamily: "InterSemiBold" },
 	memberPhoto: { width: "100%", height: "100%" },
 	memberInitials: { fontFamily: "InterSemiBold", fontSize: 16, color: COLORS.primary },
-	memberCheck: { position: "absolute", bottom: -2, right: -2, backgroundColor: COLORS.accent, borderRadius: 9, width: 18, height: 18, alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderColor: "#fff" },
+	memberCheck: { position: "absolute", top: 36, right: 4, backgroundColor: COLORS.accent, borderRadius: 9, width: 18, height: 18, alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderColor: "#fff" },
 
 	iconGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
 	iconBox: { width: 60, height: 60, borderRadius: 16, borderWidth: 1, borderColor: "rgba(35, 54, 0, 0.1)", justifyContent: "center", alignItems: "center", backgroundColor: "#f9fafb" },

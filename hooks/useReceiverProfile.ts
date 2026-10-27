@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSession } from "../context";
 import { db } from "../lib/firebase-config";
 import { updateCareReceiverInDB, uploadImageAsync } from "../lib/firebase-service";
+import { listenerError } from "../lib/firestoreErrors";
 
 export function useReceiverProfile() {
 	const { t } = useTranslation();
@@ -57,6 +58,10 @@ export function useReceiverProfile() {
 				setDiagnoses(receiver.diagnoses || "");
 				setGpVisit(receiver.gpVisit || "");
 			}
+			setIsLoading(false);
+		}, (error) => {
+			// No access anymore (account deleted, removed from the circle): stop loading quietly
+			listenerError("Kon zorgontvanger niet laden:")(error);
 			setIsLoading(false);
 		});
 

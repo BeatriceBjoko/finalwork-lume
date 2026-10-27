@@ -13,6 +13,7 @@ import CustomAlert from "../../components/ui/CustomAlert";
 import Input from "../../components/ui/Input";
 import { COLORS } from "../../constants/theme";
 import { useReceiverProfile } from "../../hooks/useReceiverProfile";
+import { getInitials } from "../../lib/initials";
 
 const PHOTO_SIZE = 130;
 const SKIA_PADDING = 30;
@@ -41,15 +42,6 @@ export default function ReceiverProfileScreen() {
 		return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
 	};
 
-	const getInitials = (userName: string) => {
-		if (!userName) return "?";
-		return userName
-			.split(" ")
-			.map((n) => n[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2);
-	};
 
 	const outerClipPath = useMemo(() => {
 		if (cardWidth <= 0 || cardHeight <= 0) return null;

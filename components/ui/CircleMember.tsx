@@ -4,6 +4,7 @@ import * as Haptics from "expo-haptics";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, FONTS } from "../../constants/theme";
+import { getInitials } from "../../lib/initials";
 
 interface CircleMemberProps {
 	name: string;
@@ -18,14 +19,6 @@ export default function CircleMember({ name, role, photoUrl, size, onPressOption
 
 	const skiaImage = useImage(photoUrl);
 
-	const getInitials = (name: string) => {
-		return name
-			.split(" ")
-			.map((n) => n[0])
-			.join("")
-			.substring(0, 2)
-			.toUpperCase();
-	};
 
 	const SVG_PATH = "M 48 -4 C 75 -2 96 20 96 50 C 96 82 72 98 45 98 C 20 98 6 70 5 55 C 4 30 22 -4 48 -4 Z";
 	const scale = size / 100;
