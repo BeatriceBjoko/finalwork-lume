@@ -195,6 +195,7 @@
 		"receiverInfo": "Informations sur le patient",
 		"emergencyContacts": "Contacts d'urgence",
 		"logout": "Se déconnecter",
+		"deleteAccount": "Supprimer le compte",
 		"roleAdmin": "administrateur",
 		"roleMember": "membre"
 	},
@@ -328,6 +329,7 @@
 		"startTime": "Début",
 		"endTime": "Fin",
 		"assignTo": "Attribuer à",
+		"assignNobody": "Personne",
 		"chooseIcon": "Choisissez une icône",
 		"descriptionLabel": "Description (Nouvelle ligne = nouveau point)",
 		"descriptionPlaceholder": "• Donner les médicaments\n• Mesurer la tension",
@@ -590,5 +592,35 @@
 			"notFoundText": "Cet emballage n'est pas dans la base de données, mais le code a été enregistré pour de futurs scans."
 		},
 		"cancel": "Annuler"
+	},
+	"deleteAccount": {
+		"titlePart1": "Supprimer",
+		"titlePart2": "le compte",
+		"whatTitle": "Ce qui sera supprimé",
+		"whatItems": [
+			"Votre compte et votre profil (nom, adresse e-mail, photos de profil)",
+			"Toutes les notes que vous avez écrites, avec leurs photos",
+			"Toutes les tâches que vous avez créées",
+			"Vos confirmations de médication",
+			"Les invitations que vous avez envoyées",
+			"Votre nom sur les tâches qui vous sont attribuées"
+		],
+		"circleTitle": "Que devient votre cercle de soins ?",
+		"leave": "Vous quittez le cercle de soins. Le cercle et les données des autres membres sont conservés.",
+		"transfer": "Vous êtes administrateur. {{name}} devient le nouvel administrateur, car c'est le membre le plus ancien du cercle. Le cercle, la personne aidée et le schéma de médication sont conservés pour les autres membres.",
+		"deleteCircle": "Vous êtes le seul membre. Le cercle de soins entier sera supprimé : les données de la personne aidée, toutes les tâches, notes, médications et photos.",
+		"noCircle": "Vous ne faites partie d'aucun cercle de soins.",
+		"whenTitle": "Quand ?",
+		"when": "Tout est supprimé immédiatement et définitivement. Cette action est irréversible.",
+		"passwordLabel": "Confirmez avec votre mot de passe",
+		"button": "Supprimer définitivement le compte",
+		"deleting": "Suppression en cours...",
+		"confirmTitle": "Êtes-vous sûr ?",
+		"confirmMessage": "Votre compte et vos données seront supprimés définitivement.",
+		"confirmButton": "Supprimer",
+		"doneTitle": "Compte supprimé",
+		"doneMessage": "Votre compte et vos données ont été supprimés. Merci d'avoir utilisé Lume.",
+		"wrongPassword": "Ce mot de passe est incorrect.",
+		"failed": "La suppression a échoué. Vérifiez votre connexion internet et réessayez."
 	}
 }

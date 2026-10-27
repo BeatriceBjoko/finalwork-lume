@@ -1,6 +1,6 @@
 import { FirebaseError } from "firebase/app";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
+import { collection, doc, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import i18n, { currentAppLanguage } from "../locales/i18n";
@@ -166,41 +166,38 @@ export async function updateCareReceiverInDB(circleId: string, data: any): Promi
 	});
 }
 
-// 1. Haal de ID van de huidige kring en de rol van de ingelogde gebruiker op
-export async function getCurrentUserCircleData(): Promise<{ careCircleId: string; role: string; currentUserId: string } | null> {
-	const currentUser = auth.currentUser;
-	if (!currentUser) return null;
 
-	const userRef = doc(db, "users", currentUser.uid);
-	const userSnap = await getDoc(userRef);
-	if (!userSnap.exists() || !userSnap.data().careCircleId) return null;
-
-	const careCircleId = userSnap.data().careCircleId;
-
-	const memberRef = doc(db, "careCircleMembers", `${careCircleId}_${currentUser.uid}`);
-	const memberSnap = await getDoc(memberRef);
-	const role = memberSnap.exists() ? memberSnap.data().role : "member";
-
-	return { careCircleId, role, currentUserId: currentUser.uid };
+// 2. Leden van een kring, LIVE: a changed name or photo shows everywhere immediately
+export interface CircleMemberInfo {
+	id: string;
+	name: string;
+	role: string; // relationship to the care receiver, e.g. "dochter"
+	photoUrl: string | null;
+	isAdmin: boolean;
+	joinedAt: string;
 }
 
-// 2. Haal alle leden van een specifieke kring op
-export async function getCircleMembers(circleId: string): Promise<any[]> {
-	const membersRef = collection(db, "careCircleMembers");
-	const q = query(membersRef, where("careCircleId", "==", circleId));
-	const snapshot = await getDocs(q);
-
+export function subscribeToCircleMembers(circleId: string, onChange: (members: CircleMemberInfo[]) => void, onError: (error: unknown) => void): () => void {
+	const q = query(collection(db, "careCircleMembers"), where("careCircleId", "==", circleId));
 	// Name and photo are stored on the membership itself; users documents are private
-	return snapshot.docs.map((docSnap) => {
-		const data = docSnap.data();
-		return {
-			id: data.userId,
-			name: data.name || i18n.t("common.unknownName"),
-			role: data.relationshipToCareReceiver || i18n.t("common.memberFallback"),
-			photoUrl: data.photoUrl || null,
-			isAdmin: data.role === "admin",
-		};
-	});
+	return onSnapshot(
+		q,
+		(snapshot) =>
+			onChange(
+				snapshot.docs.map((docSnap) => {
+					const data = docSnap.data();
+					return {
+						id: data.userId,
+						name: data.name || i18n.t("common.unknownName"),
+						role: data.relationshipToCareReceiver || i18n.t("common.memberFallback"),
+						photoUrl: data.photoUrl || null,
+						isAdmin: data.role === "admin",
+						joinedAt: data.joinedAt || "",
+					};
+				}),
+			),
+		onError,
+	);
 }
 
 // 3. Verwijder een lid uit de kring. The server (Cloud Function removeMember) checks that the
@@ -223,4 +220,37 @@ export async function getCircleInviteCode(circleId: string): Promise<InviteCodeI
 	} catch (error) {
 		throw toCircleError(error);
 	}
+}
+
+// ─── Account deletion ─────────────────────────────────────────────────────────
+
+export type AccountDeletionOutcome = "leave" | "transfer" | "deleteCircle" | "noCircle";
+
+// What deleting the account will do to the user's circle (shown before confirming)
+export async function getAccountDeletionPlan(): Promise<{ outcome: AccountDeletionOutcome; newAdminName: string | null }> {
+	const getPlan = httpsCallable<object, { outcome: AccountDeletionOutcome; newAdminName: string | null }>(functions, "getAccountDeletionPlan");
+	return (await getPlan({})).data;
+}
+
+// Confirms the password (the server only deletes after a recent login), lets the
+// server delete everything, then signs out on this phone.
+// Throws "WRONG_PASSWORD" when the password does not match.
+export async function deleteMyAccount(password: string): Promise<void> {
+	const currentUser = auth.currentUser;
+	if (!currentUser?.email) throw new Error("Je bent niet ingelogd.");
+
+	try {
+		await reauthenticateWithCredential(currentUser, EmailAuthProvider.credential(currentUser.email, password));
+	} catch (error) {
+		const code = (error as FirebaseError)?.code;
+		if (code === "auth/wrong-password" || code === "auth/invalid-credential" || code === "auth/invalid-login-credentials") throw new Error("WRONG_PASSWORD");
+		throw error;
+	}
+
+	// The fresh login gives a new token with a recent auth_time
+	await currentUser.getIdToken(true);
+	await httpsCallable(functions, "deleteAccount")({});
+
+	// The login account no longer exists; clear the local session
+	await signOut(auth).catch(() => {});
 }

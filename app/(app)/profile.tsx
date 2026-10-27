@@ -100,6 +100,14 @@ export default function ProfileScreen() {
 								<Text style={styles.menuLabel}>{t("profile.logout", "Uitloggen")}</Text>
 								<Ionicons name="chevron-forward" size={18} color={COLORS.primary} />
 							</Pressable>
+
+							<Pressable style={({ pressed }) => [styles.logoutRow, pressed && { opacity: 0.7 }]} onPress={() => router.push("/delete-account")}>
+								<View style={[styles.iconCircle, styles.logoutCircle]}>
+									<MaterialCommunityIcons name="account-remove-outline" size={20} color="#C94B47" />
+								</View>
+								<Text style={[styles.menuLabel, styles.deleteLabel]}>{t("profile.deleteAccount")}</Text>
+								<Ionicons name="chevron-forward" size={18} color="#C94B47" />
+							</Pressable>
 						</View>
 					</View>
 				</View>
@@ -187,6 +195,7 @@ const styles = StyleSheet.create({
 	menuLabel: { flex: 1, fontFamily: "InterRegular", fontSize: 16, color: COLORS.primary },
 	logoutSeparator: { height: 1, backgroundColor: "rgba(45, 106, 79, 0.1)", marginTop: 4 },
 	logoutRow: { flexDirection: "row", alignItems: "center", paddingHorizontal: 24, paddingVertical: 18, gap: 14, backgroundColor: "#f8fafc8d" },
+	deleteLabel: { color: "#C94B47" },
 	logoutCircle: { backgroundColor: "rgba(201, 75, 71, 0.2)", shadowOpacity: 0, elevation: 0 },
 
 	modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.3)", justifyContent: "center", paddingHorizontal: 24 },

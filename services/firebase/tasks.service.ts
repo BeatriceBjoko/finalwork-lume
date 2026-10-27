@@ -38,7 +38,8 @@ export interface TaskInputData {
 	timeStr: string;
 	icon: string;
 	description: string[];
-	assignee: { name: string; initials: string; photo: string | null } | null;
+	// uid identifies the member (used to remove them when they delete their account)
+	assignee: { uid?: string; name: string; initials: string; photo: string | null } | null;
 	date: string;
 }
 

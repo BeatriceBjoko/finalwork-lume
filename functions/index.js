@@ -3,7 +3,9 @@ const { setGlobalOptions } = require("firebase-functions/v2");
 const { onDocumentCreated, onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
+const { getAuth } = require("firebase-admin/auth");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
+const { getStorage } = require("firebase-admin/storage");
 
 setGlobalOptions({ region: "europe-west1" });
 
@@ -246,10 +248,11 @@ exports.joinCircle = onCall(async (request) => {
 });
 
 // Removes uid from allowedUserIds on every doc of the circle in this collection
+// (circleId null: in every circle, used when an account is deleted)
 async function revokeAllowedUser(collectionName, circleId, uid) {
 	// Single-field query (no composite index needed); filter on the circle here
 	const snap = await db.collection(collectionName).where("allowedUserIds", "array-contains", uid).get();
-	const docs = snap.docs.filter((d) => d.get("careCircleId") === circleId);
+	const docs = circleId === null ? snap.docs : snap.docs.filter((d) => d.get("careCircleId") === circleId);
 	for (let i = 0; i < docs.length; i += 400) {
 		const batch = db.batch();
 		for (const d of docs.slice(i, i + 400)) batch.update(d.ref, { allowedUserIds: FieldValue.arrayRemove(uid) });
@@ -290,6 +293,159 @@ exports.removeMember = onCall(async (request) => {
 	await revokeAllowedUser("medicationLogs", circleId, memberUid);
 
 	return { removed: memberUid };
+});
+
+// ─── Account deletion (App Store 5.1.1(v), Google Play, GDPR art. 17) ───────────
+// Removes everything that belongs to the user. Data that belongs to the circle (care
+// receiver, medication schedule, other members' notes and tasks) stays when the circle
+// continues. The function can safely be called again if it stops halfway; the login
+// account is deleted last, so the user can always retry.
+
+const RECENT_LOGIN_SECONDS = 5 * 60;
+
+async function deleteRefs(refs) {
+	if (refs.length === 0) return;
+	const writer = db.bulkWriter();
+	for (const ref of refs) writer.delete(ref);
+	await writer.close();
+}
+
+async function deleteStoragePrefix(prefix) {
+	try {
+		await getStorage().bucket().deleteFiles({ prefix, force: true });
+	} catch (err) {
+		if (err.code !== 404) throw err;
+	}
+}
+
+// The user was the only member: delete the circle with all its data and photos
+async function deleteWholeCircle(circleId) {
+	for (const name of ["careCircleTasks", "careCircleNotes", "medicationDetails", "medicationLogs", "careCircleInvites", "inviteCodes", "careCircleMembers"]) {
+		const snap = await db.collection(name).where("careCircleId", "==", circleId).get();
+		await deleteRefs(snap.docs.map((d) => d.ref));
+	}
+	await deleteRefs([db.collection("circlePrivate").doc(circleId), db.collection("careCircles").doc(circleId)]);
+	await deleteStoragePrefix(`careCircles/${circleId}/`);
+}
+
+// The admin leaves but others stay: the new admin takes over the circle's own records
+async function transferCircle(circleId, fromUid, toUid) {
+	const writer = db.bulkWriter();
+	writer.update(db.collection("careCircleMembers").doc(`${circleId}_${toUid}`), { role: "admin" });
+	const circleRef = db.collection("careCircles").doc(circleId);
+	if ((await circleRef.get()).get("createdBy") === fromUid) writer.update(circleRef, { createdBy: toUid });
+	for (const name of ["medicationDetails", "careCircleTasks", "inviteCodes"]) {
+		const snap = await db.collection(name).where("createdBy", "==", fromUid).get();
+		for (const d of snap.docs) {
+			if (d.get("careCircleId") !== circleId) continue;
+			// Medication slots belong to the circle; the admin's normal tasks are deleted later
+			if (name === "careCircleTasks" && d.get("isMedication") !== true) continue;
+			writer.update(d.ref, { createdBy: toUid });
+		}
+	}
+	await writer.close();
+}
+
+// Removes the user as assignee from the circle's tasks. Older tasks stored only the
+// name and photo of the assignee (no uid), so those are matched on name.
+async function unassignUser(circleId, uid, name) {
+	const snap = await db.collection("careCircleTasks").where("careCircleId", "==", circleId).get();
+	const writer = db.bulkWriter();
+	for (const d of snap.docs) {
+		const assignee = d.get("assignee");
+		if (!assignee) continue;
+		const isUser = assignee.uid ? assignee.uid === uid : !!name && assignee.name === name;
+		if (isUser) writer.update(d.ref, { assignee: null });
+	}
+	await writer.close();
+}
+
+// Shown to the user before deleting: what will happen to their circle
+async function planCircles(uid) {
+	const memberships = await db.collection("careCircleMembers").where("userId", "==", uid).get();
+	const plans = [];
+	for (const m of memberships.docs) {
+		const circleId = m.get("careCircleId");
+		if (m.get("role") !== "admin") {
+			plans.push({ circleId, outcome: "leave" });
+			continue;
+		}
+		const others = (await db.collection("careCircleMembers").where("careCircleId", "==", circleId).get()).docs.filter((d) => d.get("userId") !== uid);
+		if (others.length === 0) {
+			plans.push({ circleId, outcome: "deleteCircle" });
+			continue;
+		}
+		// An existing admin takes over; otherwise the member who joined earliest
+		const byJoined = (a, b) => String(a.get("joinedAt") || "").localeCompare(String(b.get("joinedAt") || ""));
+		const next = others.filter((d) => d.get("role") === "admin").sort(byJoined)[0] || others.sort(byJoined)[0];
+		plans.push({ circleId, outcome: "transfer", newAdminUid: next.get("userId"), newAdminName: next.get("name") || "" });
+	}
+	return plans;
+}
+
+// What deleting the account would do, so the app can explain it before the user confirms
+exports.getAccountDeletionPlan = onCall(async (request) => {
+	const uid = requireAuth(request);
+	const plans = await planCircles(uid);
+	const plan = plans[0] || { outcome: "noCircle" };
+	return { outcome: plan.outcome, newAdminName: plan.newAdminName || null };
+});
+
+exports.deleteAccount = onCall(async (request) => {
+	const uid = requireAuth(request);
+
+	// The app asks for the password right before deleting (re-authentication)
+	const authTime = request.auth.token.auth_time;
+	if (!authTime || Date.now() / 1000 - authTime > RECENT_LOGIN_SECONDS) {
+		throw new HttpsError("failed-precondition", "Log opnieuw in om je account te verwijderen.", { reason: "requires-recent-login" });
+	}
+
+	const userSnap = await db.collection("users").doc(uid).get();
+	const name = (userSnap.exists && userSnap.get("name")) || "";
+
+	// 1. The circle: delete it (alone), hand it over (admin with others) or just leave it
+	const plans = await planCircles(uid);
+	for (const plan of plans) {
+		if (plan.outcome === "deleteCircle") {
+			await deleteWholeCircle(plan.circleId);
+			continue;
+		}
+		if (plan.outcome === "transfer") await transferCircle(plan.circleId, uid, plan.newAdminUid);
+		await unassignUser(plan.circleId, uid, name);
+	}
+
+	// 2. Everything the user wrote or created, in any circle
+	const notes = await db.collection("careCircleNotes").where("createdBy", "==", uid).get();
+	for (const n of notes.docs) await deleteStoragePrefix(`careCircles/${n.get("careCircleId")}/notes/${n.id}/`);
+	await deleteRefs(notes.docs.map((d) => d.ref));
+
+	for (const [collectionName, field] of [
+		["careCircleTasks", "createdBy"],
+		["medicationLogs", "confirmedBy"],
+		["careCircleInvites", "invitedBy"],
+		["careCircleMembers", "userId"],
+	]) {
+		const snap = await db.collection(collectionName).where(field, "==", uid).get();
+		await deleteRefs(snap.docs.map((d) => d.ref));
+	}
+
+	// 3. Access lists that mention the user
+	await revokeAllowedUser("medicationDetails", null, uid);
+	await revokeAllowedUser("medicationLogs", null, uid);
+
+	// 4. Profile photos (current folder and the older profilePhotos/ folder)
+	await deleteStoragePrefix(`users/${uid}/`);
+	await deleteStoragePrefix(`profilePhotos/${uid}_`);
+
+	// 5. Profile, wrong-code counter and finally the login account itself
+	await deleteRefs([db.collection("joinAttempts").doc(uid), db.collection("users").doc(uid)]);
+	try {
+		await getAuth().deleteUser(uid);
+	} catch (err) {
+		if (err.code !== "auth/user-not-found") throw err;
+	}
+
+	return { deleted: true };
 });
 
 async function fetchTokens(uids) {

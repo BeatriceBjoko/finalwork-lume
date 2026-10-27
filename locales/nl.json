@@ -195,6 +195,7 @@
 		"receiverInfo": "Zorgontvanger informatie",
 		"emergencyContacts": "Belangrijke contactpersonen",
 		"logout": "Uitloggen",
+		"deleteAccount": "Account verwijderen",
 		"roleAdmin": "beheerder",
 		"roleMember": "lid"
 	},
@@ -327,6 +328,7 @@
 		"startTime": "Begin",
 		"endTime": "Einde",
 		"assignTo": "Toewijzen aan",
+		"assignNobody": "Niemand",
 		"chooseIcon": "Kies een icoon",
 		"descriptionLabel": "Beschrijving (Nieuwe regel = nieuw puntje)",
 		"descriptionPlaceholder": "• Medicatie geven\n• Bloeddruk meten",
@@ -589,5 +591,35 @@
 			"notFoundText": "Deze verpakking staat niet in de databank, maar de code is wel opgeslagen voor latere scans."
 		},
 		"cancel": "Annuleren"
+	},
+	"deleteAccount": {
+		"titlePart1": "Account",
+		"titlePart2": "verwijderen",
+		"whatTitle": "Dit wordt verwijderd",
+		"whatItems": [
+			"Je account en profiel (naam, e-mailadres, profielfoto's)",
+			"Alle notities die je schreef, met hun foto's",
+			"Alle taken die je aanmaakte",
+			"Je bevestigingen van medicatie",
+			"Uitnodigingen die je verstuurde",
+			"Je naam bij taken die aan jou toegewezen zijn"
+		],
+		"circleTitle": "Wat gebeurt er met je zorgkring?",
+		"leave": "Je verlaat de zorgkring. De zorgkring en de gegevens van de andere leden blijven bestaan.",
+		"transfer": "Jij bent beheerder. {{name}} wordt de nieuwe beheerder, omdat die het langst lid is van de kring. De zorgkring, de zorgontvanger en het medicatieschema blijven bestaan voor de andere leden.",
+		"deleteCircle": "Jij bent het enige lid. De volledige zorgkring wordt verwijderd: de gegevens van de zorgontvanger, alle taken, notities, medicatie en foto's.",
+		"noCircle": "Je bent geen lid van een zorgkring.",
+		"whenTitle": "Wanneer?",
+		"when": "Alles wordt meteen en definitief verwijderd. Dit kan niet ongedaan worden gemaakt.",
+		"passwordLabel": "Bevestig met je wachtwoord",
+		"button": "Account definitief verwijderen",
+		"deleting": "Bezig met verwijderen...",
+		"confirmTitle": "Ben je zeker?",
+		"confirmMessage": "Je account en je gegevens worden definitief verwijderd.",
+		"confirmButton": "Verwijderen",
+		"doneTitle": "Account verwijderd",
+		"doneMessage": "Je account en je gegevens zijn verwijderd. Bedankt dat je Lume gebruikte.",
+		"wrongPassword": "Dit wachtwoord klopt niet.",
+		"failed": "Het verwijderen is niet gelukt. Controleer je internetverbinding en probeer het opnieuw."
 	}
 }
