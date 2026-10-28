@@ -117,7 +117,7 @@ header { display: flex; justify-content: space-between; align-items: center; pad
 .logo { text-decoration: none; color: var(--primary); font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
 .logo span { background: var(--accent); border-radius: 20px; padding: 2px 14px; }
 .lang { color: var(--primary); font-weight: 600; font-size: 14px; }
-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 8px; }
+nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 24px 0 8px; }
 nav a { color: var(--primary); text-decoration: none; font-size: 14px; border: 1px solid var(--line); border-radius: 20px; padding: 6px 14px; }
 nav a[aria-current="page"] { background: var(--primary); color: #fff; border-color: var(--primary); }
 h1 { font-size: 32px; line-height: 1.2; margin: 28px 0 4px; }
