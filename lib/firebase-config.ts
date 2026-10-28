@@ -25,8 +25,9 @@ const auth = initializeAuth(app, {
 // Initialize Firestore Database
 const db = getFirestore(app);
 
-// Initialize Firebase Storage
-const storage = getStorage(app);
+// Photos live in the EU bucket (Belgium); the default bucket is in the US
+export const PHOTO_BUCKET = "finalwork-lume";
+const storage = getStorage(app, `gs://${PHOTO_BUCKET}`);
 
 // Cloud Functions run in Belgium (same region as in functions/index.js)
 const functions = getFunctions(app, "europe-west1");

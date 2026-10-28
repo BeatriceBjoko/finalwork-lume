@@ -310,11 +310,16 @@ async function deleteRefs(refs) {
 	await writer.close();
 }
 
+// Photos live in the EU bucket; the old default (US) bucket is cleaned too until it is empty
+const PHOTO_BUCKETS = ["finalwork-lume", "finalwork-lume.firebasestorage.app"];
+
 async function deleteStoragePrefix(prefix) {
-	try {
-		await getStorage().bucket().deleteFiles({ prefix, force: true });
-	} catch (err) {
-		if (err.code !== 404) throw err;
+	for (const name of PHOTO_BUCKETS) {
+		try {
+			await getStorage().bucket(name).deleteFiles({ prefix, force: true });
+		} catch (err) {
+			if (err.code !== 404) throw err;
+		}
 	}
 }
 
