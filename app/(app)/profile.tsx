@@ -95,8 +95,8 @@ export default function ProfileScreen() {
 							<View style={styles.logoutSeparator} />
 
 							<Pressable style={({ pressed }) => [styles.logoutRow, pressed && { opacity: 0.7 }]} onPress={handleLogout}>
-								<View style={[styles.iconCircle, styles.logoutCircle]}>
-									<MaterialCommunityIcons name="logout-variant" size={20} color="#C94B47" />
+								<View style={[styles.iconCircle, styles.neutralCircle]}>
+									<MaterialCommunityIcons name="logout-variant" size={20} color={COLORS.iconColor} />
 								</View>
 								<Text style={styles.menuLabel}>{t("profile.logout", "Uitloggen")}</Text>
 								<Ionicons name="chevron-forward" size={18} color={COLORS.primary} />
@@ -197,7 +197,9 @@ const styles = StyleSheet.create({
 	logoutSeparator: { height: 1, backgroundColor: "rgba(45, 106, 79, 0.1)", marginTop: 4 },
 	logoutRow: { flexDirection: "row", alignItems: "center", paddingHorizontal: 24, paddingVertical: 18, gap: 14, backgroundColor: "#f8fafc8d" },
 	deleteLabel: { color: "#C94B47" },
+	// Red is only for the destructive action (deleting the account); logging out is neutral
 	logoutCircle: { backgroundColor: "rgba(201, 75, 71, 0.2)", shadowOpacity: 0, elevation: 0 },
+	neutralCircle: { backgroundColor: "rgba(176, 248, 0, 0.2)" },
 
 	modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.3)", justifyContent: "center", paddingHorizontal: 24 },
 	modalContent: { backgroundColor: "#FFF", borderRadius: 16, padding: 20, elevation: 10 },
