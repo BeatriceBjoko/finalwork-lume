@@ -34,10 +34,11 @@
 		"emailExample": "nom@exemple.be",
 		"email": "E-mail",
 		"password": "Mot de passe",
-		"termsStart": "J'accepte la ",
+		"termsStart": "J'ai 13 ans ou plus et j'accepte la ",
 		"termsPrivacy": "Politique de confidentialité",
 		"termsAnd": " et les ",
 		"termsTerms": "Conditions d'utilisation",
+		"healthConsent": "J'accepte que des données de santé (comme les médicaments) soient conservées et partagées avec mon cercle de soins.",
 		"securityNote": "Vos données restent en sécurité au sein de votre cercle",
 		"buttonLoading": "Chargement...",
 		"button": "Créer un compte",
@@ -45,35 +46,254 @@
 		"loginLink": "Se connecter"
 	},
 	"legal": {
-		"title": "Conditions",
+		"title": "Confidentialité & conditions",
 		"tabPrivacy": "Confidentialité",
 		"tabTerms": "Conditions d'utilisation",
+		"privacyTitle": "Politique de confidentialité",
+		"termsTitle": "Conditions d'utilisation",
+		"deletionTitle": "Supprimer votre compte et vos données",
+		"updated": "Version {{version}} · dernière mise à jour le {{date}}",
 		"privacyContent": [
-			{ "type": "body", "text": "Chez Lume, nous accordons une grande importance à votre vie privée.\n\nNous collectons uniquement les données nécessaires au bon fonctionnement de l'application et pour vous soutenir en tant qu'aidant proche." },
-			{ "type": "subtitle", "text": "Quelles données collectons-nous ?" },
-			{ "type": "body", "text": "• Nom et adresse e-mail\n• Informations sur votre cercle de soins\n• Tâches, rendez-vous et notes que vous ajoutez vous-même" },
-			{ "type": "subtitle", "text": "Pourquoi collectons-nous ces données ?" },
-			{ "type": "body", "text": "• Pour vous donner un aperçu clair des tâches de soins\n• Pour permettre la collaboration entre les utilisateurs\n• Pour que les rappels et notifications fonctionnent correctement" },
-			{ "type": "highlight", "text": "Vos données restent privées." },
+			{
+				"type": "highlight",
+				"text": "En bref : Lume conserve uniquement ce qui est nécessaire pour prendre soin ensemble. Pas de publicité, rien n'est vendu et aucun traceur n'est utilisé. Vous pouvez toujours supprimer vous-même votre compte et vos données dans l'app."
+			},
+			{
+				"type": "subtitle",
+				"text": "1. Qui est responsable ?"
+			},
 			{
 				"type": "body",
-				"text": "Nous ne partageons jamais vos données avec des tiers sans votre consentement.\n\nVos données sont stockées en toute sécurité et utilisées uniquement au sein de l'application.\n\nVous avez toujours le droit de consulter, modifier ou supprimer vos données."
+				"text": "Lume est une application pour les aidants proches, développée par Beatrice Bjoko (Belgique). Elle est la responsable du traitement de vos données.\n\nDes questions sur votre vie privée ? Écrivez à lume.helpmantelzorg@gmail.com. Nous répondons dans un délai d'un mois."
+			},
+			{
+				"type": "subtitle",
+				"text": "2. Quelles données conservons-nous ?"
+			},
+			{
+				"type": "body",
+				"text": "• Votre compte : nom, adresse e-mail, mot de passe (chiffré par Firebase, nous ne le voyons jamais), langue, date d'inscription et une photo de profil si vous en ajoutez une.\n• Votre cercle de soins : le nom du cercle, votre rôle (administrateur ou membre) et votre relation avec la personne aidée.\n• La personne aidée : nom, photo, date de naissance, adresse et loisirs, ainsi que des données de santé comme les diagnostics, allergies, médicaments et visites chez le médecin. Aussi les contacts importants (nom et numéro de téléphone).\n• Ce que vous partagez : tâches et rendez-vous, notes et photos dans le journal, et messages via « Partagez votre état ».\n• Médicaments : nom, dose, instructions, le code-barres de la boîte (GTIN ou CNK), qui peut voir les détails, et un aperçu des scans (qui a confirmé, quand, et si c'était dans le schéma).\n• Technique : le jeton push de votre appareil (pour envoyer des notifications) et le type d'appareil. Lors de la connexion, Firebase traite votre adresse IP et le type d'appareil pour la sécurité. Nous comptons aussi les tentatives échouées de saisie d'un code d'invitation, pour empêcher de deviner les codes."
+			},
+			{
+				"type": "body",
+				"text": "Uniquement sur votre appareil (nous ne le recevons pas) : votre batterie d'énergie mentale et votre choix de langue. Si vous exportez une tâche vers votre propre agenda, cela se fait uniquement sur votre appareil. Les adresses e-mail que vous saisissez pour inviter quelqu'un servent uniquement à ouvrir votre propre app de messagerie : nous ne les conservons pas.\n\nNous utilisons l'appareil photo uniquement pour scanner un code-barres. Nous ne conservons aucune image : le code scanné est recherché dans la liste officielle de l'AFMPS qui se trouve dans notre propre base de données. Rien n'est envoyé à l'AFMPS.\n\nLume ne demande jamais votre position, vos contacts ou votre micro."
+			},
+			{
+				"type": "subtitle",
+				"text": "3. Pourquoi et sur quelle base ?"
+			},
+			{
+				"type": "body",
+				"text": "• Pour faire fonctionner l'app (compte, cercle de soins, agenda, journal, notifications) : parce que c'est nécessaire pour le service que vous utilisez (RGPD article 6.1.b, les conditions d'utilisation).\n• Données de santé (les vôtres ou celles de la personne aidée) : sur la base de votre consentement explicite, donné lors de la création de votre compte (RGPD article 9.2.a). Lume est une app de soins : sans ces données, l'app ne peut pas fonctionner.\n• Sécurité et prévention des abus (sécurité de connexion, comptage des tentatives, suivi des exceptions de médication) : notre intérêt légitime à avoir une app sûre (RGPD article 6.1.f).\n• Notifications push : uniquement si vous les autorisez sur votre téléphone. Vous pouvez toujours les désactiver dans les réglages de votre téléphone."
+			},
+			{
+				"type": "body",
+				"text": "Nous n'utilisons pas vos données pour de la publicité, nous ne créons pas de profil de vous et nous ne prenons aucune décision automatique vous concernant. Le scan de médicaments compare seulement la boîte avec le schéma rempli par le cercle. Ce n'est pas un avis médical."
+			},
+			{
+				"type": "subtitle",
+				"text": "4. Données de la personne aidée"
+			},
+			{
+				"type": "body",
+				"text": "La personne aidée n'a pas de compte. Celui ou celle qui saisit des données sur la personne aidée confirme le faire avec sa connaissance et son accord, ou en tant que son représentant (légal). N'ajoutez que ce qui est vraiment nécessaire pour les soins.\n\nLa personne aidée peut exercer elle-même ses droits (voir point 9) via lume.helpmantelzorg@gmail.com."
+			},
+			{
+				"type": "subtitle",
+				"text": "5. Qui peut voir vos données ?"
+			},
+			{
+				"type": "body",
+				"text": "• Les membres de votre cercle de soins voient l'agenda partagé, le journal, le profil de la personne aidée et le nom et la photo des autres membres.\n• Les détails des médicaments (nom, dose, instructions) ne sont visibles que par l'administrateur et les personnes qu'il choisit. Les autres membres voient seulement « Moment de médication ».\n• Votre adresse e-mail et votre compte restent privés : les autres membres ne les voient pas."
+			},
+			{
+				"type": "body",
+				"text": "Nous travaillons avec ces prestataires (« sous-traitants »). Ils utilisent vos données uniquement pour faire fonctionner Lume :\n• Google Firebase (Google Ireland Ltd. et Google LLC) : connexion, base de données, photos et fonctions serveur. La base de données se trouve dans l'UE (Belgique et Pays-Bas), les photos et les fonctions serveur en Belgique. La connexion (e-mail, mot de passe, adresse IP) est traitée par Firebase aux États-Unis.\n• Expo (650 Industries, Inc., États-Unis) : envoie les notifications push. Expo reçoit votre jeton push et le texte de la notification.\n• Apple et Google : livrent les notifications sur votre appareil.\n\nLes notifications ne contiennent volontairement aucun détail de santé, comme le texte d'une note ou le nom d'un médicament. Vous ne les voyez que dans l'app.\n\nNous ne vendons ni ne louons jamais vos données. Nous ne les transmettons que si la loi nous y oblige."
+			},
+			{
+				"type": "subtitle",
+				"text": "6. Données en dehors de l'Union européenne"
+			},
+			{
+				"type": "body",
+				"text": "La connexion de Firebase, le service push d'Expo et les services de notification d'Apple et de Google fonctionnent (en partie) depuis les États-Unis. Ce transfert est protégé par le EU-US Data Privacy Framework (la décision de la Commission européenne du 10 juillet 2023) ou par les clauses contractuelles types de la Commission européenne."
+			},
+			{
+				"type": "subtitle",
+				"text": "7. Combien de temps conservons-nous vos données ?"
+			},
+			{
+				"type": "body",
+				"text": "• Votre compte et vos propres données : tant que votre compte existe. Si vous supprimez votre compte, nous effaçons immédiatement votre profil, vos photos, votre jeton push, vos propres notes et tâches et vos scans de médicaments. Firebase supprime aussi la connexion de ses sauvegardes, dans les 180 jours.\n• Données partagées du cercle (le profil de la personne aidée, le schéma de médication, les notes et tâches des autres membres) : tant que le cercle existe, car les autres membres en ont besoin. Si vous êtes le dernier membre, nous effaçons tout le cercle.\n• Codes d'invitation : valables 7 jours maximum.\n• Journaux techniques (par exemple messages d'erreur et adresses IP lors de la connexion) : quelques semaines, 30 jours maximum.\n• Quand vous vous déconnectez, nous effaçons le jeton push de cet appareil."
+			},
+			{
+				"type": "subtitle",
+				"text": "8. Comment protégeons-nous vos données ?"
+			},
+			{
+				"type": "body",
+				"text": "• Toutes les connexions sont chiffrées (HTTPS) et les données sont stockées de façon chiffrée.\n• Des règles de sécurité strictes : seuls les membres d'un cercle de soins peuvent lire les données de ce cercle.\n• Les détails des médicaments sont stockés séparément et protégés davantage.\n• Les codes d'invitation sont créés par le serveur. Ils sont valables 7 jours et protégés contre les tentatives de deviner.\n• Pour supprimer votre compte, nous vous redemandons votre mot de passe."
+			},
+			{
+				"type": "subtitle",
+				"text": "9. Vos droits"
+			},
+			{
+				"type": "body",
+				"text": "Vous avez le droit :\n• de consulter vos données et d'en recevoir une copie (aussi dans un format utilisable, pour les emporter) ;\n• de corriger vos données : c'est généralement possible vous-même dans l'app ;\n• de faire effacer vos données : dans l'app via Profil → Supprimer le compte, ou par e-mail ;\n• de vous opposer au traitement ou d'en demander la limitation ;\n• de retirer votre consentement : supprimez les données de santé ou votre compte. Ce qui a déjà eu lieu reste valable.\n\nÉcrivez à lume.helpmantelzorg@gmail.com depuis l'adresse e-mail de votre compte. Nous répondons dans un délai d'un mois."
+			},
+			{
+				"type": "body",
+				"text": "Vous n'êtes pas satisfait(e) ? Vous pouvez introduire une plainte auprès de l'Autorité de protection des données (APD) : www.autoriteprotectiondonnees.be."
+			},
+			{
+				"type": "subtitle",
+				"text": "10. Les jeunes"
+			},
+			{
+				"type": "body",
+				"text": "Lume est aussi là pour les jeunes aidants. Vous devez avoir au moins 13 ans pour créer un compte. Vous avez moins de 16 ans ? Nous vous conseillons de parler de Lume avec un parent ou un autre adulte de confiance."
+			},
+			{
+				"type": "subtitle",
+				"text": "11. Modifications"
+			},
+			{
+				"type": "body",
+				"text": "Si nous modifions cette politique de confidentialité, vous le verrez grâce au numéro de version et à la date en haut. En cas de changement important, nous vous prévenons dans l'app et vous redemandons votre accord."
 			}
 		],
 		"termsContent": [
-			{ "type": "body", "text": "En utilisant Lume, vous acceptez les conditions suivantes." },
-			{ "type": "subtitle", "text": "Utilisation de l'application" },
-			{ "type": "body", "text": "Lume est conçu comme un outil pour organiser et soutenir les tâches de soins. L'application ne remplace pas un avis médical professionnel." },
-			{ "type": "subtitle", "text": "Responsabilité" },
-			{ "type": "body", "text": "Vous êtes responsable des informations que vous saisissez dans l'application et de la manière dont vous les utilisez." },
-			{ "type": "subtitle", "text": "Collaboration" },
-			{ "type": "body", "text": "Si vous collaborez avec d'autres utilisateurs, vous êtes responsable du partage correct des informations au sein de votre cercle de soins." },
-			{ "type": "subtitle", "text": "Limitations" },
-			{ "type": "body", "text": "Lume n'est pas responsable des erreurs dans les données saisies, des tâches manquées ou des décisions médicales basées sur les informations de l'application." },
-			{ "type": "subtitle", "text": "Confidentialité" },
-			{ "type": "body", "text": "Vous ne pouvez pas partager d'informations sensibles en dehors de votre cercle de soins sans autorisation." },
-			{ "type": "subtitle", "text": "Modifications" },
-			{ "type": "body", "text": "Ces conditions peuvent être modifiées à l'avenir pour améliorer l'application." }
+			{
+				"type": "body",
+				"text": "Bienvenue sur Lume ! En créant un compte, vous acceptez ces conditions d'utilisation. Lisez-les avec notre politique de confidentialité."
+			},
+			{
+				"type": "subtitle",
+				"text": "1. Qu'est-ce que Lume ?"
+			},
+			{
+				"type": "body",
+				"text": "Lume est une application gratuite qui permet aux aidants proches d'organiser ensemble les soins d'un proche dans un cercle de soins fermé : un agenda partagé, un journal, un scanner de médicaments et un espace pour votre propre bien-être. Lume est créé par Beatrice Bjoko (Belgique)."
+			},
+			{
+				"type": "subtitle",
+				"text": "2. Qui peut utiliser Lume ?"
+			},
+			{
+				"type": "body",
+				"text": "• Vous avez au moins 13 ans. Si vous avez moins de 16 ans, parlez-en avec un parent ou un autre adulte de confiance.\n• Votre compte est personnel. Gardez votre mot de passe secret et ne partagez pas votre compte.\n• Utilisez votre propre nom et une adresse e-mail correcte."
+			},
+			{
+				"type": "highlight",
+				"text": "Lume n'est pas un dispositif médical ni un service d'urgence."
+			},
+			{
+				"type": "body",
+				"text": "• Lume ne pose aucun diagnostic et ne donne aucun conseil sur les médicaments ou les doses. Suivez toujours la notice et l'avis de votre médecin ou pharmacien.\n• Le scanner de médicaments compare seulement la boîte avec le schéma que vous avez rempli vous-mêmes. Une confirmation verte ne signifie pas que le schéma est médicalement correct.\n• « Partagez votre état » et les autres notifications peuvent arriver en retard ou pas du tout, par exemple sans internet.\n• En cas d'urgence : appelez le 112. Centre Antipoisons : 070 245 245. Parler du suicide : Centre de Prévention du Suicide 0800 32 123."
+			},
+			{
+				"type": "subtitle",
+				"text": "3. Le cercle de soins"
+			},
+			{
+				"type": "body",
+				"text": "• L'administrateur crée le cercle, invite des personnes avec un code, décide qui peut voir les détails des médicaments et peut retirer des membres du cercle.\n• Les membres peuvent ajouter des tâches et des notes et voient ce que l'administrateur leur montre.\n• N'invitez que des personnes réellement impliquées dans les soins."
+			},
+			{
+				"type": "subtitle",
+				"text": "4. Comment se comporter ?"
+			},
+			{
+				"type": "body",
+				"text": "• N'ajoutez des données sur la personne aidée qu'avec son accord, ou en tant que son représentant (légal), et uniquement ce qui est nécessaire pour les soins.\n• Ne partagez pas les informations du cercle avec des personnes extérieures au cercle.\n• Soyez respectueux. Pas de contenu offensant, illégal ou blessant.\n• N'ajoutez des photos d'autres personnes que si elles sont d'accord.\n• N'essayez pas d'abuser de l'app ou de sa sécurité."
+			},
+			{
+				"type": "subtitle",
+				"text": "5. Votre contenu"
+			},
+			{
+				"type": "body",
+				"text": "Ce que vous mettez dans Lume reste à vous. Vous nous donnez seulement l'autorisation de le conserver et de le montrer à votre cercle de soins, pour que l'app fonctionne. Vous êtes responsable de ce que vous saisissez."
+			},
+			{
+				"type": "subtitle",
+				"text": "6. Disponibilité"
+			},
+			{
+				"type": "body",
+				"text": "Lume est gratuit et proposé tel quel. Nous faisons de notre mieux pour que l'app fonctionne bien et en toute sécurité, mais nous ne pouvons pas promettre qu'elle fonctionnera toujours sans erreur ni interruption. Si Lume s'arrête un jour, nous vous prévenons au moins 30 jours à l'avance, pour que vous puissiez demander vos données."
+			},
+			{
+				"type": "subtitle",
+				"text": "7. Responsabilité"
+			},
+			{
+				"type": "body",
+				"text": "Lume est un outil pour s'organiser ensemble. Nous ne sommes pas responsables des décisions prises sur la base des informations saisies, des tâches oubliées ou des erreurs dans les données saisies par les utilisateurs. Cela ne limite jamais vos droits de consommateur selon la loi belge et ne s'applique pas en cas de faute intentionnelle ou de faute grave."
+			},
+			{
+				"type": "subtitle",
+				"text": "8. Arrêter votre compte"
+			},
+			{
+				"type": "body",
+				"text": "Vous pouvez supprimer votre compte à tout moment via Profil → Supprimer le compte. Si quelqu'un enfreint ces conditions de façon grave ou répétée, nous pouvons lui retirer l'accès après un avertissement, ou immédiatement si c'est nécessaire pour protéger les autres."
+			},
+			{
+				"type": "subtitle",
+				"text": "9. Modifications"
+			},
+			{
+				"type": "body",
+				"text": "Nous pouvons modifier ces conditions, par exemple quand l'app change. En cas de changement important, nous vous prévenons dans l'app et vous redemandons votre accord."
+			},
+			{
+				"type": "subtitle",
+				"text": "10. Droit applicable et contact"
+			},
+			{
+				"type": "body",
+				"text": "Ces conditions sont soumises au droit belge. Des questions ou des plaintes ? Écrivez à lume.helpmantelzorg@gmail.com. Nous cherchons toujours d'abord une solution ensemble."
+			}
+		],
+		"deletionContent": [
+			{
+				"type": "body",
+				"text": "Cette page explique comment supprimer votre compte Lume (développé par Beatrice Bjoko) et les données associées."
+			},
+			{
+				"type": "subtitle",
+				"text": "Dans l'app (le plus rapide)"
+			},
+			{
+				"type": "body",
+				"text": "1. Ouvrez Lume et allez dans Profil.\n2. Appuyez sur Supprimer le compte.\n3. Lisez ce qui sera supprimé et ce qui arrivera à votre cercle de soins.\n4. Saisissez votre mot de passe et confirmez.\n\nVotre compte et vos données sont supprimés immédiatement."
+			},
+			{
+				"type": "subtitle",
+				"text": "Sans l'app"
+			},
+			{
+				"type": "body",
+				"text": "Envoyez un e-mail à lume.helpmantelzorg@gmail.com depuis l'adresse e-mail de votre compte Lume, avec comme objet « Supprimer le compte ». Nous vérifions que la demande vient bien de vous, supprimons votre compte dans les 30 jours et vous prévenons quand c'est fait."
+			},
+			{
+				"type": "subtitle",
+				"text": "Qu'est-ce qui est supprimé ?"
+			},
+			{
+				"type": "body",
+				"text": "• Votre connexion, votre profil (nom, e-mail, langue) et votre photo de profil\n• Vos propres notes et leurs photos\n• Les tâches que vous avez créées\n• Vos scans de médicaments\n• Votre adhésion au cercle de soins et votre accès aux détails des médicaments\n• Le jeton push de vos appareils"
+			},
+			{
+				"type": "subtitle",
+				"text": "Qu'est-ce qui est conservé ?"
+			},
+			{
+				"type": "body",
+				"text": "Si d'autres membres restent dans votre cercle de soins, les données partagées dont ils ont besoin sont conservées : le profil de la personne aidée, le schéma de médication et les notes et tâches des autres membres. Si vous étiez l'administrateur, le membre présent depuis le plus longtemps devient le nouvel administrateur. Les tâches qui vous étaient attribuées n'ont plus de nom.\n\nSi vous êtes le dernier membre, tout le cercle de soins est supprimé avec toutes ses données et photos.\n\nFirebase efface aussi la connexion de ses sauvegardes, dans les 180 jours. Les journaux techniques disparaissent après 30 jours maximum."
+			}
 		]
 	},
 	"errors": {
@@ -197,7 +417,8 @@
 		"logout": "Se déconnecter",
 		"deleteAccount": "Supprimer le compte",
 		"roleAdmin": "administrateur",
-		"roleMember": "membre"
+		"roleMember": "membre",
+		"privacy": "Confidentialité & conditions"
 	},
 	"editProfile": {
 		"titlePart1": "Modifier mon",
@@ -621,6 +842,16 @@
 		"doneTitle": "Compte supprimé",
 		"doneMessage": "Votre compte et vos données ont été supprimés. Merci d'avoir utilisé Lume.",
 		"wrongPassword": "Ce mot de passe est incorrect.",
+	},
+	"consent": {
+		"title": "Votre accord",
+		"body": "Pour continuer à utiliser Lume en toute sécurité, nous vous demandons de lire la politique de confidentialité et les conditions d'utilisation et de donner votre accord.",
+		"button": "J'accepte et je continue",
+		"saving": "Un instant...",
+		"logout": "Se déconnecter",
+		"deleteHint": "Vous préférez ne pas accepter ? Vous pouvez aussi supprimer votre compte.",
+		"deleteLink": "Supprimer le compte",
+		"error": "Votre accord n'a pas pu être enregistré. Vérifiez votre connexion internet et réessayez."
 		"failed": "La suppression a échoué. Vérifiez votre connexion internet et réessayez."
 	}
 }

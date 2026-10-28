@@ -1,8 +1,9 @@
 import { FirebaseError } from "firebase/app";
 import { createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, signInWithEmailAndPassword, signOut, updateProfile, User } from "firebase/auth";
-import { collection, doc, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { LEGAL_VERSION } from "../constants/legal";
 import i18n, { currentAppLanguage } from "../locales/i18n";
 import { auth, db, functions, storage } from "./firebase-config";
 
@@ -17,6 +18,19 @@ export async function login(email: string, password: string): Promise<FirebaseUs
 
 export async function logout(): Promise<void> {
 	await signOut(auth);
+}
+
+// Proof of consent (GDPR art. 7): which version of the privacy policy and terms the user
+// accepted, the explicit consent for health data, and when (server time, checked by the rules)
+function consentRecord() {
+	return { version: LEGAL_VERSION, healthData: true, acceptedAt: serverTimestamp(), language: currentAppLanguage() };
+}
+
+// Existing users agree to a new version of the privacy policy and terms
+export async function acceptLegalTerms(): Promise<void> {
+	const currentUser = auth.currentUser;
+	if (!currentUser) throw new Error("Je bent niet ingelogd.");
+	await updateDoc(doc(db, "users", currentUser.uid), { consent: consentRecord() });
 }
 
 export async function register(email: string, password: string, name?: string): Promise<FirebaseUserResponse | undefined> {
@@ -39,6 +53,8 @@ export async function register(email: string, password: string, name?: string): 
 		createdAt: new Date().toISOString(),
 		role: "mantelzorger",
 		onboardingCompleted: false,
+		// The sign-up screen only allows registering after both consent checkboxes
+		consent: consentRecord(),
 	});
 
 	return { user };

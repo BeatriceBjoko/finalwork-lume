@@ -14,6 +14,8 @@ interface UserData {
 	email?: string;
 	photoUrl?: string;
 	language?: string;
+	// Accepted version of the privacy policy and terms (see constants/legal.ts)
+	consent?: { version?: string; healthData?: boolean };
 }
 
 interface AuthContextType {

@@ -53,5 +53,10 @@ firebase-debug.log
 firestore.rules
 storage.rules
 
+# Legal web pages, by scripts/build-legal-site.js
+/hosting/public
+# Firebase CLI deploy cache
+.firebase/
+
 # Claude Code workspace 
 .claude/

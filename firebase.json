@@ -13,6 +13,22 @@
       ]
     }
   ],
+  "hosting": {
+    "public": "hosting/public",
+    "predeploy": ["node scripts/build-legal-site.js"],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          { "key": "Content-Security-Policy", "value": "default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" },
+          { "key": "X-Content-Type-Options", "value": "nosniff" },
+          { "key": "Referrer-Policy", "value": "no-referrer" }
+        ]
+      }
+    ]
+  },
   "emulators": {
     "auth": {
       "port": 9099

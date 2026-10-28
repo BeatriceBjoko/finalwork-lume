@@ -34,10 +34,11 @@
 		"emailExample": "naam@voorbeeld.be",
 		"email": "E-mail",
 		"password": "Wachtwoord",
-		"termsStart": "Ik ga akkoord met de ",
-		"termsPrivacy": "Privacyvoorwaarden",
-		"termsAnd": " en ",
+		"termsStart": "Ik ben 13+ en ga akkoord met het ",
+		"termsPrivacy": "Privacybeleid",
+		"termsAnd": " en de ",
 		"termsTerms": "Gebruiksvoorwaarden",
+		"healthConsent": "Ik geef toestemming om gezondheidsgegevens (zoals medicatie) te bewaren en te delen met mijn zorgkring.",
 		"securityNote": "Je gegevens blijven veilig binnen je zorgkring",
 		"buttonLoading": "Laden...",
 		"button": "Account aanmaken",
@@ -45,35 +46,254 @@
 		"loginLink": "Log in"
 	},
 	"legal": {
-		"title": "Voorwaarden",
+		"title": "Privacy & voorwaarden",
 		"tabPrivacy": "Privacy",
 		"tabTerms": "Gebruiksvoorwaarden",
+		"privacyTitle": "Privacybeleid",
+		"termsTitle": "Gebruiksvoorwaarden",
+		"deletionTitle": "Account en gegevens verwijderen",
+		"updated": "Versie {{version}} · laatst bijgewerkt op {{date}}",
 		"privacyContent": [
-			{ "type": "body", "text": "Bij Lume hechten we veel belang aan jouw privacy.\n\nWe verzamelen enkel de gegevens die nodig zijn om de app correct te laten werken en jou te ondersteunen als mantelzorger." },
-			{ "type": "subtitle", "text": "Welke gegevens verzamelen we?" },
-			{ "type": "body", "text": "• Naam en e-mailadres\n• Informatie over jouw zorgkring\n• Taken, afspraken en notities die je zelf toevoegt" },
-			{ "type": "subtitle", "text": "Waarom verzamelen we deze gegevens?" },
-			{ "type": "body", "text": "• Om jou een duidelijk overzicht te geven van zorgtaken\n• Om samenwerking mogelijk te maken tussen gebruikers\n• Om herinneringen en meldingen correct te laten werken" },
-			{ "type": "highlight", "text": "Jouw gegevens blijven privé." },
+			{
+				"type": "highlight",
+				"text": "Kort samengevat: Lume bewaart alleen wat nodig is om samen te zorgen. We tonen geen reclame, verkopen niets en gebruiken geen trackers. Je kan je account en je gegevens altijd zelf verwijderen in de app."
+			},
+			{
+				"type": "subtitle",
+				"text": "1. Wie is verantwoordelijk?"
+			},
 			{
 				"type": "body",
-				"text": "We delen jouw gegevens nooit met derden zonder jouw toestemming.\n\nJe gegevens worden veilig opgeslagen en enkel gebruikt binnen de app.\n\nJe hebt altijd het recht om je gegevens te bekijken, aan te passen of te verwijderen."
+				"text": "Lume is een app voor mantelzorgers, ontwikkeld door Beatrice Bjoko (België). Zij is de verwerkingsverantwoordelijke voor jouw gegevens.\n\nVragen over je privacy? Mail naar lume.helpmantelzorg@gmail.com. We antwoorden binnen één maand."
+			},
+			{
+				"type": "subtitle",
+				"text": "2. Welke gegevens bewaren we?"
+			},
+			{
+				"type": "body",
+				"text": "• Je account: naam, e-mailadres, wachtwoord (versleuteld door Firebase, wij zien het nooit), taal, datum van registratie en een profielfoto als je die toevoegt.\n• Je zorgkring: de naam van de kring, je rol (beheerder of lid) en je relatie tot de zorgontvanger.\n• De zorgontvanger: naam, foto, geboortedatum, adres en hobby's, en gezondheidsgegevens zoals diagnoses, allergieën, medicatie en huisartsbezoeken. Ook belangrijke contactpersonen (naam en telefoonnummer).\n• Wat je deelt: taken en afspraken, notities en foto's in het logboek, en berichten via \"Deel je status\".\n• Medicatie: naam, dosis, instructies, de barcode van het doosje (GTIN of CNK), wie de details mag zien, en een overzicht van scans (wie bevestigde, wanneer, en of het binnen het schema was).\n• Technisch: het push-token van je toestel (om meldingen te sturen) en het type toestel. Bij het inloggen verwerkt Firebase je IP-adres en toesteltype voor de beveiliging. We tellen ook mislukte pogingen om een uitnodigingscode in te geven, tegen het raden van codes."
+			},
+			{
+				"type": "body",
+				"text": "Alleen op je eigen toestel (wij ontvangen dit niet): je mentale energiebatterij en je taalkeuze. Exporteer je een taak naar je eigen agenda, dan gebeurt dat alleen op jouw toestel. E-mailadressen die je invult om iemand uit te nodigen, gebruiken we alleen om je eigen mail-app te openen: we bewaren ze niet.\n\nDe camera gebruiken we alleen om een barcode te scannen. We bewaren geen camerabeelden: de gescande code wordt opgezocht in de officiële lijst van het FAGG die in onze eigen database staat. Er wordt niets naar het FAGG gestuurd.\n\nLume vraagt nooit je locatie, je contacten of je microfoon."
+			},
+			{
+				"type": "subtitle",
+				"text": "3. Waarom en op welke basis?"
+			},
+			{
+				"type": "body",
+				"text": "• Om de app te laten werken (account, zorgkring, agenda, logboek, meldingen): omdat dat nodig is voor de dienst die je gebruikt (AVG artikel 6.1.b, de gebruiksvoorwaarden).\n• Gezondheidsgegevens (van jezelf of van de zorgontvanger): op basis van je uitdrukkelijke toestemming die je geeft bij het aanmaken van je account (AVG artikel 9.2.a). Lume is een zorg-app, dus zonder deze gegevens kan de app niet werken.\n• Beveiliging en misbruik voorkomen (inlogbeveiliging, pogingen tellen, medicatie-uitzonderingen bijhouden): ons gerechtvaardigd belang bij een veilige app (AVG artikel 6.1.f).\n• Pushmeldingen: alleen als je dat toelaat op je telefoon. Je kan ze altijd uitzetten in de instellingen van je telefoon."
+			},
+			{
+				"type": "body",
+				"text": "We gebruiken je gegevens niet voor reclame, maken geen profielen van je en nemen geen automatische beslissingen over jou. De medicatiescan vergelijkt alleen het doosje met het schema dat de kring zelf invulde. Het is geen medisch advies."
+			},
+			{
+				"type": "subtitle",
+				"text": "4. Gegevens over de zorgontvanger"
+			},
+			{
+				"type": "body",
+				"text": "De zorgontvanger heeft zelf geen account. Wie gegevens over de zorgontvanger invult, bevestigt dat dit gebeurt met diens medeweten en toestemming, of als diens (wettelijke) vertegenwoordiger. Voeg alleen toe wat echt nodig is voor de zorg.\n\nDe zorgontvanger kan zelf zijn of haar rechten uitoefenen (zie punt 9) via lume.helpmantelzorg@gmail.com."
+			},
+			{
+				"type": "subtitle",
+				"text": "5. Wie kan je gegevens zien?"
+			},
+			{
+				"type": "body",
+				"text": "• De leden van je zorgkring zien de gedeelde agenda, het logboek, het profiel van de zorgontvanger en elkaars naam en foto.\n• Medicatiedetails (naam, dosis, instructies) ziet alleen de beheerder en wie de beheerder daarvoor kiest. Andere leden zien alleen \"Medicatiemoment\".\n• Je e-mailadres en je account blijven privé: andere leden zien ze niet."
+			},
+			{
+				"type": "body",
+				"text": "We werken met deze dienstverleners (\"verwerkers\"). Zij gebruiken je gegevens alleen om Lume te laten werken:\n• Google Firebase (Google Ireland Ltd. en Google LLC): login, database, foto's en serverfuncties. De database staat in de EU (België en Nederland), foto's en serverfuncties in België. De login (e-mail, wachtwoord, IP-adres) verwerkt Firebase in de Verenigde Staten.\n• Expo (650 Industries, Inc., Verenigde Staten): verstuurt pushmeldingen. Expo ontvangt je push-token en de tekst van de melding.\n• Apple en Google: bezorgen de meldingen op je toestel.\n\nPushmeldingen bevatten bewust geen gezondheidsdetails, zoals de tekst van een notitie of de naam van een medicijn. Die zie je pas in de app.\n\nWe verkopen of verhuren je gegevens nooit. We geven ze alleen door als de wet ons daartoe verplicht."
+			},
+			{
+				"type": "subtitle",
+				"text": "6. Gegevens buiten de Europese Unie"
+			},
+			{
+				"type": "body",
+				"text": "De login van Firebase, de pushdienst van Expo en de meldingendiensten van Apple en Google werken (deels) vanuit de Verenigde Staten. Die doorgifte is beschermd door het EU-VS Data Privacy Framework (de beslissing van de Europese Commissie van 10 juli 2023) of door de standaardcontractbepalingen van de Europese Commissie."
+			},
+			{
+				"type": "subtitle",
+				"text": "7. Hoe lang bewaren we je gegevens?"
+			},
+			{
+				"type": "body",
+				"text": "• Je account en je eigen gegevens: zolang je account bestaat. Verwijder je je account, dan wissen we meteen je profiel, foto's, push-token, je eigen notities en taken en je medicatiescans. Firebase verwijdert de login ook uit zijn back-ups, binnen 180 dagen.\n• Gedeelde gegevens van de zorgkring (het profiel van de zorgontvanger, het medicatieschema, notities en taken van andere leden): zolang de kring bestaat, want de andere leden hebben ze nodig. Ben je het laatste lid, dan wissen we de hele kring.\n• Uitnodigingscodes: maximaal 7 dagen geldig.\n• Technische logboeken (bijvoorbeeld foutmeldingen en IP-adressen bij het inloggen): enkele weken, maximaal 30 dagen.\n• Bij het uitloggen wissen we het push-token van dat toestel."
+			},
+			{
+				"type": "subtitle",
+				"text": "8. Hoe beveiligen we je gegevens?"
+			},
+			{
+				"type": "body",
+				"text": "• Alle verbindingen zijn versleuteld (HTTPS) en de gegevens worden versleuteld opgeslagen.\n• Strikte beveiligingsregels: alleen leden van een zorgkring kunnen de gegevens van die kring lezen.\n• Medicatiedetails staan apart en extra afgeschermd.\n• Uitnodigingscodes maakt de server aan. Ze zijn 7 dagen geldig en beschermd tegen raden.\n• Voor het verwijderen van je account vragen we opnieuw je wachtwoord."
+			},
+			{
+				"type": "subtitle",
+				"text": "9. Jouw rechten"
+			},
+			{
+				"type": "body",
+				"text": "Je hebt het recht om:\n• je gegevens in te kijken en een kopie te krijgen (ook in een bruikbaar formaat, om mee te nemen);\n• je gegevens te verbeteren: dat kan meestal zelf in de app;\n• je gegevens te laten wissen: in de app via Profiel → Account verwijderen, of via e-mail;\n• bezwaar te maken of het gebruik te laten beperken;\n• je toestemming in te trekken: verwijder de gezondheidsgegevens of je account. Wat al gebeurde, blijft wel geldig.\n\nMail naar lume.helpmantelzorg@gmail.com vanaf het e-mailadres van je account. We antwoorden binnen één maand."
+			},
+			{
+				"type": "body",
+				"text": "Ben je niet tevreden? Dan kan je een klacht indienen bij de Gegevensbeschermingsautoriteit (GBA): www.gegevensbeschermingsautoriteit.be."
+			},
+			{
+				"type": "subtitle",
+				"text": "10. Jongeren"
+			},
+			{
+				"type": "body",
+				"text": "Lume is er ook voor jonge mantelzorgers. Je moet minstens 13 jaar zijn om een account te maken. Ben je jonger dan 16? Dan raden we je aan om met een ouder of een andere volwassene die je vertrouwt over Lume te praten."
+			},
+			{
+				"type": "subtitle",
+				"text": "11. Wijzigingen"
+			},
+			{
+				"type": "body",
+				"text": "Passen we dit privacybeleid aan, dan zie je dat aan het versienummer en de datum bovenaan. Bij belangrijke wijzigingen laten we het je in de app weten en vragen we opnieuw je akkoord."
 			}
 		],
 		"termsContent": [
-			{ "type": "body", "text": "By Lume te gebruiken, ga je akkoord met de volgende voorwaarden." },
-			{ "type": "subtitle", "text": "Gebruik van de app" },
-			{ "type": "body", "text": "Lume is bedoeld als hulpmiddel om zorgtaken te organiseren en te ondersteunen. De app vervangt geen professioneel medisch advies." },
-			{ "type": "subtitle", "text": "Verantwoordelijkheid" },
-			{ "type": "body", "text": "Je bent zelf verantwoordelijk voor de informatie die je invoert in de app en hoe je deze gebruikt." },
-			{ "type": "subtitle", "text": "Samenwerking" },
-			{ "type": "body", "text": "Als je samenwerkt met andere gebruikers, ben je verantwoordelijk voor het correct delen van informatie binnen jouw zorgkring." },
-			{ "type": "subtitle", "text": "Beperkingen" },
-			{ "type": "body", "text": "Lume is niet verantwoordelijk voor fouten in ingevoerde gegevens, gemiste taken of medische beslissingen die gebaseerd zijn op informatie uit de app." },
-			{ "type": "subtitle", "text": "Privacy" },
-			{ "type": "body", "text": "Je mag geen gevoelige informatie delen buiten jouw zorgkring zonder toestemming." },
-			{ "type": "subtitle", "text": "Wijzigingen" },
-			{ "type": "body", "text": "Deze voorwaarden kunnen in de toekomst aangepast worden om de app te verbeteren." }
+			{
+				"type": "body",
+				"text": "Welkom bij Lume! Door een account te maken ga je akkoord met deze gebruiksvoorwaarden. Lees ze samen met ons privacybeleid."
+			},
+			{
+				"type": "subtitle",
+				"text": "1. Wat is Lume?"
+			},
+			{
+				"type": "body",
+				"text": "Lume is een gratis app waarmee mantelzorgers samen de zorg voor een naaste organiseren in een besloten zorgkring: een gedeelde agenda, een logboek, een medicatiescanner en een plek voor je eigen welzijn. Lume is gemaakt door Beatrice Bjoko (België)."
+			},
+			{
+				"type": "subtitle",
+				"text": "2. Wie mag Lume gebruiken?"
+			},
+			{
+				"type": "body",
+				"text": "• Je bent minstens 13 jaar oud. Ben je jonger dan 16, praat dan met een ouder of een andere volwassene die je vertrouwt.\n• Je account is persoonlijk. Houd je wachtwoord geheim en deel je account niet met anderen.\n• Vul je eigen, juiste naam en e-mailadres in."
+			},
+			{
+				"type": "highlight",
+				"text": "Lume is geen medisch hulpmiddel en geen noodhulp."
+			},
+			{
+				"type": "body",
+				"text": "• Lume stelt geen diagnoses en geeft geen advies over medicatie of dosissen. Volg altijd de bijsluiter en het advies van je arts of apotheker.\n• De medicatiescanner vergelijkt het doosje alleen met het schema dat jullie zelf invulden. Een groene bevestiging betekent niet dat het schema medisch klopt.\n• \"Deel je status\" en andere meldingen kunnen te laat of niet aankomen, bijvoorbeeld zonder internet.\n• In nood: bel 112. Antigifcentrum: 070 245 245. Praten over zelfdoding: Zelfmoordlijn 1813."
+			},
+			{
+				"type": "subtitle",
+				"text": "3. De zorgkring"
+			},
+			{
+				"type": "body",
+				"text": "• De beheerder maakt de kring aan, nodigt mensen uit met een code, beslist wie medicatiedetails mag zien en kan leden uit de kring verwijderen.\n• Leden kunnen taken en notities toevoegen en zien wat de beheerder hen toont.\n• Nodig alleen mensen uit die echt bij de zorg betrokken zijn."
+			},
+			{
+				"type": "subtitle",
+				"text": "4. Hoe ga je met elkaar om?"
+			},
+			{
+				"type": "body",
+				"text": "• Voeg gegevens over de zorgontvanger alleen toe met diens toestemming, of als diens (wettelijke) vertegenwoordiger, en alleen wat nodig is voor de zorg.\n• Deel informatie uit de zorgkring niet met mensen buiten de kring.\n• Wees respectvol. Geen beledigende, onwettige of kwetsende inhoud.\n• Zet alleen foto's van anderen in Lume als zij daarmee akkoord gaan.\n• Probeer de app of de beveiliging niet te misbruiken."
+			},
+			{
+				"type": "subtitle",
+				"text": "5. Jouw inhoud"
+			},
+			{
+				"type": "body",
+				"text": "Wat je in Lume zet, blijft van jou. Je geeft ons alleen de toestemming om het te bewaren en te tonen aan je zorgkring, zodat de app kan werken. Je bent zelf verantwoordelijk voor wat je invult."
+			},
+			{
+				"type": "subtitle",
+				"text": "6. Beschikbaarheid"
+			},
+			{
+				"type": "body",
+				"text": "Lume is gratis en wordt aangeboden zoals hij is. We doen ons best om de app goed en veilig te laten werken, maar we kunnen niet beloven dat hij altijd zonder fouten of onderbrekingen werkt. Stopt Lume ooit, dan laten we het je minstens 30 dagen op voorhand weten, zodat je je gegevens kan opvragen."
+			},
+			{
+				"type": "subtitle",
+				"text": "7. Aansprakelijkheid"
+			},
+			{
+				"type": "body",
+				"text": "Lume is een hulpmiddel om samen te organiseren. We zijn niet aansprakelijk voor beslissingen die op basis van ingevulde informatie genomen worden, voor gemiste taken of voor fouten in gegevens die gebruikers zelf invulden. Dit beperkt nooit je rechten als consument volgens de Belgische wet, en geldt niet bij opzet of grove fout."
+			},
+			{
+				"type": "subtitle",
+				"text": "8. Je account stoppen"
+			},
+			{
+				"type": "body",
+				"text": "Je kan je account op elk moment verwijderen via Profiel → Account verwijderen. Wie deze voorwaarden ernstig of herhaaldelijk schendt, kunnen we na een waarschuwing de toegang ontzeggen, of meteen als dat nodig is om anderen te beschermen."
+			},
+			{
+				"type": "subtitle",
+				"text": "9. Wijzigingen"
+			},
+			{
+				"type": "body",
+				"text": "We kunnen deze voorwaarden aanpassen, bijvoorbeeld als de app verandert. Bij belangrijke wijzigingen laten we het je in de app weten en vragen we opnieuw je akkoord."
+			},
+			{
+				"type": "subtitle",
+				"text": "10. Recht en contact"
+			},
+			{
+				"type": "body",
+				"text": "Op deze voorwaarden is het Belgische recht van toepassing. Vragen of klachten? Mail naar lume.helpmantelzorg@gmail.com. We zoeken altijd eerst samen naar een oplossing."
+			}
+		],
+		"deletionContent": [
+			{
+				"type": "body",
+				"text": "Deze pagina legt uit hoe je je account van Lume (ontwikkeld door Beatrice Bjoko) en de bijbehorende gegevens verwijdert."
+			},
+			{
+				"type": "subtitle",
+				"text": "In de app (snelst)"
+			},
+			{
+				"type": "body",
+				"text": "1. Open Lume en ga naar Profiel.\n2. Tik op Account verwijderen.\n3. Lees wat er verwijderd wordt en wat er met je zorgkring gebeurt.\n4. Vul je wachtwoord in en bevestig.\n\nJe account en gegevens worden meteen verwijderd."
+			},
+			{
+				"type": "subtitle",
+				"text": "Zonder de app"
+			},
+			{
+				"type": "body",
+				"text": "Stuur een e-mail naar lume.helpmantelzorg@gmail.com vanaf het e-mailadres van je Lume-account, met als onderwerp \"Account verwijderen\". We controleren dat de aanvraag van jou komt, verwijderen je account binnen 30 dagen en laten je weten wanneer het gebeurd is."
+			},
+			{
+				"type": "subtitle",
+				"text": "Wat wordt verwijderd?"
+			},
+			{
+				"type": "body",
+				"text": "• Je login, je profiel (naam, e-mail, taal) en je profielfoto\n• Je eigen notities en hun foto's\n• Taken die je zelf maakte\n• Je medicatiescans\n• Je lidmaatschap van de zorgkring en je toegang tot medicatiedetails\n• Het push-token van je toestellen"
+			},
+			{
+				"type": "subtitle",
+				"text": "Wat blijft er bewaard?"
+			},
+			{
+				"type": "body",
+				"text": "Blijven er andere leden in je zorgkring, dan blijven de gedeelde gegevens die zij nodig hebben bestaan: het profiel van de zorgontvanger, het medicatieschema en de notities en taken van de andere leden. Was jij de beheerder, dan wordt het lid dat het langst in de kring zit de nieuwe beheerder. Taken die aan jou waren toegewezen, krijgen geen naam meer.\n\nBen je het laatste lid, dan wordt de hele zorgkring met al zijn gegevens en foto's verwijderd.\n\nFirebase wist de login ook uit zijn back-ups, binnen 180 dagen. Technische logboeken verdwijnen na maximaal 30 dagen."
+			}
 		]
 	},
 	"errors": {
@@ -197,7 +417,8 @@
 		"logout": "Uitloggen",
 		"deleteAccount": "Account verwijderen",
 		"roleAdmin": "beheerder",
-		"roleMember": "lid"
+		"roleMember": "lid",
+		"privacy": "Privacy & voorwaarden"
 	},
 	"editProfile": {
 		"titlePart1": "Pas mijn",
@@ -614,6 +835,16 @@
 		"passwordLabel": "Bevestig met je wachtwoord",
 		"button": "Account definitief verwijderen",
 		"deleting": "Bezig met verwijderen...",
+	},
+	"consent": {
+		"title": "Even je akkoord",
+		"body": "Om Lume veilig te blijven gebruiken, vragen we je om het privacybeleid en de gebruiksvoorwaarden te lezen en je toestemming te geven.",
+		"button": "Akkoord en verder",
+		"saving": "Even geduld...",
+		"logout": "Uitloggen",
+		"deleteHint": "Liever niet? Dan kan je je account ook verwijderen.",
+		"deleteLink": "Account verwijderen",
+		"error": "Je akkoord kon niet bewaard worden. Controleer je internet en probeer opnieuw."
 		"confirmTitle": "Ben je zeker?",
 		"confirmMessage": "Je account en je gegevens worden definitief verwijderd.",
 		"confirmButton": "Verwijderen",

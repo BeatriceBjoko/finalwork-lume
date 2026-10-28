@@ -90,6 +90,7 @@ export default function ProfileScreen() {
 							<MenuItem iconName="account-group-outline" label={t("profile.circleOverview", "Overzicht van de kring")} onPress={() => router.push("/circle-overview")} />
 							<MenuItem iconName="account-heart-outline" label={t("profile.receiverInfo", "Zorgontvanger informatie")} onPress={() => router.push("/receiver-profile")} />
 							<MenuItem iconName="phone-outline" label={t("profile.emergencyContacts", "Belangrijke contactpersonen")} onPress={() => router.push("/important-contacts")} />
+							<MenuItem iconName="shield-account-outline" label={t("profile.privacy")} onPress={() => router.push("/legal")} />
 
 							<View style={styles.logoutSeparator} />
 

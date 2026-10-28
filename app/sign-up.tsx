@@ -13,7 +13,7 @@ import { useSignUp } from "../hooks/useSignUp";
 
 export default function SignUp() {
 	const { t } = useTranslation();
-	const { name, setName, email, setEmail, password, setPassword, termsAccepted, setTermsAccepted, isSubmitting, errorMessage, handleSignUpPress } = useSignUp();
+	const { name, setName, email, setEmail, password, setPassword, termsAccepted, setTermsAccepted, healthConsent, setHealthConsent, isSubmitting, errorMessage, handleSignUpPress } = useSignUp();
 
 	const TermsLabel = (
 		<Text style={styles.termsText}>
@@ -54,9 +54,11 @@ export default function SignUp() {
 
 				<Checkbox checked={termsAccepted} onChange={setTermsAccepted} label={TermsLabel} />
 
+				<Checkbox checked={healthConsent} onChange={setHealthConsent} label={<Text style={styles.termsText}>{t("signup.healthConsent")}</Text>} />
+
 				<Text style={styles.securityNote}>{t("signup.securityNote")}</Text>
 
-				<Button title={isSubmitting ? t("signup.buttonLoading") : t("signup.button")} onPress={handleSignUpPress} disabled={isSubmitting || !termsAccepted} style={{ marginTop: 8 }} />
+				<Button title={isSubmitting ? t("signup.buttonLoading") : t("signup.button")} onPress={handleSignUpPress} disabled={isSubmitting || !termsAccepted || !healthConsent} style={{ marginTop: 8 }} />
 
 				<View style={styles.footer}>
 					<Text style={styles.footerText}>{t("signup.alreadyAccount")}</Text>
@@ -74,7 +76,7 @@ export default function SignUp() {
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: COLORS.primary },
 	spacer: { flex: 1 },
-	header: { alignItems: "center", marginBottom: 32, zIndex: 1 },
+	header: { alignItems: "center", marginBottom: 20, zIndex: 1 },
 	title: {
 		fontFamily: FONTS.heading,
 		fontSize: 28,

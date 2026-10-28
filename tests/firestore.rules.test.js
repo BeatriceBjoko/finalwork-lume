@@ -10,11 +10,14 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { after, before, beforeEach, describe, test } = require("node:test");
 const { assertFails, assertSucceeds, initializeTestEnvironment } = require("@firebase/rules-unit-testing");
-const { collection, deleteDoc, deleteField, doc, getDoc, getDocs, query, setDoc, updateDoc, where } = require("firebase/firestore");
+const { collection, deleteDoc, deleteField, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } = require("firebase/firestore");
 
 let env;
 
 const userDoc = (uid, circleId) => ({ uid, email: `${uid}@test.be`, name: uid, language: "nl", role: "mantelzorger", onboardingCompleted: true, careCircleId: circleId, pushToken: `ExponentPushToken[${uid}]` });
+// What the app stores at sign-up: accepted version, explicit health-data consent, server time
+const consent = (overrides = {}) => ({ version: "1.0", healthData: true, acceptedAt: serverTimestamp(), language: "nl", ...overrides });
+const newUser = (uid, extra = {}) => ({ uid, email: "frank@test.be", name: "Frank", language: "nl", createdAt: "now", role: "mantelzorger", onboardingCompleted: false, consent: consent(), ...extra });
 const member = (circleId, uid, role) => ({ careCircleId: circleId, userId: uid, role, name: uid, photoUrl: null, relationshipToCareReceiver: "zoon", status: "active" });
 
 before(async () => {
@@ -75,12 +78,26 @@ describe("users (private profiles)", () => {
 	test("you cannot move yourself into another circle", () => assertFails(updateDoc(doc(as("alice"), "users/alice"), { careCircleId: "c2" })));
 	test("you cannot change your role", () => assertFails(updateDoc(doc(as("alice"), "users/alice"), { role: "admin" })));
 	test("you cannot edit someone else's profile", () => assertFails(updateDoc(doc(as("eve"), "users/bob"), { name: "Hacked" })));
-	test("a new user can create their own profile at sign-up", () =>
-		assertSucceeds(setDoc(doc(as("frank"), "users/frank"), { uid: "frank", email: "frank@test.be", name: "Frank", language: "nl", createdAt: "now", role: "mantelzorger", onboardingCompleted: false })));
-	test("a new user cannot sign up straight into a circle", () =>
-		assertFails(setDoc(doc(as("frank"), "users/frank"), { uid: "frank", email: "frank@test.be", name: "Frank", language: "nl", createdAt: "now", role: "mantelzorger", onboardingCompleted: false, careCircleId: "c1" })));
-	test("you cannot create a profile for someone else", () =>
-		assertFails(setDoc(doc(as("frank"), "users/zoe"), { uid: "zoe", email: "frank@test.be", name: "Zoe", language: "nl", createdAt: "now", role: "mantelzorger", onboardingCompleted: false })));
+	test("a new user can create their own profile at sign-up", () => assertSucceeds(setDoc(doc(as("frank"), "users/frank"), newUser("frank"))));
+	test("a new user cannot sign up straight into a circle", () => assertFails(setDoc(doc(as("frank"), "users/frank"), newUser("frank", { careCircleId: "c1" }))));
+	test("you cannot create a profile for someone else", () => assertFails(setDoc(doc(as("frank"), "users/zoe"), newUser("zoe"))));
+});
+
+describe("users: consent to the privacy policy and terms", () => {
+	test("signing up without consent is refused", () => {
+		const { consent: _, ...withoutConsent } = newUser("frank");
+		return assertFails(setDoc(doc(as("frank"), "users/frank"), withoutConsent));
+	});
+	test("signing up without the health-data consent is refused", () => assertFails(setDoc(doc(as("frank"), "users/frank"), newUser("frank", { consent: consent({ healthData: false }) }))));
+	test("the consent time must be the server time, not a time chosen by the app", () =>
+		assertFails(setDoc(doc(as("frank"), "users/frank"), newUser("frank", { consent: consent({ acceptedAt: new Date("2020-01-01") }) }))));
+	test("the consent cannot contain other fields", () => assertFails(setDoc(doc(as("frank"), "users/frank"), newUser("frank", { consent: consent({ extra: "x" }) }))));
+	test("an existing user can agree to a new version", () => assertSucceeds(updateDoc(doc(as("alice"), "users/alice"), { consent: consent({ version: "1.1", language: "fr" }) })));
+	test("you cannot remove your consent record", async () => {
+		await updateDoc(doc(as("alice"), "users/alice"), { consent: consent() });
+		await assertFails(updateDoc(doc(as("alice"), "users/alice"), { consent: deleteField() }));
+	});
+	test("you cannot record consent for someone else", () => assertFails(updateDoc(doc(as("eve"), "users/bob"), { consent: consent() })));
 });
 
 describe("careCircles", () => {

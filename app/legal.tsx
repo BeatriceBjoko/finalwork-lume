@@ -1,14 +1,15 @@
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CONTACT_EMAIL } from "../constants/legal";
 import { COLORS, FONTS } from "../constants/theme";
 
 import { useLegal } from "../hooks/useLegal";
 
 export default function Legal() {
-	const { activeTab, setActiveTab, contentData, t } = useLegal();
+	const { versionLine, activeTab, setActiveTab, contentData, t } = useLegal();
 
 	const renderContentBlock = (item: any, index: number) => {
 		if (item.type === "subtitle") {
@@ -52,7 +53,12 @@ export default function Legal() {
 			</View>
 
 			<ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
+				<Text style={styles.versionLine}>{versionLine}</Text>
 				<View style={styles.textContent}>{Array.isArray(contentData) && contentData.map((item, index) => renderContentBlock(item, index))}</View>
+				<Pressable onPress={() => Linking.openURL(`mailto:${CONTACT_EMAIL}`)} style={styles.contactButton} hitSlop={8}>
+					<Feather name="mail" size={18} color={COLORS.primary} />
+					<Text style={styles.contactText}>{CONTACT_EMAIL}</Text>
+				</Pressable>
 				<View style={{ height: 40 }} />
 			</ScrollView>
 		</SafeAreaView>
@@ -70,7 +76,10 @@ const styles = StyleSheet.create({
 	tabText: { fontFamily: FONTS.body, fontSize: 15, color: "rgba(35, 54, 0, 0.5)" },
 	activeTabText: { fontFamily: FONTS.button, color: COLORS.primary },
 	contentContainer: { flex: 1, paddingHorizontal: 24 },
-	textContent: { marginTop: 24 },
+	versionLine: { fontFamily: FONTS.body, fontSize: 12, color: "rgba(35, 54, 0, 0.6)", marginTop: 20 },
+	textContent: { marginTop: 12 },
+	contactButton: { flexDirection: "row", alignItems: "center", alignSelf: "flex-start", gap: 8, marginTop: 8, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1, borderColor: "rgba(35, 54, 0, 0.2)" },
+	contactText: { fontFamily: FONTS.button, fontSize: 14, color: COLORS.primary },
 	subtitle: { fontFamily: FONTS.button, fontSize: 16, color: COLORS.primary, marginTop: 24, marginBottom: 8 },
 	body: { fontFamily: FONTS.body, fontSize: 15, color: COLORS.primary, lineHeight: 24, marginBottom: 16 },
 	highlight: { fontFamily: FONTS.button },

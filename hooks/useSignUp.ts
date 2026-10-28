@@ -9,6 +9,8 @@ export function useSignUp() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [termsAccepted, setTermsAccepted] = useState(false);
+	// Health data needs its own, explicit consent (GDPR art. 9), separate from the terms
+	const [healthConsent, setHealthConsent] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 
@@ -18,7 +20,7 @@ export function useSignUp() {
 		setErrorMessage("");
 
 		// Extra veiligheidscheck: Ga niet verder als de voorwaarden niet zijn geaccepteerd
-		if (!termsAccepted) return;
+		if (!termsAccepted || !healthConsent) return;
 
 		if (!name || !email || !password) {
 			setErrorMessage(t("errors.missingFields"));
@@ -64,6 +66,8 @@ export function useSignUp() {
 		setPassword,
 		termsAccepted,
 		setTermsAccepted,
+		healthConsent,
+		setHealthConsent,
 		isSubmitting,
 		errorMessage,
 		handleSignUpPress,
