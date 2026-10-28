@@ -27,7 +27,7 @@
       "package": "com.beatricebj.finalworklume"
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/logo-lume.png"
     },
     "plugins": [
