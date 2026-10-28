@@ -66,7 +66,6 @@ export interface CreateCircleParams {
 	profileImage: string;
 	relation: string;
 	customRelation: string;
-	invitees: { contact: string }[];
 }
 
 export interface InviteCodeInfo {
@@ -129,7 +128,6 @@ export async function createCareCircleInDB(params: CreateCircleParams): Promise<
 			receiverName: params.receiverName,
 			relation: params.relation,
 			customRelation: params.customRelation,
-			invitees: params.invitees.map((i) => i.contact),
 		});
 	} catch (error) {
 		throw toCircleError(error);

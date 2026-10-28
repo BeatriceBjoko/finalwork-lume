@@ -817,14 +817,7 @@
 		"titlePart1": "Account",
 		"titlePart2": "verwijderen",
 		"whatTitle": "Dit wordt verwijderd",
-		"whatItems": [
-			"Je account en profiel (naam, e-mailadres, profielfoto's)",
-			"Alle notities die je schreef, met hun foto's",
-			"Alle taken die je aanmaakte",
-			"Je bevestigingen van medicatie",
-			"Uitnodigingen die je verstuurde",
-			"Je naam bij taken die aan jou toegewezen zijn"
-		],
+		"whatItems": ["Je account en profiel (naam, e-mailadres, profielfoto's)", "Alle notities die je schreef, met hun foto's", "Alle taken die je aanmaakte", "Je bevestigingen van medicatie", "Je naam bij taken die aan jou toegewezen zijn"],
 		"circleTitle": "Wat gebeurt er met je zorgkring?",
 		"leave": "Je verlaat de zorgkring. De zorgkring en de gegevens van de andere leden blijven bestaan.",
 		"transfer": "Jij bent beheerder. {{name}} wordt de nieuwe beheerder, omdat die het langst lid is van de kring. De zorgkring, de zorgontvanger en het medicatieschema blijven bestaan voor de andere leden.",
@@ -835,6 +828,13 @@
 		"passwordLabel": "Bevestig met je wachtwoord",
 		"button": "Account definitief verwijderen",
 		"deleting": "Bezig met verwijderen...",
+		"confirmTitle": "Ben je zeker?",
+		"confirmMessage": "Je account en je gegevens worden definitief verwijderd.",
+		"confirmButton": "Verwijderen",
+		"doneTitle": "Account verwijderd",
+		"doneMessage": "Je account en je gegevens zijn verwijderd. Bedankt dat je Lume gebruikte.",
+		"wrongPassword": "Dit wachtwoord klopt niet.",
+		"failed": "Het verwijderen is niet gelukt. Controleer je internetverbinding en probeer het opnieuw."
 	},
 	"consent": {
 		"title": "Even je akkoord",
@@ -845,12 +845,5 @@
 		"deleteHint": "Liever niet? Dan kan je je account ook verwijderen.",
 		"deleteLink": "Account verwijderen",
 		"error": "Je akkoord kon niet bewaard worden. Controleer je internet en probeer opnieuw."
-		"confirmTitle": "Ben je zeker?",
-		"confirmMessage": "Je account en je gegevens worden definitief verwijderd.",
-		"confirmButton": "Verwijderen",
-		"doneTitle": "Account verwijderd",
-		"doneMessage": "Je account en je gegevens zijn verwijderd. Bedankt dat je Lume gebruikte.",
-		"wrongPassword": "Dit wachtwoord klopt niet.",
-		"failed": "Het verwijderen is niet gelukt. Controleer je internetverbinding en probeer het opnieuw."
 	}
 }

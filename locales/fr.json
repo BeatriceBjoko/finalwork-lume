@@ -823,7 +823,6 @@
 			"Toutes les notes que vous avez écrites, avec leurs photos",
 			"Toutes les tâches que vous avez créées",
 			"Vos confirmations de médication",
-			"Les invitations que vous avez envoyées",
 			"Votre nom sur les tâches qui vous sont attribuées"
 		],
 		"circleTitle": "Que devient votre cercle de soins ?",
@@ -842,6 +841,7 @@
 		"doneTitle": "Compte supprimé",
 		"doneMessage": "Votre compte et vos données ont été supprimés. Merci d'avoir utilisé Lume.",
 		"wrongPassword": "Ce mot de passe est incorrect.",
+		"failed": "La suppression a échoué. Vérifiez votre connexion internet et réessayez."
 	},
 	"consent": {
 		"title": "Votre accord",
@@ -852,6 +852,5 @@
 		"deleteHint": "Vous préférez ne pas accepter ? Vous pouvez aussi supprimer votre compte.",
 		"deleteLink": "Supprimer le compte",
 		"error": "Votre accord n'a pas pu être enregistré. Vérifiez votre connexion internet et réessayez."
-		"failed": "La suppression a échoué. Vérifiez votre connexion internet et réessayez."
 	}
 }

@@ -77,7 +77,7 @@ export function useCreateCircleStep2() {
 				profileImage: (params.profileImage as string) || "",
 				relation: params.relation as string,
 				customRelation: params.customRelation as string,
-				invitees: inviteList.map((i) => ({ contact: i.contact })),
+				// The invitees' e-mail addresses stay on the phone: they are only used to open the mail app
 			})
 				.then((created) => {
 					createdCircleRef.current = created;

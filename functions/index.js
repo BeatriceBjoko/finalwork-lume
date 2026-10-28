@@ -28,7 +28,6 @@ const JOIN_MAX_FAILURES = 5;
 const JOIN_WINDOW_MS = 15 * 60 * 1000;
 
 const RELATION_KEYS = ["partner", "dochter", "zoon", "moeder", "vader", "zus", "broer", "kleindochter", "kleinzoon", "vriend_vriendin", "buur", "familielid", "vertrouwenspersoon", "vrijwilliger", "andere"];
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function requireAuth(request) {
 	if (!request.auth) throw new HttpsError("unauthenticated", "Je bent niet ingelogd.");
@@ -142,10 +141,6 @@ exports.createCircle = onCall(async (request) => {
 	const circleName = cleanText(data.circleName, "Naam zorgkring", 60);
 	const receiverName = cleanText(data.receiverName, "Naam zorgontvanger", 60);
 	const relationship = cleanRelation(data.relation, data.customRelation);
-	const invitees = Array.isArray(data.invitees) ? data.invitees : [];
-	if (invitees.length > 20) throw new HttpsError("invalid-argument", "Te veel uitnodigingen.");
-	const inviteeEmails = invitees.map((e) => cleanText(e, "E-mail", 254).toLowerCase());
-	if (inviteeEmails.some((e) => !EMAIL_RE.test(e))) throw new HttpsError("invalid-argument", "Ongeldig e-mailadres.");
 
 	const profile = await getProfileOutsideCircle(uid);
 
@@ -176,15 +171,9 @@ exports.createCircle = onCall(async (request) => {
 
 	const { code, expiresAt } = await issueInviteCode(circleId, uid);
 
-	// Record who was invited by e-mail (the app opens the mail client to send the code)
-	if (inviteeEmails.length > 0) {
-		const inviteBatch = db.batch();
-		for (const email of inviteeEmails) {
-			const ref = db.collection("careCircleInvites").doc();
-			inviteBatch.set(ref, { id: ref.id, careCircleId: circleId, emailOrPhone: email, invitedBy: uid, roleOnJoin: "member", status: "pending", createdAt: now, expiresAt: new Date(expiresAt).toISOString() });
-		}
-		await inviteBatch.commit();
-	}
+	// E-mail addresses of invitees are NOT stored: the app only uses them on the phone to
+	// open the mail app (data minimisation). Old careCircleInvites docs are still cleaned up
+	// by deleteAccount and deleteWholeCircle.
 
 	return { circleId, inviteCode: code, expiresAt };
 });
