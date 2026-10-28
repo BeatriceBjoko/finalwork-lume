@@ -8,6 +8,7 @@
  * Pages: /privacy, /terms, /delete-account (Dutch) and /fr/privacy, /fr/terms, /fr/delete-account.
  * The pages load nothing from other websites (no fonts, scripts or trackers).
  */
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -86,7 +87,7 @@ function page({ lang, slug, title, content, legal }) {
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>${escapeHtml(title)} · Lume</title>
 	<meta name="description" content="${escapeHtml(title)} · Lume">
-	<link rel="stylesheet" href="/style.css">
+	<link rel="stylesheet" href="/style.css?v=${CSS_HASH}">
 	<link rel="alternate" hreflang="${other}" href="${LANGS[other].prefix}/${slug}">
 </head>
 <body>
@@ -131,6 +132,9 @@ a { color: var(--primary); }
 .contact a { display: inline-block; border: 1px solid var(--line); border-radius: 20px; padding: 10px 16px; font-weight: 600; text-decoration: none; }
 footer { color: var(--muted); font-size: 13px; padding-top: 40px; padding-bottom: 40px; }
 `;
+
+// The link to the stylesheet changes with its content, so phones never keep showing an old style
+const CSS_HASH = crypto.createHash("sha256").update(CSS).digest("hex").slice(0, 8);
 
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(path.join(OUT, "fr"), { recursive: true });
