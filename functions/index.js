@@ -523,13 +523,13 @@ exports.onMedicationOverride = onDocumentCreated("medicationLogs/{logId}", async
 	const tokens = await fetchTokens([...recipients]);
 	if (tokens.length === 0) return;
 
-	const medName = (med && med.medName) || "medicatie";
+	// No medicine name in the push: it passes Expo, Apple/Google and shows on the lock screen
 	const byName = log.confirmedByName || "Iemand";
 	const messages = tokens.map((to) => ({
 		to,
 		sound: "default",
 		title: "Medicatie buiten schema",
-		body: `${byName} bevestigde ${medName} buiten het schema.`,
+		body: `${byName} bevestigde een medicatie buiten het schema. Open Lume voor details.`,
 		data: { type: "medicationOverride", medicationId, taskId: log.taskId || null },
 	}));
 	await sendExpoPush(messages);
@@ -557,12 +557,12 @@ exports.onSosNote = onDocumentCreated("careCircleNotes/{noteId}", async (event) 
 	if (tokens.length === 0) return;
 
 	const authorName = (note.author && note.author.name) || "Iemand";
-	const body = (note.content || "").trim().slice(0, 140) || "wil iets met de kring delen.";
+	// No note text in the push: it passes Expo, Apple/Google and shows on the lock screen
 	const messages = tokens.map((to) => ({
 		to,
 		sound: "default",
 		title: `💚 ${authorName} vraagt om steun`,
-		body,
+		body: "Open Lume om het bericht te lezen.",
 		data: { type: "sosNote", noteId: event.params.noteId, careCircleId: circleId },
 	}));
 	await sendExpoPush(messages);
