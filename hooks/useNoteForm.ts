@@ -1,7 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Linking } from "react-native";
 import { useSession } from "../context";
 import { addNoteToDB, NoteInputData, updateNoteInDB } from "../services/firebase/notes.service";
 import { appAlert } from "../lib/appAlert";
@@ -54,15 +53,7 @@ export function useNoteForm(visible: boolean, onClose: () => void, noteToEdit?: 
 		}
 
 		try {
-			const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-			if (!permissionResult.granted) {
-				appAlert(t("logbook.alerts.permissionTitle"), t("logbook.alerts.permissionMessage"), [
-					{ text: t("common.cancel"), style: "cancel" },
-					{ text: t("common.settings"), onPress: () => Linking.openSettings() },
-				]);
-				return;
-			}
-
+			// No photo library permission needed: the system picker only shares the photo you choose
 			let result = await ImagePicker.launchImageLibraryAsync({
 				mediaTypes: ["images"],
 				allowsEditing: true,
