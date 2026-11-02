@@ -845,5 +845,8 @@
 		"deleteHint": "Liever niet? Dan kan je je account ook verwijderen.",
 		"deleteLink": "Account verwijderen",
 		"error": "Je akkoord kon niet bewaard worden. Controleer je internet en probeer opnieuw."
+	},
+	"splash": {
+		"tagline": "Samen zorgen voor wie je liefhebt"
 	}
 }

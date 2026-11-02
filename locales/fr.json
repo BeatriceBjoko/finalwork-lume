@@ -852,5 +852,8 @@
 		"deleteHint": "Vous préférez ne pas accepter ? Vous pouvez aussi supprimer votre compte.",
 		"deleteLink": "Supprimer le compte",
 		"error": "Votre accord n'a pas pu être enregistré. Vérifiez votre connexion internet et réessayez."
+	},
+	"splash": {
+		"tagline": "Prendre soin ensemble de ceux qu'on aime"
 	}
 }
