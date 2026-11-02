@@ -64,7 +64,7 @@
 			},
 			{
 				"type": "body",
-				"text": "Lume est une application pour les aidants proches, développée par Beatrice Bjoko (Belgique). Elle est la responsable du traitement de vos données.\n\nDes questions sur votre vie privée ? Écrivez à lume.helpmantelzorg@gmail.com. Nous répondons dans un délai d'un mois."
+				"text": "Lume est une application pour les aidants proches, développée par Beatrice Bjoko (Belgique). Elle est la responsable du traitement de vos données.\n\nDes questions sur votre vie privée ? Écrivez à help@lumecare.be. Nous répondons dans un délai d'un mois."
 			},
 			{
 				"type": "subtitle",
@@ -96,7 +96,7 @@
 			},
 			{
 				"type": "body",
-				"text": "La personne aidée n'a pas de compte. Celui ou celle qui saisit des données sur la personne aidée confirme le faire avec sa connaissance et son accord, ou en tant que son représentant (légal). N'ajoutez que ce qui est vraiment nécessaire pour les soins.\n\nLa personne aidée peut exercer elle-même ses droits (voir point 9) via lume.helpmantelzorg@gmail.com."
+				"text": "La personne aidée n'a pas de compte. Celui ou celle qui saisit des données sur la personne aidée confirme le faire avec sa connaissance et son accord, ou en tant que son représentant (légal). N'ajoutez que ce qui est vraiment nécessaire pour les soins.\n\nLa personne aidée peut exercer elle-même ses droits (voir point 9) via help@lumecare.be."
 			},
 			{
 				"type": "subtitle",
@@ -140,7 +140,7 @@
 			},
 			{
 				"type": "body",
-				"text": "Vous avez le droit :\n• de consulter vos données et d'en recevoir une copie (aussi dans un format utilisable, pour les emporter) ;\n• de corriger vos données : c'est généralement possible vous-même dans l'app ;\n• de faire effacer vos données : dans l'app via Profil → Supprimer le compte, ou par e-mail ;\n• de vous opposer au traitement ou d'en demander la limitation ;\n• de retirer votre consentement : supprimez les données de santé ou votre compte. Ce qui a déjà eu lieu reste valable.\n\nÉcrivez à lume.helpmantelzorg@gmail.com depuis l'adresse e-mail de votre compte. Nous répondons dans un délai d'un mois."
+				"text": "Vous avez le droit :\n• de consulter vos données et d'en recevoir une copie (aussi dans un format utilisable, pour les emporter) ;\n• de corriger vos données : c'est généralement possible vous-même dans l'app ;\n• de faire effacer vos données : dans l'app via Profil → Supprimer le compte, ou par e-mail ;\n• de vous opposer au traitement ou d'en demander la limitation ;\n• de retirer votre consentement : supprimez les données de santé ou votre compte. Ce qui a déjà eu lieu reste valable.\n\nÉcrivez à help@lumecare.be depuis l'adresse e-mail de votre compte. Nous répondons dans un délai d'un mois."
 			},
 			{
 				"type": "body",
@@ -254,7 +254,7 @@
 			},
 			{
 				"type": "body",
-				"text": "Ces conditions sont soumises au droit belge. Des questions ou des plaintes ? Écrivez à lume.helpmantelzorg@gmail.com. Nous cherchons toujours d'abord une solution ensemble."
+				"text": "Ces conditions sont soumises au droit belge. Des questions ou des plaintes ? Écrivez à help@lumecare.be. Nous cherchons toujours d'abord une solution ensemble."
 			}
 		],
 		"deletionContent": [
@@ -276,7 +276,7 @@
 			},
 			{
 				"type": "body",
-				"text": "Envoyez un e-mail à lume.helpmantelzorg@gmail.com depuis l'adresse e-mail de votre compte Lume, avec comme objet « Supprimer le compte ». Nous vérifions que la demande vient bien de vous, supprimons votre compte dans les 30 jours et vous prévenons quand c'est fait."
+				"text": "Envoyez un e-mail à help@lumecare.be depuis l'adresse e-mail de votre compte Lume, avec comme objet « Supprimer le compte ». Nous vérifions que la demande vient bien de vous, supprimons votre compte dans les 30 jours et vous prévenons quand c'est fait."
 			},
 			{
 				"type": "subtitle",
