@@ -132,22 +132,24 @@ export function TaskCard({ task, expanded, onPress, onToggleStatus, canManage = 
 									{task.title}
 								</Text>
 								{!expanded && <Text style={styles.timeCollapsed}>{task.time}</Text>}
+
+								{/* Directly under the title (not under the icon row), so the gap is the same for 1- and 2-line titles */}
+								{expanded && task.description && (
+									<Animated.View style={[styles.descBlock, descStyle]}>
+										{task.description.map((line, i) => (
+											<View key={i} style={styles.bulletRow}>
+												<View style={styles.bulletDot} />
+												<Text style={styles.bullet}>{line}</Text>
+											</View>
+										))}
+									</Animated.View>
+								)}
 							</View>
 
 							<View style={styles.chevronCircle}>
 								<MaterialCommunityIcons name={expanded ? "chevron-down" : "chevron-right"} size={20} color="#464A00" />
 							</View>
 						</View>
-
-						{expanded && task.description && (
-							<Animated.View style={[styles.descBlock, descStyle]}>
-								{task.description.map((line, i) => (
-									<Text key={i} style={styles.bullet}>
-										• {line}
-									</Text>
-								))}
-							</Animated.View>
-						)}
 
 						<View style={[styles.footer, expanded && styles.footerExpanded]}>
 							{expanded ? (
@@ -226,8 +228,11 @@ const styles = StyleSheet.create({
 	timeCollapsed: { fontFamily: "InterRegular", fontSize: 14, color: COLORS.primary, opacity: 0.6 },
 	timeExpanded: { fontFamily: "InterRegular", fontSize: 12, color: "#475569" },
 	chevronCircle: { width: 28, height: 28, borderRadius: 14, borderWidth: 1, borderColor: "rgba(70, 74, 0, 0.35)", justifyContent: "center", alignItems: "center", marginTop: 2 },
-	descBlock: { paddingLeft: 54, paddingRight: 8, marginTop: 10 },
-	bullet: { fontFamily: "InterRegular", fontSize: 13, color: COLORS.primary, lineHeight: 21, marginBottom: 2 },
+	descBlock: { marginTop: 8 },
+	// A drawn dot instead of "•": the font's bullet sits low; the dot is centred on the first line (21 - 5) / 2
+	bulletRow: { flexDirection: "row", alignItems: "flex-start", marginBottom: 2 },
+	bulletDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: COLORS.primary, marginTop: 8, marginRight: 8 },
+	bullet: { flex: 1, fontFamily: "InterRegular", fontSize: 13, color: COLORS.primary, lineHeight: 21 },
 	footer: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", marginTop: 10 },
 	footerExpanded: { justifyContent: "space-between", marginTop: 14 },
 	footerLeft: { flexDirection: "row", alignItems: "center", gap: 14 },

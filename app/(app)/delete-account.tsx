@@ -68,7 +68,7 @@ export default function DeleteAccountScreen() {
 						{Array.isArray(whatItems) &&
 							whatItems.map((item) => (
 								<View key={item} style={styles.bulletRow}>
-									<Text style={styles.bullet}>•</Text>
+									<View style={styles.bulletDot} />
 									<Text style={styles.bodyText}>{item}</Text>
 								</View>
 							))}
@@ -115,7 +115,8 @@ const styles = StyleSheet.create({
 	iconCircleDanger: { backgroundColor: "rgba(201, 75, 71, 0.15)" },
 	cardTitle: { flex: 1, fontFamily: "BricolageMedium", fontSize: 17, color: COLORS.primary },
 	bulletRow: { flexDirection: "row", marginBottom: 4 },
-	bullet: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.primary, marginRight: 8, lineHeight: 21 },
+	// Drawn dot, centred on the first line of text (21 - 5) / 2, like the task descriptions
+	bulletDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: COLORS.primary, marginTop: 8, marginRight: 10 },
 	bodyText: { flex: 1, fontFamily: FONTS.body, fontSize: 14, color: COLORS.primary, lineHeight: 21 },
 	textDanger: { color: DANGER },
 
