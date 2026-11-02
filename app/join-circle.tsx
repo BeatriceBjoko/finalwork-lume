@@ -1,4 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -38,13 +39,12 @@ export default function JoinCircle() {
 		setIsPermissionAlertVisible,
 	} = useJoinCircle();
 
+	// Accepts typed characters as well as a pasted "LUME-ABC234" or a whole shared message
+	// ("... Code: LUME-ABC234"): only the 6 characters of the code are kept
 	const handleCodeChange = (text: string) => {
-		setInviteCode(
-			text
-				.toUpperCase()
-				.replaceAll(/[^A-Z0-9]/g, "")
-				.slice(0, 6),
-		);
+		const upper = text.toUpperCase();
+		const shared = upper.match(/LUME[\s-]*([A-Z0-9]{6})/);
+		setInviteCode(shared ? shared[1] : upper.replaceAll(/[^A-Z0-9]/g, "").slice(0, 6));
 	};
 
 	return (
@@ -67,7 +67,22 @@ export default function JoinCircle() {
 					<Text style={styles.subtitle}>{t("joinCircle.subtitle", "Voer je uitnodigingscode in en stel je profiel in")}</Text>
 
 					<View style={styles.formContainer}>
-						<Text style={styles.label}>{t("joinCircle.codeLabel", "Uitnodigingscode")}</Text>
+						<View style={styles.codeLabelRow}>
+							<Text style={styles.label}>{t("joinCircle.codeLabel", "Uitnodigingscode")}</Text>
+							{/* iPhone: Apple's own paste button (no "Lume wants to paste" question).
+							    Android: the keyboard itself suggests the copied code, so no button there. */}
+							{Clipboard.isPasteButtonAvailable && (
+								<Clipboard.ClipboardPasteButton
+									onPress={(data) => data.type === "text" && handleCodeChange(data.text)}
+									acceptedContentTypes={["plain-text"]}
+									backgroundColor={COLORS.primary}
+									foregroundColor={COLORS.white}
+									cornerStyle="capsule"
+									displayMode="iconAndLabel"
+									style={styles.pasteButton}
+								/>
+							)}
+						</View>
 
 						<View style={styles.codeWrapperRow}>
 							<Text style={styles.lumePrefix}>LUME -</Text>
@@ -78,7 +93,7 @@ export default function JoinCircle() {
 										<Text style={styles.codeText}>{inviteCode[index] || ""}</Text>
 									</View>
 								))}
-								<TextInput ref={inputRef} style={styles.hiddenInput} value={inviteCode} onChangeText={handleCodeChange} maxLength={6} keyboardType="default" autoCapitalize="characters" autoCorrect={false} caretHidden={true} />
+								<TextInput ref={inputRef} style={styles.hiddenInput} value={inviteCode} onChangeText={handleCodeChange} keyboardType="default" autoCapitalize="characters" autoCorrect={false} caretHidden={true} />
 							</Pressable>
 						</View>
 
@@ -209,6 +224,9 @@ const styles = StyleSheet.create({
 		color: "rgba(35, 54, 0, 0.92)",
 		marginRight: 8,
 	},
+	codeLabelRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+	// UIPasteControl only shows with an explicit width and height
+	pasteButton: { width: 100, height: 32, marginTop: 10, marginBottom: 8 },
 	codeBoxesContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
