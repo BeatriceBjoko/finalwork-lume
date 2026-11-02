@@ -21,6 +21,7 @@ const constant = (name) => constants.match(new RegExp(`${name} = "([^"]+)"`))[1]
 const VERSION = constant("LEGAL_VERSION");
 const UPDATED = constant("LEGAL_UPDATED");
 const EMAIL = constant("CONTACT_EMAIL");
+const SITE_URL = constant("LEGAL_WEB_URL");
 
 const LANGS = {
 	nl: { prefix: "", locale: "nl-BE", other: "fr", otherLabel: "Français" },
@@ -88,11 +89,14 @@ function page({ lang, slug, title, content, legal }) {
 	<title>${escapeHtml(title)} · Lume</title>
 	<meta name="description" content="${escapeHtml(title)} · Lume">
 	<link rel="stylesheet" href="/style.css?v=${CSS_HASH}">
-	<link rel="alternate" hreflang="${other}" href="${LANGS[other].prefix}/${slug}">
+	<link rel="icon" type="image/png" href="/favicon.png">
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+	<link rel="canonical" href="${SITE_URL}${prefix}/${slug}">
+	<link rel="alternate" hreflang="${other}" href="${SITE_URL}${LANGS[other].prefix}/${slug}">
 </head>
 <body>
 	<header>
-		<a class="logo" href="${prefix}/privacy"><span>Lume</span></a>
+		<a class="logo" href="${prefix}/privacy"><img src="/logo.png" width="40" height="40" alt=""><span>Lume</span></a>
 		<a class="lang" href="${LANGS[other].prefix}/${slug}" hreflang="${other}" lang="${other}">${otherLabel}</a>
 	</header>
 	<main>
@@ -115,8 +119,7 @@ const CSS = `:root { --primary: #233600; --accent: #FEF970; --background: #FDFBF
 body { margin: 0; background: var(--background); color: var(--primary); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 header, main, footer { max-width: 760px; margin: 0 auto; padding: 0 20px; }
 header { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; padding-bottom: 8px; }
-.logo { text-decoration: none; color: var(--primary); font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
-.logo span { background: var(--accent); border-radius: 20px; padding: 2px 14px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--primary); font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
 .lang { color: var(--primary); font-weight: 600; font-size: 14px; }
 nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 24px 0 8px; }
 nav a { color: var(--primary); text-decoration: none; font-size: 14px; border: 1px solid var(--line); border-radius: 20px; padding: 6px 14px; }
@@ -139,6 +142,10 @@ const CSS_HASH = crypto.createHash("sha256").update(CSS).digest("hex").slice(0, 
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(path.join(OUT, "fr"), { recursive: true });
 fs.writeFileSync(path.join(OUT, "style.css"), CSS);
+// Logo, browser tab icon and iPhone bookmark icon (hosting/assets, made from assets/images/logo-lume.png)
+for (const file of fs.readdirSync(path.join(ROOT, "hosting", "assets"))) {
+	fs.copyFileSync(path.join(ROOT, "hosting", "assets", file), path.join(OUT, file));
+}
 
 for (const lang of Object.keys(LANGS)) {
 	const { legal } = JSON.parse(fs.readFileSync(path.join(ROOT, "locales", `${lang}.json`), "utf8"));
