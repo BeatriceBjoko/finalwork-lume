@@ -1,30 +1,68 @@
 {
   "expo": {
-    "name": "finalwork-lume",
+    "name": "Lume",
     "slug": "finalwork-lume",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo-lume.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "finalworklume",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.beatricebj.finalworklume"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.beatricebj.finalworklume",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
     },
     "android": {
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/logo-lume.png"
+        "backgroundColor": "#FDFBF7",
+        "foregroundImage": "./assets/images/adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.READ_CALENDAR",
         "android.permission.WRITE_CALENDAR",
-        "android.permission.CAMERA",
+        "android.permission.CAMERA"
+      ],
+      "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.beatricebj.finalworklume"
+    },
+    "locales": {
+      "nl": {
+        "ios": {
+          "CFBundleDisplayName": "Lume",
+          "NSCameraUsageDescription": "Lume gebruikt de camera om de barcode op een medicijndoosje te scannen. Er worden geen foto's bewaard.",
+          "NSPhotoLibraryUsageDescription": "Lume opent je foto's zodat je zelf een profielfoto of een foto bij een notitie kan kiezen.",
+          "NSCalendarsUsageDescription": "Lume zet een zorgtaak in je eigen agenda wanneer je daarvoor kiest.",
+          "NSCalendarsFullAccessUsageDescription": "Lume zet een zorgtaak in je eigen agenda wanneer je daarvoor kiest.",
+          "NSRemindersUsageDescription": "Lume gebruikt je herinneringen niet.",
+          "NSRemindersFullAccessUsageDescription": "Lume gebruikt je herinneringen niet."
+        },
+        "android": {
+          "app_name": "Lume"
+        }
+      },
+      "fr": {
+        "ios": {
+          "CFBundleDisplayName": "Lume",
+          "NSCameraUsageDescription": "Lume utilise l'appareil photo pour scanner le code-barres d'une boîte de médicaments. Aucune photo n'est conservée.",
+          "NSPhotoLibraryUsageDescription": "Lume ouvre vos photos pour que vous puissiez choisir vous-même une photo de profil ou une photo pour une note.",
+          "NSCalendarsUsageDescription": "Lume ajoute une tâche de soins à votre propre agenda quand vous le choisissez.",
+          "NSCalendarsFullAccessUsageDescription": "Lume ajoute une tâche de soins à votre propre agenda quand vous le choisissez.",
+          "NSRemindersUsageDescription": "Lume n'utilise pas vos rappels.",
+          "NSRemindersFullAccessUsageDescription": "Lume n'utilise pas vos rappels."
+        },
+        "android": {
+          "app_name": "Lume"
+        }
+      }
     },
     "web": {
       "output": "single",
@@ -38,9 +76,9 @@
           "image": "./assets/images/logo-lume.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#FDFBF7",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#FDFBF7"
           }
         }
       ],
@@ -50,13 +88,30 @@
       [
         "expo-calendar",
         {
-          "calendarPermission": "Lume wil je zorgtaken aan je agenda toevoegen."
+          "calendarPermission": "Lume zet een zorgtaak in je eigen agenda wanneer je daarvoor kiest.",
+          "remindersPermission": "Lume gebruikt je herinneringen niet."
         }
       ],
       [
         "expo-camera",
         {
-          "cameraPermission": "Lume gebruikt de camera om medicatie te scannen."
+          "cameraPermission": "Lume gebruikt de camera om de barcode op een medicijndoosje te scannen. Er worden geen foto's bewaard.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Lume opent je foto's zodat je zelf een profielfoto of een foto bij een notitie kan kiezen.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#233600"
         }
       ],
       "expo-image",
